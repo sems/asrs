@@ -1,2 +1,71 @@
+# Own ignore here 
 output/
+HMI/src/resources/config.properties
+HMI/.idea/workspace.xml
+
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+
+# User-specific stuff
+HMI/.idea/**/workspace.xml
+HMI/.idea/**/tasks.xml
+HMI/.idea/**/usage.statistics.xml
+HMI/.idea/**/dictionaries
+HMI/.idea/**/shelf
+
+# Generated files
+HMI/.idea/**/contentModel.xml
+
+# Sensitive or high-churn files
+HMI/.idea/**/dataSources/
+HMI/.idea/**/dataSources.ids
+HMI/.idea/**/dataSources.local.xml
+HMI/.idea/**/sqlDataSources.xml
+HMI/.idea/**/dynamic.xml
+HMI/.idea/**/uiDesigner.xml
+HMI/.idea/**/dbnavigator.xml
+
+# Gradle
+HMI/.idea/**/gradle.xml
+HMI/.idea/**/libraries
+
+# Gradle and Maven with auto-import
+# When using Gradle or Maven with auto-import, you should exclude module files,
+# since they will be recreated, and may cause churn.  Uncomment if using
+# auto-import.
+# .idea/modules.xml
+# .idea/*.iml
+# .idea/modules
+
+# CMake
+HMI/cmake-build-*/
+
+# Mongo Explorer plugin
+HMI/.idea/**/mongoSettings.xml
+
+# File-based project format
+*.iws
+
+# IntelliJ
 HMI/out/
+
+# mpeltonen/sbt-idea plugin
+HMI/.idea_modules/
+
+# JIRA plugin
+HMI/atlassian-ide-plugin.xml
+
+# Cursive Clojure plugin
+HMI/.idea/replstate.xml
+
+# Crashlytics plugin (for Android Studio and IntelliJ)
+HMI/com_crashlytics_export_strings.xml
+HMI/crashlytics.properties
+HMI/crashlytics-build.properties
+HMI/fabric.properties
+
+# Editor-based Rest Client
+HMI/.idea/httpRequests
+
+# Android studio 3.1+ serialized cache file
+HMI/.idea/caches/build_file_checksums.ser
