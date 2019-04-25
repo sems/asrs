@@ -1,5 +1,4 @@
-package com.company.View.StorageRack;
-
+package View.StorageRack;
 import java.awt.*;
 
 public class RobotPositionStorageSlot extends StorageSlot {
