@@ -43,7 +43,7 @@ class Robot implements SerialPortDataListener {
 
         comPort.readBytes(payload, size);
 
-        System.out.println("x: " + payload[0] + ", y: " + payload[1]);
+        System.out.println("x: " + payload[0] + ", y: " + payload[1] + ", z: " + payload[2]);
         // System.out.print(comPort.bytesAvailable() + " available");
         // byte[] newData = new byte[comPort.bytesAvailable()];
         // int numRead = comPort.readBytes(newData, newData.length);
