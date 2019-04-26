@@ -7,27 +7,27 @@ HMI/.idea/workspace.xml
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff
-HMI/.idea/**/workspace.xml
-HMI/.idea/**/tasks.xml
-HMI/.idea/**/usage.statistics.xml
-HMI/.idea/**/dictionaries
-HMI/.idea/**/shelf
+HMI/.idea/workspace.xml
+HMI/.idea/tasks.xml
+HMI/.idea/usage.statistics.xml
+HMI/.idea/dictionaries
+HMI/.idea/shelf
 
 # Generated files
-HMI/.idea/**/contentModel.xml
+HMI/.idea/contentModel.xml
 
 # Sensitive or high-churn files
-HMI/.idea/**/dataSources/
-HMI/.idea/**/dataSources.ids
-HMI/.idea/**/dataSources.local.xml
-HMI/.idea/**/sqlDataSources.xml
-HMI/.idea/**/dynamic.xml
-HMI/.idea/**/uiDesigner.xml
-HMI/.idea/**/dbnavigator.xml
+HMI/.idea/dataSources/
+HMI/.idea/dataSources.ids
+HMI/.idea/dataSources.local.xml
+HMI/.idea/sqlDataSources.xml
+HMI/.idea/dynamic.xml
+HMI/.idea/uiDesigner.xml
+HMI/.idea/dbnavigator.xml
 
 # Gradle
-HMI/.idea/**/gradle.xml
-HMI/.idea/**/libraries
+HMI/.idea/gradle.xml
+HMI/.idea/libraries
 
 # Gradle and Maven with auto-import
 # When using Gradle or Maven with auto-import, you should exclude module files,
@@ -41,7 +41,7 @@ HMI/.idea/**/libraries
 HMI/cmake-build-*/
 
 # Mongo Explorer plugin
-HMI/.idea/**/mongoSettings.xml
+HMI/.idea/mongoSettings.xml
 
 # File-based project format
 *.iws

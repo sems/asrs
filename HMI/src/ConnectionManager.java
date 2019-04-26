@@ -8,7 +8,7 @@ class ConnectionManager {
 
     private static Connection getConnection() {
         try {
-            String driverName = "com.mysql.jdbc.Driver";
+            String driverName = "com.mysql.cj.jdbc.Driver";
             Class.forName(driverName);
             try {
                 String username = ConnectionManager.getProp("db.user");
