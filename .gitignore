@@ -1,2 +1,5 @@
 output/
 HMI/out/
+HMI/src/resources/config.properties
+HMI/.idea/workspace.xml
+HMI/.idea/misc.xml
