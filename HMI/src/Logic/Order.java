@@ -1,3 +1,5 @@
+package Logic;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -29,7 +31,7 @@ public class Order {
         }
     }
 
-    private boolean isPickingCompleted() {
+    public boolean isPickingCompleted() {
         return this.pickingCompleted != null;
     }
 
@@ -39,7 +41,7 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Order "+ id +" { \n" +
+        return "Logic.Order "+ id +" { \n" +
                  orderdate + "\n" +
                  buyer + "\n" +
                  address +
