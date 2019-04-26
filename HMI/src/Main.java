@@ -1,7 +1,17 @@
+import Data.Database.DataServer;
 import View.StorageRack.*;
 
+/**
+ * The type Main.
+ */
 public class Main {
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
+        DataServer ds = new DataServer();
 
     }
 

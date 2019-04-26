@@ -9,13 +9,24 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * The type Data server.
+ */
 public class DataServer {
     private ConnectionManager cm;
 
+    /**
+     * Instantiates a new Data server.
+     */
     public DataServer() {
         this.cm = new ConnectionManager();
     }
 
+    /**
+     * Get storage items array list.
+     *
+     * @return array list of StorageItem
+     */
     public ArrayList<StorageItem> getStorageItems(){
         ArrayList<StorageItem> storageItems = new ArrayList<>();
         try {
@@ -24,7 +35,7 @@ public class DataServer {
                     "WHERE (stockitems.StockItemID = stockitemholdings.StockItemID) " +
                     "AND (stockitems.StockItemID BETWEEN  1 AND 25)";
 
-            ResultSet rs = ConnectionManager.call(sql);
+            ResultSet rs = cm.call(sql);
             while(rs.next()){
                 int id  = rs.getInt(1);
                 String name = rs.getString(2);
@@ -39,7 +50,13 @@ public class DataServer {
         return storageItems;
     }
 
-    public Order getOrder(int orderid){
+    /**
+     * Get order order.
+     *
+     * @param orderID the orderID
+     * @return the order
+     */
+    public Order getOrder(int orderID){
         Order order = null;
         try {
             String orderSQL = "SELECT orders.OrderID, customers.CustomerName, customers.DeliveryAddressLine1, customers.DeliveryAddressLine2, customers.DeliveryPostalCode, cities.CityName, orders.OrderDate " +
@@ -47,9 +64,9 @@ public class DataServer {
                     "WHERE (orders.CustomerID = customers.CustomerID) " +
                     "AND (customers.DeliveryCityID = cities.CityID)" +
                     "AND orders.OrderDate > '2019-01-01' " +
-                    "AND orders.OrderID = " + orderid + " " +
+                    "AND orders.OrderID = " + orderID + " " +
                     "ORDER BY orders.OrderID ASC";
-            ResultSet rsOrders = ConnectionManager.call(orderSQL);
+            ResultSet rsOrders = cm.call(orderSQL);
             while(rsOrders.next()){
                 // OrderId
                 int id  = rsOrders.getInt(1);
@@ -70,27 +87,11 @@ public class DataServer {
         return order;
     }
 
-    private void getOrderItems(Order order, int id) {
-        try {
-            String sqlOrderLines = "SELECT StockItemID, Description, Quantity, PickedQuantity, PickingCompletedWhen " +
-                    "FROM orderlines " +
-                    "WHERE OrderID = " + id;
-            ResultSet rsOrdersItems = ConnectionManager.call(sqlOrderLines);
-            while(rsOrdersItems.next()){
-
-                int itemID = rsOrdersItems.getInt(1);
-                String itemName = rsOrdersItems.getString(2);
-                int quantity = rsOrdersItems.getInt(3);
-
-                order.addOrderItems(new OrderItem(itemID, itemName, quantity));
-            }
-
-            rsOrdersItems.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
+    /**
+     * Get orders array list.
+     *
+     * @return the array list of orders
+     */
     public ArrayList<Order> getOrders(){
         ArrayList<Order> orders = new ArrayList<>();
         try {
@@ -100,7 +101,7 @@ public class DataServer {
                     "AND (customers.DeliveryCityID = cities.CityID)" +
                     "AND orders.OrderDate > '2019-01-01' " +
                     "ORDER BY orders.OrderID ASC";
-            ResultSet rsOrders = ConnectionManager.call(orderSQL);
+            ResultSet rsOrders = cm.call(orderSQL);
             while(rsOrders.next()){
                 // OrderId
                 int id  = rsOrders.getInt(1);
@@ -120,5 +121,32 @@ public class DataServer {
             e.printStackTrace();
         }
         return orders;
+    }
+
+    /**
+     * Gets the items out of orderlines
+     *
+     * @param order create in method where is is called.
+     * @param id from the order
+     */
+    private void getOrderItems(Order order, int id) {
+        try {
+            String sqlOrderLines = "SELECT StockItemID, Description, Quantity, PickedQuantity, PickingCompletedWhen " +
+                    "FROM orderlines " +
+                    "WHERE OrderID = " + id;
+            ResultSet rsOrdersItems = cm.call(sqlOrderLines);
+            while(rsOrdersItems.next()){
+
+                int itemID = rsOrdersItems.getInt(1);
+                String itemName = rsOrdersItems.getString(2);
+                int quantity = rsOrdersItems.getInt(3);
+
+                order.addOrderItems(new OrderItem(itemID, itemName, quantity));
+            }
+
+            rsOrdersItems.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
