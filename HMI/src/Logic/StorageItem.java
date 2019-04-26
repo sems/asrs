@@ -1,3 +1,5 @@
+package Logic;
+
 public class StorageItem {
     private int id;
     private String name;
@@ -13,7 +15,7 @@ public class StorageItem {
 
     @Override
     public String toString() {
-        return "StorageItem{" +
+        return "Logic.StorageItem{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", location='" + location + '\'' +
