@@ -10,28 +10,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class Main extends Application {
-    @Override
-    public void start(Stage stage) {
-        Parent root = null;
-        try {
-            root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        Scene scene = new Scene(root, screenBounds.getWidth(), screenBounds.getHeight());
 
-        stage.setTitle("FXML Welcome");
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-}
 //
 ///**
 // * The type Main.
