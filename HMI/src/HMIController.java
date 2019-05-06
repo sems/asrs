@@ -1,3 +1,4 @@
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -30,6 +31,6 @@ public class HMIController {
          double progressBarValue = (double)(maxItems / 100 * item) / 100;
          progressBar.setProgress(progressBarValue);
 
-        progressLabel.setText("Product Items Opgehaald "+ item + " van de "+maxItems);
+        Platform.runLater(() -> progressLabel.setText("Product Items Opgehaald "+ item + " van de "+maxItems));
     }
 }
