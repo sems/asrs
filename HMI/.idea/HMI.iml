@@ -17,5 +17,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="com.fazecast:jSerialComm:2.5.1" level="project" />
   </component>
 </module>
