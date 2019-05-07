@@ -155,10 +155,8 @@ public class DataServer {
 
     public void completePicking(int idOrder){
         try {
-            // TODO fix time.
-
-            String sqlUpdateOrderLines = "UPDATE orders SET PickingCompletedWhen = " + timeStamp + " WHERE OrderID = " + idOrder;
-            int rsUpdateOrderLines = cm.update(sqlUpdateOrderLines);
+            String sqlUpdateOrderLines = "UPDATE orders SET PickingCompletedWhen = NOW() WHERE OrderID = " + idOrder;
+            cm.update(sqlUpdateOrderLines);
         } catch (SQLException e) {
             e.printStackTrace();
         }

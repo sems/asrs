@@ -33,7 +33,7 @@ public class Main {
             storage.addItemToStorage(si);
         }
 
-        orders.get(1).setPickingCompleted();
+        orders.get(2).setPickingCompleted();
     }
 
     private static StorageRack getExampleStorage() {
