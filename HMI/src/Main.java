@@ -4,12 +4,8 @@ import Logic.Storage;
 import Logic.StorageItem;
 import View.StorageRack.*;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.util.ArrayList;
 
 /**
  * The type Main.
@@ -32,8 +28,7 @@ public class Main {
         for (StorageItem si: items) {
             storage.addItemToStorage(si);
         }
-
-        orders.get(2).setPickingCompleted();
+        orders.get(1).getOrderItems().get(0).setPickingCompleted();
     }
 
     private static StorageRack getExampleStorage() {

@@ -6,10 +6,8 @@ import Logic.StorageItem;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -81,7 +79,16 @@ public class DataServer {
 
                 order = new Order(id, buyer, address, orderDate);
 
-                getOrderItems(order, id);
+                ResultSet rs = getOrderItems(id);
+                while(rs.next()){
+                    int itemID = rs.getInt(1);
+                    int OrderID = rs.getInt(2);
+                    String itemName = rs.getString(3);
+                    int quantity = rs.getInt(4);
+
+                    order.addOrderItems(new OrderItem(itemID, OrderID, itemName, quantity));
+                }
+                rs.close();
             }
             rsOrders.close();
         } catch (SQLException e) {
@@ -97,6 +104,7 @@ public class DataServer {
      */
     public ArrayList<Order> getOrders(){
         ArrayList<Order> orders = new ArrayList<>();
+        Order order;
         try {
             String orderSQL = "SELECT orders.OrderID, customers.CustomerName, customers.DeliveryAddressLine1, customers.DeliveryAddressLine2, customers.DeliveryPostalCode, cities.CityName, orders.OrderDate " +
                     "FROM orders, customers, cities  " +
@@ -114,10 +122,19 @@ public class DataServer {
                 String address = rsOrders.getString(3) + rsOrders.getString(4) + " \n"+ rsOrders.getString(5) + " " + rsOrders.getString(6);
                 Date orderDate = rsOrders.getDate(7);
 
-                Order o = new Order(id, buyer, address, orderDate);
+                order = new Order(id, buyer, address, orderDate);
 
-                getOrderItems(o, id);
-                orders.add(o);
+                ResultSet rs = getOrderItems(id);
+                while(rs.next()){
+                    int itemID = rs.getInt(1);
+                    int OrderID = rs.getInt(2);
+                    String itemName = rs.getString(3);
+                    int quantity = rs.getInt(4);
+
+                    order.addOrderItems(new OrderItem(itemID, OrderID, itemName, quantity));
+                }
+                rs.close();
+                orders.add(order);
             }
             rsOrders.close();
         } catch (SQLException e) {
@@ -129,47 +146,84 @@ public class DataServer {
     /**
      * Gets the items out of orderlines
      *
-     * @param order create in method where is is called.
      * @param id from the order
      */
-    private void getOrderItems(Order order, int id) {
+    private ResultSet getOrderItems(int id) {
+        ResultSet rsOrdersItems = null;
         try {
-            String sqlOrderLines = "SELECT StockItemID, Description, Quantity, PickedQuantity, PickingCompletedWhen " +
+            String sqlOrderLines = "SELECT StockItemID, OrderID, Description, Quantity, PickedQuantity, PickingCompletedWhen " +
                     "FROM orderlines " +
                     "WHERE OrderID = " + id;
-            ResultSet rsOrdersItems = cm.call(sqlOrderLines);
-            while(rsOrdersItems.next()){
-
-                int itemID = rsOrdersItems.getInt(1);
-                String itemName = rsOrdersItems.getString(2);
-                int quantity = rsOrdersItems.getInt(3);
-
-                order.addOrderItems(new OrderItem(itemID, itemName, quantity));
-            }
-
-            rsOrdersItems.close();
+            rsOrdersItems = cm.call(sqlOrderLines);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return rsOrdersItems;
     }
 
+
+    /**
+     * Complete picking.
+     *
+     * @param idOrder the order id
+     */
     public void completePicking(int idOrder){
         try {
-            String sqlUpdateOrderLines = "UPDATE orders SET PickingCompletedWhen = NOW() WHERE OrderID = " + idOrder;
+            String sqlUpdateOrderLines = "UPDATE orders SET PickingCompletedWhen = NOW() " +
+                    "WHERE OrderID = " + idOrder;
             cm.update(sqlUpdateOrderLines);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void completePicking(Date date, int idOrder, int idOrderItem){
+    /**
+     * Complete picking.
+     *
+     * @param orderId     the order id
+     * @param orderItemId the order item id
+     */
+    public void completePicking(int orderId, int orderItemId){
         try {
-            String sqlUpdateOrderLines = "UPDATE orderlines SET PickingCompletedWhen = " + date +
-                    "WHERE OrderID = " + idOrder + " " +
-                    "AND OrderLineID = " + idOrderItem;
-            int rsUpdateOrderLines = cm.update(sqlUpdateOrderLines);
+            String sqlUpdateOrderLines = "UPDATE orderlines SET PickingCompletedWhen = NOW() " +
+                    "WHERE OrderID = " + orderId + " " +
+                    "AND StockItemID = " + orderItemId;
+            cm.update(sqlUpdateOrderLines);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Are all items picked boolean.
+     *
+     * @param orderId the order id
+     * @return the boolean
+     */
+    public boolean areAllItemsPicked(int orderId){
+        boolean status = false;
+        int size = 0;
+        int count = 0;
+        try {
+            ResultSet rs = this.getOrderItems(orderId);
+
+            // Get the last on and set it as size
+            rs.last();
+            size = rs.getRow();
+
+            // Go back to the first for looping
+            rs.beforeFirst();
+            while(rs.next()){
+                Timestamp datePicked = rs.getTimestamp("PickingCompletedWhen");
+                if (datePicked != null) count++;
+            }
+
+            // Check if all are picked
+            if (size == count) status = true;
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return status;
     }
 }

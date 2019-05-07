@@ -11,7 +11,7 @@ public class Order {
     private String address;
     private ArrayList<OrderItem> orderItems;
     private Date orderdate;
-    private String pickingCompleted;
+    private Date pickingCompleted;
 
     public Order(int id, String buyer, String address, Date orderdate) {
         this.id = id;
@@ -39,12 +39,6 @@ public class Order {
 
     public boolean isPickingCompleted() {
         return this.pickingCompleted != null;
-    }
-
-    public void setPickingCompleted() {
-        DataServer tempDS = new DataServer();
-        tempDS.completePicking(this.id);
-        this.pickingCompleted = pickingCompleted;
     }
 
     @Override
