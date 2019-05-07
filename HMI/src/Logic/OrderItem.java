@@ -1,5 +1,7 @@
 package Logic;
 
+import Data.Database.DataServer;
+
 import java.util.Date;
 
 public class OrderItem {
@@ -7,7 +9,7 @@ public class OrderItem {
     private String name;
     private int quantity;
     private int pickedQuantity;
-    private Date pickingCompleted;
+    private String pickingCompleted;
 
     public OrderItem(int itemID, String name, int quantity) {
         this.itemID = itemID;
@@ -21,7 +23,7 @@ public class OrderItem {
         return this.pickingCompleted != null;
     }
 
-    public void setPickingCompleted(Date pickingCompleted) {
+    public void setPickingCompleted(String pickingCompleted) {
         this.pickingCompleted = pickingCompleted;
     }
 

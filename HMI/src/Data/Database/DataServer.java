@@ -6,7 +6,10 @@ import Logic.StorageItem;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -145,6 +148,28 @@ public class DataServer {
             }
 
             rsOrdersItems.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void completePicking(int idOrder){
+        try {
+            // TODO fix time.
+
+            String sqlUpdateOrderLines = "UPDATE orders SET PickingCompletedWhen = " + timeStamp + " WHERE OrderID = " + idOrder;
+            int rsUpdateOrderLines = cm.update(sqlUpdateOrderLines);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void completePicking(Date date, int idOrder, int idOrderItem){
+        try {
+            String sqlUpdateOrderLines = "UPDATE orderlines SET PickingCompletedWhen = " + date +
+                    "WHERE OrderID = " + idOrder + " " +
+                    "AND OrderLineID = " + idOrderItem;
+            int rsUpdateOrderLines = cm.update(sqlUpdateOrderLines);
         } catch (SQLException e) {
             e.printStackTrace();
         }
