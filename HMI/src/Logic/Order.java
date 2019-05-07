@@ -1,5 +1,7 @@
 package Logic;
 
+import Data.Database.DataServer;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -24,6 +26,10 @@ public class Order {
         orderItems.add(item);
     }
 
+    public ArrayList<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
     public void printOrderItems(){
         System.out.println("\nOrderItems:");
         for (OrderItem oi: orderItems ) {
@@ -33,10 +39,6 @@ public class Order {
 
     public boolean isPickingCompleted() {
         return this.pickingCompleted != null;
-    }
-
-    public void setPickingCompleted(Date pickingCompleted) {
-        this.pickingCompleted = pickingCompleted;
     }
 
     @Override
