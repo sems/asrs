@@ -1,17 +1,3 @@
-import Data.Database.DataServer;
-import View.StorageRack.*;
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-
-import java.io.IOException;
-
-
-
 //
 ///**
 // * The type Main.
@@ -27,8 +13,8 @@ import java.io.IOException;
 //
 //    }
 //
-//    private static StorageRack getExampleStorage() {
-//        StorageRack storageRack = new StorageRack();
+//    private static ASR getExampleStorage() {
+//        ASR storageRack = new ASR();
 //
 //        for (int x = 0; x < 5; x++) {
 //            for (int y = 0; y < 5; y++) {

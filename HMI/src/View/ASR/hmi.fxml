@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="HMIController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="View.ASR.HMIController">
   <children>
     <TabPane prefHeight="398.0" prefWidth="656.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
       <tabs>
@@ -26,7 +26,7 @@
                                   <items>
                                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                                       <children>
-                                        <ListView prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0" />
+                                        <ListView fx:id="allOrdersListView" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0" />
                                       </children>
                                     </AnchorPane>
                                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="72.0" prefWidth="411.0">
@@ -65,7 +65,7 @@
                                           <items>
                                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="106.0" prefWidth="447.0">
                                               <children>
-                                                <ListView prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0" />
+                                                <ListView fx:id="allOrdersToPickListView" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0" />
                                               </children>
                                             </AnchorPane>
                                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
