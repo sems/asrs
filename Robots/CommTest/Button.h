@@ -1,6 +1,9 @@
 #include "arduino.h"
 #include <stdint.h>
 
+#ifndef h_button
+#define h_button
+
 class Button
 {
 private:
@@ -12,3 +15,5 @@ public:
 
     Button(uint8_t inputPin);
 };
+
+#endif
