@@ -4,7 +4,6 @@ import com.fazecast.jSerialComm.SerialPortEvent;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.stream.Stream;
 
 public class Asr implements SerialPortDataListener {
     SerialPort comPort;
@@ -178,5 +177,4 @@ public class Asr implements SerialPortDataListener {
 
         gotoPos(currentItem[0], currentItem[1]);
     }
-
 }
