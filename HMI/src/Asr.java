@@ -17,7 +17,7 @@ public class Asr implements SerialPortDataListener {
         Asr r = new Asr(port);
 
         r.start();
-        r.gotoPos((byte)3,(byte)2);
+        r.gotoPos((byte) 3, (byte) 2);
     }
 
     public int getListeningEvents() {
@@ -26,12 +26,12 @@ public class Asr implements SerialPortDataListener {
 
     public void start() {
         OutputStream out = comPort.getOutputStream();
-        byte size = 0;
-        byte commandCode = 3;
+        final byte size = 0;
+        final byte commandCode = 3;
 
         byte checksum[] = { 0, 0 };
 
-        byte buffer[] = { size, commandCode, checksum[0], checksum[1] };
+        byte buffer[] = { size, commandCode, checksum };
 
         try {
             out.write(buffer);
@@ -42,12 +42,12 @@ public class Asr implements SerialPortDataListener {
 
     public void stop() {
         OutputStream out = comPort.getOutputStream();
-        byte size = 0;
-        byte commandCode = 2;
+        final byte size = 0;
+        final byte commandCode = 2;
 
         byte checksum[] = { 0, 0 };
 
-        byte buffer[] = { size, commandCode, checksum[0], checksum[1] };
+        byte buffer[] = { size, commandCode, checksum };
 
         try {
             out.write(buffer);
@@ -58,15 +58,15 @@ public class Asr implements SerialPortDataListener {
 
     public void gotoPos(byte x, byte y) {
         OutputStream out = comPort.getOutputStream();
-        byte size = 2;
-        byte commandCode = 11;
+        final byte size = 2;
+        final byte commandCode = 11;
         byte payload[] = { x, y };
 
         int check = makeChecksom(payload);
 
-        byte checksum[] = {(byte)(check >> 8 & 0xFF), (byte)(check & 0xFF)};
+        byte checksum[] = { (byte) (check >> 8 & 0xFF), (byte) (check & 0xFF) };
 
-        byte buffer[] = { size, commandCode, payload[0], payload[1], checksum[0], checksum[1] };
+        byte buffer[] = { size, commandCode, payload[0], payload[1], checksum };
 
         try {
             out.write(buffer);
@@ -129,7 +129,7 @@ public class Asr implements SerialPortDataListener {
 
         comPort.readBytes(payload, size);
 
-        for(int i = 0;i < size; i++){
+        for (int i = 0; i < size; i++) {
             System.out.println(i + 1 + ": " + payload[i]);
         }
 
@@ -139,12 +139,11 @@ public class Asr implements SerialPortDataListener {
         int checkPayload = this.makeChecksom(payload);
         int checkPacket = (checkBuffer[0] << 8) + (checkBuffer[1]);
 
-        if(checkPayload == checkPacket) {
+        if (checkPayload == checkPacket) {
             System.out.print("Packet is valid");
-        }else{
+        } else {
             System.out.print("Packet is invalid");
         }
-
 
     }
 }
