@@ -156,7 +156,7 @@ public class Asr implements SerialPortDataListener {
     public void addOrder(byte[][] order) {
         if (orderComplete) {
             if (activeOrder.size() > 0) {
-                activeOrder = order;
+                //activeOrder = order;
                 orderComplete = false;
                 NextItem();
             } else {
