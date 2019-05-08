@@ -10,7 +10,7 @@ public class Order {
     private ArrayList<OrderItem> orderItems;
     private Date orderdate;
     private Date pickingCompleted;
-    private int orderItemsCount = 0;
+    private String orderItemsCount = "3";
 
     public Order(int id, String buyer, String address, Date orderdate) {
         this.id = id;
@@ -19,11 +19,12 @@ public class Order {
         this.orderItems = new ArrayList<>();
         this.orderdate = orderdate;
         this.pickingCompleted = null;
-        this.orderItemsCount = this.orderItems.size();
+        orderItemsCount = "2";
     }
 
     public void addOrderItems(OrderItem item) {
         orderItems.add(item);
+        this.orderItemsCount = Integer.toString(this.orderItems.size());
     }
 
     public void printOrderItems(){
@@ -65,5 +66,9 @@ public class Order {
                  address +
                 "\norderItems=" + orderItems +
                 "\n}\n";
+    }
+
+    public String getOrderItemsCount() {
+        return orderItemsCount;
     }
 }

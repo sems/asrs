@@ -1,7 +1,6 @@
 package View.ASR;
 
 import Data.Database.DataServer;
-import Logic.Order;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
@@ -12,16 +11,12 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
 
 public class HMIApplication extends Application {
     FXMLLoader loader = null;
 
     @Override
-    public void start(Stage stage) throws InterruptedException, IOException {
+    public void start(Stage stage) throws IOException {
         loader = new FXMLLoader(
                 getClass().getResource(
                         "hmi.fxml"
@@ -35,7 +30,7 @@ public class HMIApplication extends Application {
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         Scene scene = new Scene(pane, screenBounds.getWidth(), screenBounds.getHeight());
 
-        stage.setTitle("FXML Welcome");
+        stage.setTitle("HMI Applicatie");
         stage.setScene(scene);
         stage.show();
 
@@ -62,9 +57,5 @@ public class HMIApplication extends Application {
         };
 
         new Thread(task).start();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }
