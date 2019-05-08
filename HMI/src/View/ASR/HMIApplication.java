@@ -1,5 +1,7 @@
 package View.ASR;
 
+import Data.Database.DataServer;
+import Logic.Order;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +12,10 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class HMIApplication extends Application {
     FXMLLoader loader = null;
@@ -24,7 +30,7 @@ public class HMIApplication extends Application {
 
         Pane pane =  loader.load();
 
-        HMIController controller =loader.getController();
+        HMIController controller = loader.getController();
 
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         Scene scene = new Scene(pane, screenBounds.getWidth(), screenBounds.getHeight());
@@ -41,6 +47,13 @@ public class HMIApplication extends Application {
             }
 
             @Override public void run() {
+                DataServer server = new DataServer();
+
+                var orders = new ArrayList<Order>();
+//                orders.add(new Order(1, "timon", "hello", Date.from(Instant.now())));
+
+                controller.Initialize(server.getOrders());
+
                 for (int i = 0; i < 100; i++) {
                     controller.updateOrderItemsPickedStatus(i, 100);
                     try {

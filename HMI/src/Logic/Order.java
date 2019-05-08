@@ -39,6 +39,14 @@ public class Order {
         this.pickingCompleted = pickingCompleted;
     }
 
+    public String getBuyer() {
+        return buyer;
+    }
+
+    public int getId() {
+        return id;
+    }
+
     @Override
     public String toString() {
         return "Logic.Order "+ id +" { \n" +
@@ -47,5 +55,13 @@ public class Order {
                  address +
                 "\norderItems=" + orderItems +
                 "\n}\n";
+    }
+
+    public String getAddr() {
+        return this.address;
+    }
+
+    public Date getOrderData() {
+        return this.orderdate;
     }
 }
