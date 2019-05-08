@@ -45,15 +45,25 @@ class ConnectionManager {
      * @throws SQLException the sql exception
      */
     ResultSet call(String sql) throws SQLException {
-        Connection con;
-        Statement stmt;
-        ResultSet rs;
 
-        con = this.getConnection();
-        stmt = con.createStatement();
+        Connection con = this.getConnection();
+        Statement stmt = con.createStatement();
         assert stmt != null;
-        rs = stmt.executeQuery(sql);
-        return rs;
+        return stmt.executeQuery(sql);
+    }
+
+    /**
+     * Call result set.
+     *
+     * @param sql the sql to be called.
+     * @return the result set
+     * @throws SQLException the sql exception
+     */
+    int update(String sql) throws SQLException {
+        Connection con = this.getConnection();
+        Statement stmt = con.createStatement();
+        assert stmt != null;
+        return stmt.executeUpdate(sql);
     }
 
     /**

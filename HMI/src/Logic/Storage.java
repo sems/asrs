@@ -13,10 +13,11 @@ public class Storage {
         storage.add(item);
     }
 
-    public void printStorage(){
-        for (StorageItem si: storage ) {
-            System.out.println(si);
-        }
+    @Override
+    public String toString() {
+        return "Storage{" +
+                "storage=" + storage +
+                '}';
     }
 }
 

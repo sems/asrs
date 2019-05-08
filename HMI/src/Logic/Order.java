@@ -1,5 +1,7 @@
 package Logic;
 
+import Data.Database.DataServer;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -25,6 +27,10 @@ public class Order {
     public void addOrderItems(OrderItem item) {
         orderItems.add(item);
         this.orderItemsCount = Integer.toString(this.orderItems.size());
+    }
+
+    public ArrayList<OrderItem> getOrderItems() {
+        return orderItems;
     }
 
     public void printOrderItems(){

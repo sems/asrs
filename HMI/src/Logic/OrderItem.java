@@ -1,16 +1,20 @@
 package Logic;
 
+import Data.Database.DataServer;
+
 import java.util.Date;
 
 public class OrderItem {
     private int itemID;
+    private int orderID;
     private String name;
     private int quantity;
     private int pickedQuantity;
     private Date pickingCompleted;
 
-    public OrderItem(int itemID, String name, int quantity) {
+    public OrderItem(int itemID, int orderID, String name, int quantity) {
         this.itemID = itemID;
+        this.orderID = orderID;
         this.name = name;
         this.quantity = quantity;
         this.pickedQuantity = 0;
@@ -21,8 +25,12 @@ public class OrderItem {
         return this.pickingCompleted != null;
     }
 
-    public void setPickingCompleted(Date pickingCompleted) {
-        this.pickingCompleted = pickingCompleted;
+    public void setPickingCompleted() {
+        DataServer tempDS = new DataServer();
+        tempDS.completePicking(this.orderID, this.itemID);
+        // If all the items are picked set order on picked.
+        if (tempDS.areAllItemsPicked(this.orderID)) tempDS.completePicking(this.orderID);
+        this.pickingCompleted = new Date();
     }
 
     @Override
