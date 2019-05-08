@@ -10,6 +10,7 @@ public class Order {
     private ArrayList<OrderItem> orderItems;
     private Date orderdate;
     private Date pickingCompleted;
+    private int orderItemsCount = 0;
 
     public Order(int id, String buyer, String address, Date orderdate) {
         this.id = id;
@@ -18,6 +19,7 @@ public class Order {
         this.orderItems = new ArrayList<>();
         this.orderdate = orderdate;
         this.pickingCompleted = null;
+        this.orderItemsCount = this.orderItems.size();
     }
 
     public void addOrderItems(OrderItem item) {
@@ -47,6 +49,14 @@ public class Order {
         return id;
     }
 
+    public String getAddr() {
+        return this.address;
+    }
+
+    public Date getOrderData() {
+        return this.orderdate;
+    }
+
     @Override
     public String toString() {
         return "Logic.Order "+ id +" { \n" +
@@ -55,13 +65,5 @@ public class Order {
                  address +
                 "\norderItems=" + orderItems +
                 "\n}\n";
-    }
-
-    public String getAddr() {
-        return this.address;
-    }
-
-    public Date getOrderData() {
-        return this.orderdate;
     }
 }

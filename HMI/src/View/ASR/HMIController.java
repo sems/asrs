@@ -37,10 +37,10 @@ public class HMIController {
         orderIdCol.setCellValueFactory(
                 new PropertyValueFactory<Order, String>("id"));
 
-        TableColumn productIDCol = new TableColumn("Product ID's");
+        TableColumn productIDCol = new TableColumn("Order Items");
         productIDCol.setMinWidth(100);
         productIDCol.setCellValueFactory(
-                new PropertyValueFactory<Order, String>("buyer"));
+                new PropertyValueFactory<Order, String>("orderItemsCount"));
 
         TableColumn buyerCol = new TableColumn("Koper");
         buyerCol.setMinWidth(200);
@@ -54,10 +54,10 @@ public class HMIController {
         orderIdCol1.setCellValueFactory(
                 new PropertyValueFactory<Order, String>("id"));
 
-        TableColumn productIDCol1 = new TableColumn("Product ID's");
+        TableColumn productIDCol1 = new TableColumn("Order Items");
         productIDCol1.setMinWidth(100);
         productIDCol1.setCellValueFactory(
-                new PropertyValueFactory<Order, String>("buyer"));
+                new PropertyValueFactory<Order, String>("orderItemsCount"));
 
         TableColumn buyerCol1 = new TableColumn("Koper");
         buyerCol1.setMinWidth(200);
@@ -71,7 +71,7 @@ public class HMIController {
     protected void handleAddOrderAction(ActionEvent event) {
         Order selectedItem = (Order)this.allOrdersTableView.getSelectionModel().getSelectedItem();
         Platform.runLater(() -> {
-            pickedOrdersTableView.getItems().add(new Order(selectedItem.getId(), selectedItem.getBuyer(), selectedItem.getAddr(), selectedItem.getOrderData()));
+            pickedOrdersTableView.getItems().add(selectedItem);
             this.allOrdersObservableList.removeIf(x -> x.getId() == selectedItem.getId());
         });
     }
@@ -80,7 +80,7 @@ public class HMIController {
     protected void handleRemoveOrderAction(ActionEvent event) {
         Order selectedItem = (Order)this.pickedOrdersTableView.getSelectionModel().getSelectedItem();
         Platform.runLater(() -> {
-            allOrdersTableView.getItems().add(new Order(selectedItem.getId(), selectedItem.getBuyer(), selectedItem.getAddr(), selectedItem.getOrderData()));
+            allOrdersTableView.getItems().add(selectedItem);
             this.pickedOrdersObservableList.removeIf(x -> x.getId() == selectedItem.getId());
         });
     }
