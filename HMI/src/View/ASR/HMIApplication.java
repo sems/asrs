@@ -39,6 +39,9 @@ public class HMIApplication extends Application {
         stage.setScene(scene);
         stage.show();
 
+        DataServer server = new DataServer();
+        controller.Initialize(server.getOrders());
+
         // example updating progress bar order items picked
         Task task = new Task<Void>() {
             @Override
@@ -47,13 +50,6 @@ public class HMIApplication extends Application {
             }
 
             @Override public void run() {
-                DataServer server = new DataServer();
-
-                var orders = new ArrayList<Order>();
-//                orders.add(new Order(1, "timon", "hello", Date.from(Instant.now())));
-
-                controller.Initialize(server.getOrders());
-
                 for (int i = 0; i < 100; i++) {
                     controller.updateOrderItemsPickedStatus(i, 100);
                     try {

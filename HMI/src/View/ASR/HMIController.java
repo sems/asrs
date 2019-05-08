@@ -22,11 +22,11 @@ public class HMIController {
     private TableView<Order> pickedOrdersTableView;
 
     private ObservableList<Order> allOrdersObservableList;
-    private ObservableList<Order> pickedOrdersObservalbleList;
+    private ObservableList<Order> pickedOrdersObservableList;
 
     public void Initialize(ArrayList<Order> orders) {
         this.allOrdersObservableList = FXCollections.observableArrayList();
-        this.pickedOrdersObservalbleList = FXCollections.observableArrayList();
+        this.pickedOrdersObservableList = FXCollections.observableArrayList();
 
         Platform.runLater(() -> {
             this.allOrdersObservableList.addAll(orders);
@@ -63,7 +63,7 @@ public class HMIController {
         buyerCol1.setMinWidth(200);
         buyerCol1.setCellValueFactory(new PropertyValueFactory<Order, String>("buyer"));
 
-        pickedOrdersTableView.setItems(pickedOrdersObservalbleList);
+        pickedOrdersTableView.setItems(pickedOrdersObservableList);
         pickedOrdersTableView.getColumns().addAll(orderIdCol1, productIDCol1, buyerCol1);
     }
 
@@ -81,7 +81,7 @@ public class HMIController {
         Order selectedItem = (Order)this.pickedOrdersTableView.getSelectionModel().getSelectedItem();
         Platform.runLater(() -> {
             allOrdersTableView.getItems().add(new Order(selectedItem.getId(), selectedItem.getBuyer(), selectedItem.getAddr(), selectedItem.getOrderData()));
-            this.pickedOrdersObservalbleList.removeIf(x -> x.getId() == selectedItem.getId());
+            this.pickedOrdersObservableList.removeIf(x -> x.getId() == selectedItem.getId());
         });
     }
 
