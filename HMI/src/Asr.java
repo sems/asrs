@@ -1,4 +1,6 @@
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import com.fazecast.jSerialComm.*;
 
@@ -29,9 +31,7 @@ public class Asr implements SerialPortDataListener {
         final byte size = 0;
         final byte commandCode = 3;
 
-        byte checksum[] = { 0, 0 };
-
-        byte buffer[] = { size, commandCode, checksum };
+        byte buffer[] = { size, commandCode, 0, 0 };
 
         try {
             out.write(buffer);
@@ -45,9 +45,7 @@ public class Asr implements SerialPortDataListener {
         final byte size = 0;
         final byte commandCode = 2;
 
-        byte checksum[] = { 0, 0 };
-
-        byte buffer[] = { size, commandCode, checksum };
+        byte buffer[] = { size, commandCode, 0, 0 };
 
         try {
             out.write(buffer);
@@ -66,7 +64,7 @@ public class Asr implements SerialPortDataListener {
 
         byte checksum[] = { (byte) (check >> 8 & 0xFF), (byte) (check & 0xFF) };
 
-        byte buffer[] = { size, commandCode, payload[0], payload[1], checksum };
+        byte buffer[] = { size, commandCode, payload[0], payload[1], checksum[0], checksum[1] };
 
         try {
             out.write(buffer);
@@ -146,4 +144,35 @@ public class Asr implements SerialPortDataListener {
         }
 
     }
+
+    private ArrayList<byte[]> activeOrder;
+
+    private byte[] currentItem;
+
+    // private byte[][] completedItems;
+
+    private boolean orderComplete = true;
+
+    public void addOrder(byte[][] order) {
+        if (orderComplete) {
+            if (activeOrder.size() > 0) {
+                activeOrder = order;
+                orderComplete = false;
+                NextItem();
+            } else {
+                System.err.println("There is nothing in the order");
+            }
+        } else {
+            System.err.println("Order still in progress");
+        }
+    }
+
+    public void NextItem() {
+        byte item[] = activeOrder.get(0);
+        currentItem = item;
+        activeOrder.remove(0);
+
+        gotoPos(currentItem[0], currentItem[1]);
+    }
+
 }
