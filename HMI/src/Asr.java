@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-
 public class Asr implements SerialPortDataListener {
     SerialPort comPort;
 
@@ -160,7 +159,7 @@ public class Asr implements SerialPortDataListener {
         if (orderComplete) {
             if (activeOrder.size() > 0) {
 
-                //activeOrder = order;
+                // activeOrder = order;
 
                 orderComplete = false;
                 NextItem();
