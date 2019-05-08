@@ -1,4 +1,6 @@
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import com.fazecast.jSerialComm.*;
 
@@ -146,4 +148,35 @@ public class Asr implements SerialPortDataListener {
         }
 
     }
+
+    private ArrayList<byte[]> activeOrder;
+
+    private byte[] currentItem;
+
+    // private byte[][] completedItems;
+
+    private boolean orderComplete = true;
+
+    public void addOrder(byte[][] order) {
+        if (orderComplete) {
+            if (activeOrder.size() > 0) {
+                activeOrder = order;
+                orderComplete = false;
+                NextItem();
+            } else {
+                System.err.println("There is nothing in the order");
+            }
+        } else {
+            System.err.println("Order still in progress");
+        }
+    }
+
+    public void NextItem() {
+        byte item[] = activeOrder.get(0);
+        currentItem = item;
+        activeOrder.remove(0);
+
+        gotoPos(currentItem[0], currentItem[1]);
+    }
+
 }
