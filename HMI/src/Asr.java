@@ -31,9 +31,7 @@ public class Asr implements SerialPortDataListener {
         final byte size = 0;
         final byte commandCode = 3;
 
-        byte checksum[] = { 0, 0 };
-
-        byte buffer[] = { size, commandCode, checksum };
+        byte buffer[] = { size, commandCode, 0, 0 };
 
         try {
             out.write(buffer);
@@ -47,9 +45,7 @@ public class Asr implements SerialPortDataListener {
         final byte size = 0;
         final byte commandCode = 2;
 
-        byte checksum[] = { 0, 0 };
-
-        byte buffer[] = { size, commandCode, checksum };
+        byte buffer[] = { size, commandCode, 0, 0 };
 
         try {
             out.write(buffer);
@@ -68,7 +64,7 @@ public class Asr implements SerialPortDataListener {
 
         byte checksum[] = { (byte) (check >> 8 & 0xFF), (byte) (check & 0xFF) };
 
-        byte buffer[] = { size, commandCode, payload[0], payload[1], checksum };
+        byte buffer[] = { size, commandCode, payload[0], payload[1], checksum[0], checksum[1] };
 
         try {
             out.write(buffer);
