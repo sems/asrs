@@ -12,7 +12,7 @@ public class Order {
     private ArrayList<OrderItem> orderItems;
     private Date orderdate;
     private Date pickingCompleted;
-    private String orderItemsCount = "3";
+    private String orderItemsCount;
 
     public Order(int id, String buyer, String address, Date orderdate) {
         this.id = id;
@@ -21,7 +21,6 @@ public class Order {
         this.orderItems = new ArrayList<>();
         this.orderdate = orderdate;
         this.pickingCompleted = null;
-        orderItemsCount = "2";
     }
 
     public void addOrderItems(OrderItem item) {
