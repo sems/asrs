@@ -3,14 +3,18 @@
 #include "arduino.h"
 
 const int LIMIT_SWITCH_X = 9;
-const int LIMIT_SWITCH_Z = 10;
-const int LIMIT_SWITCH_Y = 11;
+const int LIMIT_SWITCH_Y = 10;
+const int LIMIT_SWITCH_Z = 11;
 
-int moveXY(int X, int Y);
+void moveXY(int X, int Y);
 
-int pick();
+int ccts_a(int x, int y); //Convert Coordinate to Steps for motor a
 
-int drop();
+int ccts_b(int x, int y); //Convert Coordinate to Steps for motor b
+
+void pick();
+
+void drop();
 
 void homeZ();
 
