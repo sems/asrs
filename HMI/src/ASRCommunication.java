@@ -66,6 +66,7 @@ public class ASRCommunication implements SerialPortDataListener {
 
     /**
      * Move the ASR robot to a certain x,y position
+     * 
      * @param x
      * @param y
      */
@@ -90,6 +91,7 @@ public class ASRCommunication implements SerialPortDataListener {
 
     /**
      * Calculate the CRC8 checksum of the given payload
+     * 
      * @param payload
      * @return
      */
@@ -170,6 +172,12 @@ public class ASRCommunication implements SerialPortDataListener {
     public void addOrder(byte[][] order) {
         if (orderComplete) {
             if (activeOrder.size() > 0) {
+<<<<<<< HEAD:HMI/src/ASRCommunication.java
+=======
+
+                // activeOrder = order;
+
+>>>>>>> Added a way to process multiple orders:HMI/src/Asr.java
                 orderComplete = false;
                 NextItem();
             } else {
