@@ -9,7 +9,6 @@ public class OrderItem {
     private int orderID;
     private String name;
     private int quantity;
-    private int pickedQuantity;
     private Date pickingCompleted;
 
     public OrderItem(int itemID, int orderID, String name, int quantity) {
@@ -17,7 +16,6 @@ public class OrderItem {
         this.orderID = orderID;
         this.name = name;
         this.quantity = quantity;
-        this.pickedQuantity = 0;
         this.pickingCompleted = null;
     }
 
@@ -31,6 +29,20 @@ public class OrderItem {
         // If all the items are picked set order on picked.
         if (tempDS.areAllItemsPicked(this.orderID)) tempDS.completePicking(this.orderID);
         this.pickingCompleted = new Date();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderItem orderItem = (OrderItem) o;
+        return itemID == orderItem.itemID &&
+                name.equals(orderItem.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
     }
 
     @Override
