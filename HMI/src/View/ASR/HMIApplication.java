@@ -1,5 +1,6 @@
 package View.ASR;
 
+import Data.Database.DataServer;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
@@ -15,7 +16,7 @@ public class HMIApplication extends Application {
     FXMLLoader loader = null;
 
     @Override
-    public void start(Stage stage) throws InterruptedException, IOException {
+    public void start(Stage stage) throws IOException {
         loader = new FXMLLoader(
                 getClass().getResource(
                         "hmi.fxml"
@@ -24,14 +25,17 @@ public class HMIApplication extends Application {
 
         Pane pane =  loader.load();
 
-        HMIController controller =loader.getController();
+        HMIController controller = loader.getController();
 
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         Scene scene = new Scene(pane, screenBounds.getWidth(), screenBounds.getHeight());
 
-        stage.setTitle("FXML Welcome");
+        stage.setTitle("HMI Applicatie");
         stage.setScene(scene);
         stage.show();
+
+        DataServer server = new DataServer();
+        controller.Initialize(server.getOrders());
 
         // example updating progress bar order items picked
         Task task = new Task<Void>() {
@@ -53,9 +57,5 @@ public class HMIApplication extends Application {
         };
 
         new Thread(task).start();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }
