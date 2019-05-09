@@ -128,6 +128,7 @@ public class Asr implements SerialPortDataListener {
 
         comPort.readBytes(payload, size);
 
+        System.out.println("Payload content:");
         for (int i = 0; i < size; i++) {
             System.out.println(i + 1 + ": " + payload[i]);
         }
@@ -135,7 +136,7 @@ public class Asr implements SerialPortDataListener {
         byte checkBuffer[] = new byte[2];
         comPort.readBytes(checkBuffer, 2);
 
-        int checkPayload = this.makeChecksom(payload);
+        int checkPayload = makeChecksom(payload);
         int checkPacket = (checkBuffer[0] << 8) + (checkBuffer[1]);
 
         if (checkPayload == checkPacket) {
@@ -157,9 +158,7 @@ public class Asr implements SerialPortDataListener {
     public void addOrder(byte[][] order) {
         if (orderComplete) {
             if (activeOrder.size() > 0) {
-
                 // activeOrder = order;
-
                 orderComplete = false;
                 NextItem();
             } else {
