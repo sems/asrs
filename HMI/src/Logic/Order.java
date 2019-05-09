@@ -12,6 +12,7 @@ public class Order {
     private ArrayList<OrderItem> orderItems;
     private Date orderdate;
     private Date pickingCompleted;
+    private String orderItemsCount;
 
     public Order(int id, String buyer, String address, Date orderdate) {
         this.id = id;
@@ -24,6 +25,7 @@ public class Order {
 
     public void addOrderItems(OrderItem item) {
         orderItems.add(item);
+        this.orderItemsCount = Integer.toString(this.orderItems.size());
     }
 
     public ArrayList<OrderItem> getOrderItems() {
@@ -41,6 +43,26 @@ public class Order {
         return this.pickingCompleted != null;
     }
 
+    public void setPickingCompleted(Date pickingCompleted) {
+        this.pickingCompleted = pickingCompleted;
+    }
+
+    public String getBuyer() {
+        return buyer;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getAddr() {
+        return this.address;
+    }
+
+    public Date getOrderData() {
+        return this.orderdate;
+    }
+
     @Override
     public String toString() {
         return "Logic.Order "+ id +" { \n" +
@@ -49,5 +71,9 @@ public class Order {
                  address +
                 "\norderItems=" + orderItems +
                 "\n}\n";
+    }
+
+    public String getOrderItemsCount() {
+        return orderItemsCount;
     }
 }

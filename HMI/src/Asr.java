@@ -4,6 +4,8 @@ import com.fazecast.jSerialComm.SerialPortEvent;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.stream.Stream;
+
 
 public class Asr implements SerialPortDataListener {
     SerialPort comPort;
@@ -157,7 +159,9 @@ public class Asr implements SerialPortDataListener {
     public void addOrder(byte[][] order) {
         if (orderComplete) {
             if (activeOrder.size() > 0) {
+
                 //activeOrder = order;
+
                 orderComplete = false;
                 NextItem();
             } else {
