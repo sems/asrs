@@ -6,8 +6,8 @@ FOR NOW, ALL THE LIMITSWITHCES ARE WIRED TO LIMIT_SWITCH_Z, PIN 11, "Z-" ON THE 
 #include "packet.hpp"
 #include "core.hpp"
 #include "movement.hpp"
-#include "AccelStepper.h"
-#include "MultiStepper.h"
+//#include "AccelStepper.h"
+//#include "MultiStepper.h"
 Core core;
 
 void setup()
@@ -21,6 +21,7 @@ void setup()
 
     pinMode(8, OUTPUT); //enable pin for the stepper drivers
     digitalWrite(8, LOW);
+    initializeMovement();
 }
 
 void loop()
