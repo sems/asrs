@@ -20,6 +20,6 @@ public class StorageItem {
 
     @Override
     public String toString() {
-        return "Logic.StorageItem{ name='" + name + '\'' + ", location='" + location + '\'' + ", stock=" + stock + '}';
+        return location;
     }
 }
