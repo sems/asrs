@@ -13,13 +13,13 @@ public class StorageItem {
         this.stock = stock;
     }
 
+    public Location getLocation() {
+        String[] parts = this.location.split(",");
+        return new Location(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
+    }
+
     @Override
     public String toString() {
-        return "Logic.StorageItem{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", location='" + location + '\'' +
-                ", stock=" + stock +
-                '}';
+        return "Logic.StorageItem{ name='" + name + '\'' + ", location='" + location + '\'' + ", stock=" + stock + '}';
     }
 }

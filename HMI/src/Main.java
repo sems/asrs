@@ -1,7 +1,9 @@
 import Data.Database.DataServer;
+import Logic.Location;
 import Logic.Order;
 import Logic.Storage;
 import Logic.StorageItem;
+
 import java.util.ArrayList;
 
 /**
@@ -20,12 +22,11 @@ public class Main {
         ArrayList<Order> orders = dataServer.getOrders();
         ArrayList<StorageItem> items = dataServer.getStorageItems();
 
-        System.out.println(orders);
+        Location l1 = items.get(0).getLocation();
+        Location l2 = items.get(1).getLocation();
 
-        for (StorageItem si: items) {
-            storage.addItemToStorage(si);
-        }
-        orders.get(1).getOrderItems().get(0).setPickingCompleted();
+        System.out.println(l1.getDistance(l2));
+
     }
 }
 

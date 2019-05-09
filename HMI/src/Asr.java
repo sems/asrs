@@ -1,8 +1,9 @@
+import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortDataListener;
+import com.fazecast.jSerialComm.SerialPortEvent;
+
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.stream.Stream;
-
-import com.fazecast.jSerialComm.*;
 
 public class Asr implements SerialPortDataListener {
     SerialPort comPort;
