@@ -145,6 +145,7 @@ public class ASRCommunication implements SerialPortDataListener {
 
         comPort.readBytes(payload, size);
 
+        System.out.println("Payload content:");
         for (int i = 0; i < size; i++) {
             System.out.println(i + 1 + ": " + payload[i]);
         }
@@ -152,7 +153,7 @@ public class ASRCommunication implements SerialPortDataListener {
         byte checkBuffer[] = new byte[2];
         comPort.readBytes(checkBuffer, 2);
 
-        int checkPayload = this.calculateCRC8(payload);
+        int checkPayload = calculateCRC8(payload);
         int checkPacket = (checkBuffer[0] << 8) + (checkBuffer[1]);
 
         if (checkPayload == checkPacket) {
@@ -172,12 +173,6 @@ public class ASRCommunication implements SerialPortDataListener {
     public void addOrder(byte[][] order) {
         if (orderComplete) {
             if (activeOrder.size() > 0) {
-<<<<<<< HEAD:HMI/src/ASRCommunication.java
-=======
-
-                // activeOrder = order;
-
->>>>>>> Added a way to process multiple orders:HMI/src/Asr.java
                 orderComplete = false;
                 NextItem();
             } else {
