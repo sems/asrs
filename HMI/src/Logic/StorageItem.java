@@ -1,13 +1,13 @@
 package Logic;
 
 public class StorageItem {
-    private int id;
+    private int itemID;
     private String name;
     private String location;
     private int stock;
 
-    public StorageItem(int id, String name, String location, int stock) {
-        this.id = id;
+    public StorageItem(int itemID, String name, String location, int stock) {
+        this.itemID = itemID;
         this.name = name;
         this.location = location;
         this.stock = stock;

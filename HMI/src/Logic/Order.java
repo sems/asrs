@@ -1,7 +1,5 @@
 package Logic;
 
-import Data.Database.DataServer;
-
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -12,6 +10,7 @@ public class Order {
     private ArrayList<OrderItem> orderItems;
     private Date orderdate;
     private Date pickingCompleted;
+    private ArrayList<StorageItem> route;
 
     public Order(int id, String buyer, String address, Date orderdate) {
         this.id = id;

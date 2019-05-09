@@ -9,7 +9,6 @@ public class OrderItem {
     private int orderID;
     private String name;
     private int quantity;
-    private int pickedQuantity;
     private Date pickingCompleted;
 
     public OrderItem(int itemID, int orderID, String name, int quantity) {
@@ -17,7 +16,6 @@ public class OrderItem {
         this.orderID = orderID;
         this.name = name;
         this.quantity = quantity;
-        this.pickedQuantity = 0;
         this.pickingCompleted = null;
     }
 
