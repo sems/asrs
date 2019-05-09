@@ -1,5 +1,7 @@
 package Logic;
 
+import Data.Database.DataServer;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -20,6 +22,7 @@ public class Order {
         this.orderItems = new ArrayList<>();
         this.orderdate = orderdate;
         this.pickingCompleted = null;
+        this.route = this.getRoute(this.orderItems);
     }
 
     public void addOrderItems(OrderItem item) {
@@ -40,6 +43,24 @@ public class Order {
 
     public boolean isPickingCompleted() {
         return this.pickingCompleted != null;
+    }
+
+    private ArrayList<StorageItem> getRoute(ArrayList<OrderItem> orderItems){
+        DataServer dataServer = new DataServer();
+        TSP tsp = new TSP();
+        ArrayList<StorageItem> storageItemsInOrder = new ArrayList<>();
+
+        ArrayList<StorageItem> storageItems = dataServer.getStorageItems();
+
+        for (OrderItem oi: orderItems) {
+            for (StorageItem si: storageItems) {
+                if (oi.equals(si)){
+                    storageItemsInOrder.add(si);
+                }
+            }
+
+        }
+        return tsp.calculateRoute(storageItemsInOrder);
     }
 
     public void setPickingCompleted(Date pickingCompleted) {
