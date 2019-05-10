@@ -1,4 +1,5 @@
 import static javafx.application.Application.launch;
+
 /**
  * The main.
  */
