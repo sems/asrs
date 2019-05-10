@@ -18,6 +18,10 @@ public class StorageItem {
         return new Location(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
     }
 
+    public int getItemID() {
+        return itemID;
+    }
+
     @Override
     public String toString() {
         return location;

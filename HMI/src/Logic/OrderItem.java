@@ -31,22 +31,13 @@ public class OrderItem {
         this.pickingCompleted = new Date();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OrderItem orderItem = (OrderItem) o;
-        return itemID == orderItem.itemID &&
-                name.equals(orderItem.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return 0;
+    public boolean equals(StorageItem si) {
+        if (si == null || si.getClass() != si.getClass()) return false;
+        return si.getItemID() == this.itemID;
     }
 
     @Override
     public String toString() {
-        return "Product name = " + name +", quantity = " + quantity;
+        return "\n\tProduct name = " + name +", quantity = " + quantity;
     }
 }
