@@ -37,6 +37,20 @@ public class OrderItem {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderItem orderItem = (OrderItem) o;
+        return itemID == orderItem.itemID &&
+                name.equals(orderItem.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
+
+    @Override
     public String toString() {
         return "\n\tProduct name = " + name +", quantity = " + quantity;
     }
