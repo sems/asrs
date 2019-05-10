@@ -5,6 +5,6 @@
 #include "packet.hpp"
 #include "communication.hpp"
 
-void InfoCommand(Core &core, Communication &communication){
-    
-}
+void InfoCommand(Core &core, Communication &communication);
+
+#endif

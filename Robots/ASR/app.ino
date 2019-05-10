@@ -2,12 +2,13 @@
 #include "packet.hpp"
 #include "core.hpp"
 
-Core core;
+Communication communication;
+Core core(communication);
 
 void setup()
 {
-    core = Core();
-    Serial.begin(9600);
+    communication.initialize();
+    core.logger.logInfo("Core Initialized");
 }
 
 void loop()
