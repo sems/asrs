@@ -70,25 +70,7 @@ public class DataServer {
             ResultSet rsOrders = cm.call(orderSQL);
             while(rsOrders.next()){
                 // OrderId
-                int id  = rsOrders.getInt(1);
-                // The name of the buyer
-                String buyer = rsOrders.getString(2);
-                // Set the address
-                String address = rsOrders.getString(3) + rsOrders.getString(4) + " \n"+ rsOrders.getString(5) + " " + rsOrders.getString(6);
-                Date orderDate = rsOrders.getDate(7);
-
-                order = new Order(id, buyer, address, orderDate);
-
-                ResultSet rs = getOrderItems(id);
-                while(rs.next()){
-                    int itemID = rs.getInt(1);
-                    int OrderID = rs.getInt(2);
-                    String itemName = rs.getString(3);
-                    int quantity = rs.getInt(4);
-
-                    order.addOrderItems(new OrderItem(itemID, OrderID, itemName, quantity));
-                }
-                rs.close();
+                order = getOrder(rsOrders);
             }
             rsOrders.close();
         } catch (SQLException e) {
@@ -115,25 +97,7 @@ public class DataServer {
             ResultSet rsOrders = cm.call(orderSQL);
             while(rsOrders.next()){
                 // OrderId
-                int id  = rsOrders.getInt(1);
-                // The name of the buyer
-                String buyer = rsOrders.getString(2);
-                // Set the address
-                String address = rsOrders.getString(3) + rsOrders.getString(4) + " \n"+ rsOrders.getString(5) + " " + rsOrders.getString(6);
-                Date orderDate = rsOrders.getDate(7);
-
-                order = new Order(id, buyer, address, orderDate);
-
-                ResultSet rs = getOrderItems(id);
-                while(rs.next()){
-                    int itemID = rs.getInt(1);
-                    int OrderID = rs.getInt(2);
-                    String itemName = rs.getString(3);
-                    int quantity = rs.getInt(4);
-
-                    order.addOrderItems(new OrderItem(itemID, OrderID, itemName, quantity));
-                }
-                rs.close();
+                order = getOrder(rsOrders);
                 orders.add(order);
             }
             rsOrders.close();
@@ -141,6 +105,29 @@ public class DataServer {
             e.printStackTrace();
         }
         return orders;
+    }
+
+    private Order getOrder(ResultSet rsOrders) throws SQLException {
+        Order order;
+        int id = rsOrders.getInt(1);
+        String buyer = rsOrders.getString(2);
+        String address = rsOrders.getString(3) + rsOrders.getString(4) + " \n" + rsOrders.getString(5) + " " + rsOrders.getString(6);
+        Date orderDate = rsOrders.getDate(7);
+
+        order = new Order(id, buyer, address, orderDate);
+
+        ResultSet rs = getOrderItems(id);
+        while (rs.next()) {
+            int itemID = rs.getInt(1);
+            int OrderID = rs.getInt(2);
+            String itemName = rs.getString(3);
+            int quantity = rs.getInt(4);
+
+            order.addOrderItems(new OrderItem(itemID, OrderID, itemName, quantity));
+        }
+        rs.close();
+        order.setRoute();
+        return order;
     }
 
     /**

@@ -31,6 +31,11 @@ public class OrderItem {
         this.pickingCompleted = new Date();
     }
 
+    public boolean equals(StorageItem si) {
+        if (si == null || si.getClass() != si.getClass()) return false;
+        return si.getItemID() == this.itemID;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -47,6 +52,6 @@ public class OrderItem {
 
     @Override
     public String toString() {
-        return "Product name = " + name +", quantity = " + quantity;
+        return "\n\tProduct name = " + name +", quantity = " + quantity;
     }
 }

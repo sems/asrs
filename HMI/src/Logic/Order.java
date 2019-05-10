@@ -22,7 +22,7 @@ public class Order {
         this.orderItems = new ArrayList<>();
         this.orderdate = orderdate;
         this.pickingCompleted = null;
-        this.route = this.getRoute(this.orderItems);
+        this.route = new ArrayList<>();
     }
 
     public void addOrderItems(OrderItem item) {
@@ -30,19 +30,25 @@ public class Order {
         this.orderItemsCount = Integer.toString(this.orderItems.size());
     }
 
-    public ArrayList<OrderItem> getOrderItems() {
-        return orderItems;
-    }
-
-    public void printOrderItems(){
-        System.out.println("\nOrderItems:");
-        for (OrderItem oi: orderItems ) {
-            System.out.println(oi);
-        }
-    }
-
     public boolean isPickingCompleted() {
         return this.pickingCompleted != null;
+    }
+
+    private ArrayList<StorageItem> getRoute(ArrayList<OrderItem> orderItems){
+        DataServer dataServer = new DataServer();
+        TSP tsp = new TSP();
+        ArrayList<StorageItem> storageItemsInOrder = new ArrayList<>();
+        ArrayList<StorageItem> storageItems = dataServer.getStorageItems();
+
+        for (OrderItem oi: orderItems) {
+            for (StorageItem si: storageItems) {
+                if (oi.equals(si)){
+                    storageItemsInOrder.add(si);
+                }
+            }
+
+        }
+        return tsp.calculateRoute(storageItemsInOrder);
     }
 
     private ArrayList<StorageItem> getRoute(ArrayList<OrderItem> orderItems){
@@ -67,6 +73,10 @@ public class Order {
         this.pickingCompleted = pickingCompleted;
     }
 
+    public void setRoute() {
+        this.route = this.getRoute(this.orderItems);
+    }
+
     public String getBuyer() {
         return buyer;
     }
@@ -83,17 +93,22 @@ public class Order {
         return this.orderdate;
     }
 
+    public String getOrderItemsCount() {
+        return orderItemsCount;
+    }
+
+    public ArrayList<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
     @Override
     public String toString() {
         return "Logic.Order "+ id +" { \n" +
                  orderdate + "\n" +
                  buyer + "\n" +
-                 address +
-                "\norderItems=" + orderItems +
-                "\n}\n";
-    }
-
-    public String getOrderItemsCount() {
-        return orderItemsCount;
+                 address + "\n" +
+                "orderItems=" + orderItems + "\n" +
+                "route=" + route + "\n" +
+                "}\n\n";
     }
 }
