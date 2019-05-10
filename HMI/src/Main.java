@@ -4,7 +4,7 @@ import Data.Database.DataServer;
 import Logic.Order;
 import Logic.Storage;
 import Logic.StorageItem;
-import View.StorageRack.*;
+//import View.StorageRack.*;
 
 
 import java.util.ArrayList;
