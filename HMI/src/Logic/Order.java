@@ -51,6 +51,24 @@ public class Order {
         return tsp.calculateRoute(storageItemsInOrder);
     }
 
+    private ArrayList<StorageItem> getRoute(ArrayList<OrderItem> orderItems){
+        DataServer dataServer = new DataServer();
+        TSP tsp = new TSP();
+        ArrayList<StorageItem> storageItemsInOrder = new ArrayList<>();
+
+        ArrayList<StorageItem> storageItems = dataServer.getStorageItems();
+
+        for (OrderItem oi: orderItems) {
+            for (StorageItem si: storageItems) {
+                if (oi.equals(si)){
+                    storageItemsInOrder.add(si);
+                }
+            }
+
+        }
+        return tsp.calculateRoute(storageItemsInOrder);
+    }
+
     public void setPickingCompleted(Date pickingCompleted) {
         this.pickingCompleted = pickingCompleted;
     }
