@@ -110,9 +110,7 @@ public class DataServer {
     private Order getOrder(ResultSet rsOrders) throws SQLException {
         Order order;
         int id = rsOrders.getInt(1);
-        // The name of the buyer
         String buyer = rsOrders.getString(2);
-        // Set the address
         String address = rsOrders.getString(3) + rsOrders.getString(4) + " \n" + rsOrders.getString(5) + " " + rsOrders.getString(6);
         Date orderDate = rsOrders.getDate(7);
 
