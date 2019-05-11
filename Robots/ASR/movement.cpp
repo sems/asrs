@@ -28,26 +28,38 @@ int ypos = 0; //current X position
 
 int picked = 0; //number of items currently on the Z-axis (fork thingy)
 
+XY_POSITION_ARRAY xyPos;
+
 void initializeMovement()
 {
     steppers1.addStepper(stepper_A);
     steppers1.addStepper(stepper_B);
 }
 
-void moveXY(int x, int y)
+void moveXY(int x, int y) //sets the steps and direction for the motors to move to, doesn't actually move the ASR
 {
     long positions[2];
     positions[0] = ccts_a(x, y);
     positions[1] = ccts_b(x, y);
+    steppers1.moveTo(positions);
 }
 
-int ccts_a(int x, int y)
-{ //Convert Coordinate to Steps for motor a
+void runXY() // not sure if needed yet
+{
+}
+
+/*
+there currently is a problem with ccts_a and ccts_b it seems, where the Y-axis gets flipped.
+this might help:
+https://cloud.githubusercontent.com/assets/13655997/9081538/fe9085e0-3b97-11e5-968b-090be116c675.png
+*/
+int ccts_a(int x, int y) //Convert Coordinate to Steps for motor a
+{
     int a = ((x * steps_per_unit_lenght) - xpos) + ((y * steps_per_unit_height) - ypos);
     return a;
 }
-int ccts_b(int x, int y)
-{ //Convert Coordinate to Steps for motor b
+int ccts_b(int x, int y) //Convert Coordinate to Steps for motor b
+{
     int b = ((x * steps_per_unit_lenght) - xpos) - ((y * steps_per_unit_height) - ypos);
     return b;
 }
@@ -80,6 +92,14 @@ void dropItem()
     {
         // send error message
     }
+}
+
+XY_POSITION_ARRAY getXYPos()
+{
+    
+    xyPos.x = 0.5 * (stepper_A.currentPosition() + stepper_B.currentPosition()) / steps_per_unit_lenght;
+    xyPos.y = 0.5 * (stepper_A.currentPosition() - stepper_B.currentPosition()) / steps_per_unit_height;
+    return xyPos;
 }
 
 void homeZ()
