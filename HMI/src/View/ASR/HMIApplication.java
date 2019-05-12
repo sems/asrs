@@ -2,11 +2,12 @@ package View.ASR;
 
 import Data.Database.DataServer;
 import javafx.application.Application;
-import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -17,45 +18,58 @@ public class HMIApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        loader = new FXMLLoader(
-                getClass().getResource(
-                        "hmi.fxml"
-                )
-        );
+        try {
+            StackPane root = new StackPane();
 
-        Pane pane =  loader.load();
+            root.setAlignment(Pos.CENTER);
 
-        HMIController controller = loader.getController();
+            loader = new FXMLLoader(
+                    getClass().getResource(
+                            "hmi.fxml"
+                    )
+            );
 
-        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        Scene scene = new Scene(pane, screenBounds.getWidth(), screenBounds.getHeight());
+            Pane pane = loader.load();
+            HMIController controller = loader.getController();
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            Scene scene = new Scene(pane, screenBounds.getWidth(), screenBounds.getHeight());
 
-        stage.setTitle("HMI Applicatie");
-        stage.setScene(scene);
-        stage.show();
+            stage.setTitle("HMI Applicatie");
+            stage.setScene(scene);
+            stage.show();
 
-        DataServer server = new DataServer();
-        controller.Initialize(server.getOrders());
+            DataServer server = new DataServer();
+            controller.Initialize(server.getOrders());
 
-        // example updating progress bar order items picked
-        Task task = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                return null;
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-            @Override public void run() {
-                for (int i = 0; i < 100; i++) {
-                    controller.updateOrderItemsPickedStatus(i, 100);
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
+//
+//        // example updating progress bar order items picked
+//        Task task = new Task<Void>() {
+//            @Override
+//            protected Void call() throws Exception {
+//                return null;
+//            }
+//
+//            @Override public void run() {
+//                for (int i = 0; i < 100; i++) {
+//                    controller.updateOrderItemsPickedStatus(i, 100);
+//                    try {
+//                        Thread.sleep(10);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        };
+//
+//        new Thread(task).start();
+    }
 
-        new Thread(task).start();
+    public static void main(String[] args) {
+        launch(args);
     }
 }
+

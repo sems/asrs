@@ -1,13 +1,25 @@
 package View.ASR;
 
+import Data.Database.DataServer;
 import Logic.Order;
+import Logic.StorageItem;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.Group;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 
 import java.util.ArrayList;
 
@@ -20,6 +32,10 @@ public class HMIController {
     private TableView<Order> allOrdersTableView;
     @FXML
     private TableView<Order> pickedOrdersTableView;
+    @FXML
+    private GridPane asrGrid;
+    @FXML
+    private Pane gridPane;
 
     private ObservableList<Order> allOrdersObservableList;
     private ObservableList<Order> pickedOrdersObservableList;
@@ -32,6 +48,50 @@ public class HMIController {
             this.allOrdersObservableList.addAll(orders);
         });
 
+        InitializeGrid();
+        InitializeTables();
+
+        DataServer ds = new DataServer();
+
+        final int cellSize = 160;
+
+        for (StorageItem item : ds.getStorageItems()) {
+            var itemLocation = item.getLocation();
+            System.out.println(itemLocation.X  + "" + itemLocation.Y);
+
+            Circle circle = new Circle();
+            circle.setRadius(4);
+            circle.setStyle("black");
+            circle.setLayoutX((itemLocation.X * cellSize) + cellSize / 2);
+            circle.setLayoutY((itemLocation.Y * cellSize) + cellSize / 2);
+
+            gridPane.getChildren().add(circle);
+        }
+    }
+
+    private void InitializeGrid() {
+        int rows = 5;
+        int columns = 5;
+        double width = 800;
+        double height = 800;
+
+        // create grid and apply style
+        Grid grid = new Grid( columns, rows, width, height);
+        grid.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+
+        // fill grid with cells
+        for (int row = 0; row < rows; row++) {
+            for (int column = 0; column < columns; column++) {
+                Cell cell = new Cell(column, row);
+                grid.add(cell, column, row);
+            }
+        }
+
+        gridPane.getChildren().add(grid);
+    }
+
+    private void InitializeTables() {
+        // Initialize the table with orders
         TableColumn orderIdCol = new TableColumn("Order ID");
         orderIdCol.setMinWidth(100);
         orderIdCol.setCellValueFactory(
@@ -49,6 +109,7 @@ public class HMIController {
         allOrdersTableView.setItems(allOrdersObservableList);
         allOrdersTableView.getColumns().addAll(orderIdCol, productIDCol, buyerCol);
 
+        // Initialize the table with orders to pick
         TableColumn orderIdCol1 = new TableColumn("Order ID");
         orderIdCol1.setMinWidth(100);
         orderIdCol1.setCellValueFactory(
