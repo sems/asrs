@@ -3,7 +3,6 @@ package View.ASR;
 import javafx.scene.layout.StackPane;
 
 public class Cell extends StackPane {
-
     int column;
     int row;
 

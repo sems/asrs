@@ -33,7 +33,7 @@ public class OrderItem {
 
     public boolean equals(StorageItem si) {
         if (si == null || si.getClass() != si.getClass()) return false;
-        return si.getItemID() == this.itemID;
+        return si.getItemID() == this.storageItemID;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class OrderItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OrderItem orderItem = (OrderItem) o;
-        return itemID == orderItem.itemID &&
+        return this.orderID  == orderItem.orderID &&
                 name.equals(orderItem.name);
     }
 

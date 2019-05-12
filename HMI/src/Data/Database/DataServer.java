@@ -4,6 +4,7 @@ import Logic.Order;
 import Logic.OrderItem;
 import Logic.StorageItem;
 
+import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -147,7 +148,6 @@ public class DataServer {
         }
         return rsOrdersItems;
     }
-
 
     /**
      * Complete picking.

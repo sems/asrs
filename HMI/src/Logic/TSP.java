@@ -36,6 +36,7 @@ public class TSP {
 
     private StorageItem getNearest(ArrayList<StorageItem> items, StorageItem item) {
         Location startLocation = item.getLocation();
+
         StorageItem nearest = items.get(0);
 
         for (StorageItem si: items ) {

@@ -44,28 +44,6 @@ public class HMIApplication extends Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-//
-//        // example updating progress bar order items picked
-//        Task task = new Task<Void>() {
-//            @Override
-//            protected Void call() throws Exception {
-//                return null;
-//            }
-//
-//            @Override public void run() {
-//                for (int i = 0; i < 100; i++) {
-//                    controller.updateOrderItemsPickedStatus(i, 100);
-//                    try {
-//                        Thread.sleep(10);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        };
-//
-//        new Thread(task).start();
     }
 
     public static void main(String[] args) {

@@ -39,14 +39,13 @@ public class Order {
         TSP tsp = new TSP();
         ArrayList<StorageItem> storageItemsInOrder = new ArrayList<>();
         ArrayList<StorageItem> storageItems = dataServer.getStorageItems();
-
+        System.out.println(orderItems.size());
         for (OrderItem oi: orderItems) {
             for (StorageItem si: storageItems) {
                 if (oi.equals(si)){
                     storageItemsInOrder.add(si);
                 }
             }
-
         }
         return tsp.calculateRoute(storageItemsInOrder);
     }
@@ -92,5 +91,9 @@ public class Order {
                 "orderItems=" + orderItems + "\n" +
                 "route=" + route + "\n" +
                 "}\n\n";
+    }
+
+    public ArrayList<StorageItem> getRoute() {
+        return this.route;
     }
 }
