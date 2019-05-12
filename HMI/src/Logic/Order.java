@@ -39,7 +39,7 @@ public class Order {
         TSP tsp = new TSP();
         ArrayList<StorageItem> storageItemsInOrder = new ArrayList<>();
         ArrayList<StorageItem> storageItems = dataServer.getStorageItems();
-        System.out.println(orderItems.size());
+
         for (OrderItem oi: orderItems) {
             for (StorageItem si: storageItems) {
                 if (oi.equals(si)){

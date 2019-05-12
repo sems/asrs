@@ -7,16 +7,10 @@ public class Cell extends StackPane {
     int row;
 
     public Cell(int column, int row) {
-
         this.column = column;
         this.row = row;
 
         getStyleClass().add("cell");
-
-//          Label label = new Label(this.toString());
-//
-//          getChildren().add(label);
-
         setOpacity(0.9);
     }
 
