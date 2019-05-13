@@ -30,7 +30,7 @@ public class HMIApplication extends Application {
             );
 
             Pane pane = loader.load();
-            HMIController controller = loader.getController();
+            ASRController controller = loader.getController();
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
             Scene scene = new Scene(pane, screenBounds.getWidth(), screenBounds.getHeight());
 

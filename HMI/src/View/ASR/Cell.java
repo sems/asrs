@@ -2,6 +2,9 @@ package View.ASR;
 
 import javafx.scene.layout.StackPane;
 
+/**
+ * A cell is part of the grid making up the visual storage rack.
+ */
 public class Cell extends StackPane {
     int column;
     int row;

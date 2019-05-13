@@ -3,7 +3,7 @@ package Logic;
 import java.util.ArrayList;
 
 /**
- * The type Tsp.
+ * Type to calculate the fastest picking route for the ASR.
  */
 public class TSP {
 

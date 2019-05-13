@@ -4,13 +4,14 @@ import com.fazecast.jSerialComm.SerialPortEvent;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.stream.Stream;
 
-
-public class Asr implements SerialPortDataListener {
+/**
+ * Wraps the communication to and from the ASR robot.
+ */
+public class ASRCommunication implements SerialPortDataListener {
     SerialPort comPort;
 
-    public Asr(SerialPort port) {
+    public ASRCommunication(SerialPort port) {
         comPort = port;
         comPort.openPort();
         comPort.addDataListener(this);
@@ -19,7 +20,7 @@ public class Asr implements SerialPortDataListener {
 
     public static void main(String[] args) {
         SerialPort port = SerialPort.getCommPorts()[0];
-        Asr r = new Asr(port);
+        ASRCommunication r = new ASRCommunication(port);
 
         r.start();
         r.gotoPos((byte) 3, (byte) 2);
@@ -29,6 +30,9 @@ public class Asr implements SerialPortDataListener {
         return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
     }
 
+    /**
+     * Send the start command to the ASR
+     */
     public void start() {
         OutputStream out = comPort.getOutputStream();
         final byte size = 0;
@@ -43,6 +47,9 @@ public class Asr implements SerialPortDataListener {
         }
     }
 
+    /**
+     * Send the stop command to the ASR
+     */
     public void stop() {
         OutputStream out = comPort.getOutputStream();
         final byte size = 0;
@@ -57,13 +64,18 @@ public class Asr implements SerialPortDataListener {
         }
     }
 
+    /**
+     * Move the ASR robot to a certain x,y position
+     * @param x
+     * @param y
+     */
     public void gotoPos(byte x, byte y) {
         OutputStream out = comPort.getOutputStream();
         final byte size = 2;
         final byte commandCode = 11;
         byte payload[] = { x, y };
 
-        int check = makeChecksom(payload);
+        int check = calculateCRC8(payload);
 
         byte checksum[] = { (byte) (check >> 8 & 0xFF), (byte) (check & 0xFF) };
 
@@ -76,7 +88,12 @@ public class Asr implements SerialPortDataListener {
         }
     }
 
-    public static int makeChecksom(byte payload[]) {
+    /**
+     * Calculate the CRC8 checksum of the given payload
+     * @param payload
+     * @return
+     */
+    private static int calculateCRC8(byte payload[]) {
         byte checksumArr[] = new byte[2];
 
         int i;
@@ -97,10 +114,6 @@ public class Asr implements SerialPortDataListener {
         System.out.println(crc_value);
 
         return crc_value;
-    }
-
-    public void pick() {
-
     }
 
     public void serialEvent(SerialPortEvent event) {
@@ -137,7 +150,7 @@ public class Asr implements SerialPortDataListener {
         byte checkBuffer[] = new byte[2];
         comPort.readBytes(checkBuffer, 2);
 
-        int checkPayload = this.makeChecksom(payload);
+        int checkPayload = this.calculateCRC8(payload);
         int checkPacket = (checkBuffer[0] << 8) + (checkBuffer[1]);
 
         if (checkPayload == checkPacket) {
@@ -152,14 +165,11 @@ public class Asr implements SerialPortDataListener {
 
     private byte[] currentItem;
 
-    // private byte[][] completedItems;
-
     private boolean orderComplete = true;
 
     public void addOrder(byte[][] order) {
         if (orderComplete) {
             if (activeOrder.size() > 0) {
-//                activeOrder = order;
                 orderComplete = false;
                 NextItem();
             } else {

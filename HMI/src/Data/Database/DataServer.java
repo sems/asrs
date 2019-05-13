@@ -4,7 +4,6 @@ import Logic.Order;
 import Logic.OrderItem;
 import Logic.StorageItem;
 
-import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -127,7 +126,7 @@ public class DataServer {
             order.addOrderItems(new OrderItem(itemID, OrderID, itemName, quantity));
         }
         rs.close();
-        order.setRoute();
+        order.initializeFastestRoute();
         return order;
     }
 
