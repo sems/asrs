@@ -46,7 +46,6 @@ public class Order {
                     storageItemsInOrder.add(si);
                 }
             }
-
         }
         return tsp.calculateRoute(storageItemsInOrder);
     }
@@ -92,5 +91,9 @@ public class Order {
                 "orderItems=" + orderItems + "\n" +
                 "route=" + route + "\n" +
                 "}\n\n";
+    }
+
+    public ArrayList<StorageItem> getRoute() {
+        return this.route;
     }
 }
