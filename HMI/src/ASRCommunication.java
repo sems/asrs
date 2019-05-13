@@ -8,10 +8,10 @@ import java.util.ArrayList;
 /**
  * Wraps the communication to and from the ASR robot.
  */
-public class Asr implements SerialPortDataListener {
+public class ASRCommunication implements SerialPortDataListener {
     SerialPort comPort;
 
-    public Asr(SerialPort port) {
+    public ASRCommunication(SerialPort port) {
         comPort = port;
         comPort.openPort();
         comPort.addDataListener(this);
@@ -20,7 +20,7 @@ public class Asr implements SerialPortDataListener {
 
     public static void main(String[] args) {
         SerialPort port = SerialPort.getCommPorts()[0];
-        Asr r = new Asr(port);
+        ASRCommunication r = new ASRCommunication(port);
 
         r.start();
         r.gotoPos((byte) 3, (byte) 2);

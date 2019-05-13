@@ -21,7 +21,7 @@ import javafx.scene.shape.Line;
 
 import java.util.ArrayList;
 
-public class HMIController {
+public class ASRController {
     @FXML
     private ProgressBar progressBar;
     @FXML
@@ -176,7 +176,9 @@ public class HMIController {
     }
 
     @FXML
-    protected void handlePickOrderAction(ActionEvent event) { }
+    protected void handlePickOrderAction(ActionEvent event) {
+
+    }
 
     public void updateOrderItemsPickedStatus(int item, int maxItems) {
          double progressBarValue = (double)(maxItems / 100 * item) / 100;
