@@ -9,7 +9,7 @@ AccelStepper stepper_Z(1, 4, 7); // Z-axis, the fork thingy that acutally picks 
 
 MultiStepper steppers1;
 
-const int steps_per_mm_0 = 80;
+const int steps_per_mm_0 = 40; //40 for 1/8th microstepping, 80 for 1/16th microstepping
 const float unit_lenght_in_mm = 74.8;
 const float unit_height_in_mm = 54.8;
 const float steps_per_unit_lenght = steps_per_mm_0 * unit_lenght_in_mm;
@@ -36,16 +36,14 @@ void initializeMovement()
     steppers1.addStepper(stepper_B);
 }
 
-void moveXY(int x, int y) //sets the steps and direction for the motors to move to, doesn't actually move the ASR
+//sets the steps and direction for the motors to move to.
+// Doesn't actually move the ASR
+void moveXY(int x, int y)
 {
     long positions[2];
     positions[0] = ccts_a(x, y);
     positions[1] = ccts_b(x, y);
     steppers1.moveTo(positions);
-}
-
-void runXY() // not sure if needed yet
-{
 }
 
 /*
@@ -64,13 +62,14 @@ int ccts_b(int x, int y) //Convert Coordinate to Steps for motor b
     return b;
 }
 
+// Picks one item.
 void pickItem()
 {
-    if (picked < 4)
+    if (picked < max_items)
     {
         stepper_Z.setMaxSpeed(1200.0); // Set Max Speed of Stepper
         stepper_Z.setAcceleration(2000.0);
-        stepper_Z.moveTo(-100); // Amount of steps that correlates to the width of one item
+        stepper_Z.moveTo(-steps_item_width);
         picked++;
     }
     else
@@ -79,13 +78,15 @@ void pickItem()
     }
 }
 
+// Drops 1 item
+// Does not move to usual drop spot.
 void dropItem()
 {
     if (picked > 0)
     {
         stepper_Z.setMaxSpeed(1200.0); // Set Max Speed of Stepper
         stepper_Z.setAcceleration(2000.0);
-        stepper_Z.moveTo(100); // Amount of steps that correlates to the width of one item
+        stepper_Z.moveTo(steps_item_width);
         picked--;
     }
     else
@@ -94,9 +95,14 @@ void dropItem()
     }
 }
 
+//sets the steppers to move to the usual drop spot
+void prepareDrop()
+{
+    moveXY(-1, 2);
+}
+
 XY_POSITION_ARRAY getXYPos()
 {
-    
     xyPos.x = 0.5 * (stepper_A.currentPosition() + stepper_B.currentPosition()) / steps_per_unit_lenght;
     xyPos.y = 0.5 * (stepper_A.currentPosition() - stepper_B.currentPosition()) / steps_per_unit_height;
     return xyPos;
