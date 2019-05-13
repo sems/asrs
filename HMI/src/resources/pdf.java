@@ -36,7 +36,7 @@ public class pdf {
     public void generate() throws FileNotFoundException, DocumentException {
         PdfWriter.getInstance(this.document, new FileOutputStream(this.filename));
         this.document.open();
-        
+
         this.addText("Order: " + this.order.getId());
 
         String pattern = "MM/dd/yyyy";
@@ -52,6 +52,7 @@ public class pdf {
         document.add( Chunk.NEWLINE );
 
         PdfPTable table = new PdfPTable(3);
+        table.setWidths(new float[] { 15, 70, 15 });
         addTableHeader(table);
         for (OrderItem item: this.items ) {
             addRows(table, item);
@@ -85,7 +86,7 @@ public class pdf {
     }
 
     private void addRows(PdfPTable table, OrderItem item) {
-        table.addCell(new Phrase(String.valueOf(item.getOrderID()), this.font));
+        table.addCell(new Phrase(String.valueOf(item.getStorageItemID()), this.font));
         table.addCell(new Phrase(item.getName(), this.font));
         table.addCell(new Phrase(String.valueOf(item.getQuantity()), this.font));
     }

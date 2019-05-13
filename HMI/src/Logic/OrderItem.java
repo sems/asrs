@@ -27,6 +27,10 @@ public class OrderItem {
         return orderID;
     }
 
+    public int getStorageItemID() {
+        return storageItemID;
+    }
+
     public String getName() {
         return name;
     }
