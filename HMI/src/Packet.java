@@ -12,8 +12,8 @@ public class Packet {
 
         byte[] checkBuffer = new byte[size + 2];
 
-        CRC8 checkSumObj = new CRC8(0x07, (short)0x00);
-        checkSumObj.update(checkBuffer);
+        CRC8 checkSumObj = new CRC8();
+        checkSumObj.update(checkBuffer, 0, checkBuffer.length);
         checkSum = (byte)checkSumObj.getValue();
     }
 

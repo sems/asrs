@@ -21,10 +21,13 @@ public class ASRCommunication implements SerialPortDataListener {
 
     public static void main(String[] args) {
         SerialPort port = SerialPort.getCommPorts()[0];
+        port.setBaudRate(115200);
         ASRCommunication r = new ASRCommunication(port);
 
-        // r.start();
-        // r.gotoPos((byte) 3, (byte) 2);
+
+
+         //r.start();
+         //r.gotoPos((byte) 3, (byte) 2);
     }
 
     public void sendPacket(Packet packet) {
@@ -50,12 +53,16 @@ public class ASRCommunication implements SerialPortDataListener {
         if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
             return;
 
-        byte size = 0;
-        while (size == 0) {
-            byte[] sizeBuffer = new byte[1];
-            comPort.readBytes(sizeBuffer, 1);
-            size = sizeBuffer[0];
+        try {
+            Thread.sleep(3000);
         }
+        catch (Exception e) {
+
+        }
+
+        byte[] sizeBuffer = new byte[1];
+        comPort.readBytes(sizeBuffer, 1);
+        byte size = sizeBuffer[0];
 
         byte commandId = 0;
         while (commandId == 0) {
@@ -87,7 +94,7 @@ public class ASRCommunication implements SerialPortDataListener {
 
         byte checkBuffer[] = new byte[1];
         comPort.readBytes(checkBuffer, 1);
-        byte packetChecksum = checkBuffer[0];
+        long packetChecksum = checkBuffer[0];
 
         byte packet[] = new byte[size + 2];
 
@@ -96,18 +103,41 @@ public class ASRCommunication implements SerialPortDataListener {
 
         System.arraycopy(payload, 0, packet, 2, payload.length);
 
-        CRC8 receivedChecksum = new CRC8(0x07, (short) 0x00);
-        receivedChecksum.update(packet);
-        byte calcChecksum = (byte) receivedChecksum.getValue();
+        CRC8 receivedChecksum = new CRC8();
+        receivedChecksum.update(packet, 0, packet.length);
+        long calcChecksum = receivedChecksum.getValue();
 
         System.out.println("Received Check: " + packetChecksum + ", Calculated Checksum: " + calcChecksum);
 
         if (packetChecksum == calcChecksum) {
-            System.out.print("Packet is valid");
+            System.out.println("Packet is valid");
         } else {
-            System.out.print("Packet is invalid");
+            System.out.println("Packet is invalid");
         }
 
+        // getPos response 110
+        if (commandId == 110) {
+            System.out.println("Response to getPos (110)");
+            if(size == 2)
+                System.out.println("Asr is at position x: " + payload[0] + ", y: " + payload[1]);
+            else
+                System.out.println("Size is wrong");
+        }
+
+        //gotoPos reponse 111
+        if (commandId == 111){
+            if (size == 1){
+                if(payload[0] == 0){
+                    System.out.println("GotoPos success");
+                }
+                else {
+                    System.out.println("GotoPos went wrong");
+                }
+            }
+            else{
+                System.out.println("size diverse from expected");
+            }
+        }
     }
 
     private ArrayList<byte[]> activeOrder;
