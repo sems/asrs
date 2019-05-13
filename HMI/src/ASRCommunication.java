@@ -68,7 +68,6 @@ public class ASRCommunication implements SerialPortDataListener {
 
         int timeout = 100;
 
-        System.out.println("Size is " + size);
         while (comPort.bytesAvailable() < size + 1) {
             try {
                 System.out.println("Not all received - " + comPort.bytesAvailable() + "/ " + (size + 1) + " bytes");
@@ -78,6 +77,7 @@ public class ASRCommunication implements SerialPortDataListener {
             }
         }
 
+        System.out.println("All " + (size + 1) + " bytes received");
         comPort.readBytes(payload, size);
 
         System.out.println("Payload content:");
@@ -87,7 +87,7 @@ public class ASRCommunication implements SerialPortDataListener {
 
         byte checkBuffer[] = new byte[1];
         comPort.readBytes(checkBuffer, 1);
-        byte checksum = checkBuffer[0];
+        byte packetChecksum = checkBuffer[0];
 
         byte packet[] = new byte[size + 2];
 
@@ -98,9 +98,11 @@ public class ASRCommunication implements SerialPortDataListener {
 
         CRC8 receivedChecksum = new CRC8(0x07, (short) 0x00);
         receivedChecksum.update(packet);
-        byte checkPayload = (byte) receivedChecksum.getValue();
+        byte calcChecksum = (byte) receivedChecksum.getValue();
 
-        if (checksum == receivedChecksum.getValue()) {
+        System.out.println("Received Check: " + packetChecksum + ", Calculated Checksum: " + calcChecksum);
+
+        if (packetChecksum == calcChecksum) {
             System.out.print("Packet is valid");
         } else {
             System.out.print("Packet is invalid");

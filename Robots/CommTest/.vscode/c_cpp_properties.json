@@ -4,12 +4,13 @@
         "includePath": [
             "C:\\\\Program Files (x86)\\\\Arduino\\\\tools\\\\**",
             "C:\\\\Program Files (x86)\\\\Arduino\\\\hardware\\\\arduino\\\\avr\\\\**",
-            "C:\\\\Program Files (x86)\\\\Arduino\\\\hardware\\\\arduino\\\\avr\\\\**"
+            "C:\\\\Program Files (x86)\\\\Arduino\\\\hardware\\\\tools\\\\avr\\\\**"
         ],
         "forcedInclude": [
-            "C:\\\\Program Files (x86)\\\\Arduino\\\\hardware\\\\arduino\\\\avr\\\\cores\\\\arduino\\\\Arduino.h"
+            "C:\\\\Program Files (x86)\\\\Arduino\\\\hardware\\\\arduino\\\\avr\\\\cores\\\\arduino\\\\Arduino.h",
+            "C:\\\\Program Files (x86)\\\\Arduino\\\\hardware\\\\arduino\\\\avr\\\\cores\\\\arduino\\\\HardwareSerial.h"
         ],
-        "intelliSenseMode": "msvc-x64",
+        "intelliSenseMode": "gcc-x64",
         "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64/cl.exe",
         "cStandard": "c11",
         "cppStandard": "c++17"
