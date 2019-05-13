@@ -6,50 +6,47 @@ static const int PAYLOAD_SIZE_OFFSET = 1;
 static const int COMMAND_ID_OFFSET = 2;
 
 // CommandId + payload size + CRC16
-static const int FIELDS_SIZE = 4;
+static const int FIELDS_SIZE = 3;
 
 static const byte INFO_TX_COMMAND_ID = 104;
 
 Packet::Packet(byte *raw)
 {
     raw = raw;
-    PayloadSize = *raw;
-    CommandId = *(raw+PAYLOAD_SIZE_OFFSET);
+    PayloadSize = raw[0];
+    CommandId = raw[1];
     payload = raw+COMMAND_ID_OFFSET;
-    crc16 = COMMAND_ID_OFFSET + PayloadSize;
+    crc8 = raw[COMMAND_ID_OFFSET + PayloadSize];
 }
 
 Packet::Packet(byte commandId, byte payloadLength, byte *payload)
 {
-    CommandId = commandId;
-    PayloadSize = payloadLength;
-    
-    byte *raw = new byte[PayloadSize + FIELDS_SIZE];
-    *raw = payloadLength;
-    *(raw+1) = commandId;
 
-    for(int i = 0; i < payloadLength; i++)
+    this->CommandId = commandId;
+    this->PayloadSize = payloadLength;
+	this->payload = payload;
+
+    byte *raw = new byte[PayloadSize + FIELDS_SIZE];
+    raw[0] = payloadLength;
+	raw[1] = commandId;
+	for(int i = 0; i < payloadLength; i++)
     {
-        *(raw + COMMAND_ID_OFFSET + i) = payload[i];
+        raw[COMMAND_ID_OFFSET+i] = payload[i];
     }
+	this->crc8 = computeCrc8(raw, PayloadSize + 2);
+	raw[COMMAND_ID_OFFSET + PayloadSize] = this->crc8;
+	this->Raw = raw;
 }
 
 Packet* Packet::createLogPacket(char *message){
-    // because payload size is known, string null terminator is not needed
-    // So it is removed to save 1 byte of precious memory
-    int stringLength = strlen(message);
-    unsigned char buffer[stringLength];
-    memcpy(buffer, message, stringLength);
-    // Buffer is copied in Packet constructor so don't worry about dangling pointer
-
-    return new Packet(INFO_TX_COMMAND_ID, stringLength, buffer);
+    return new Packet(INFO_TX_COMMAND_ID, strlen(message),reinterpret_cast<byte*>(message));
 }
 
-bool Packet::validateCrc16()
+bool Packet::validateCrc8()
 {
     int length = COMMAND_ID_OFFSET + PayloadSize;
-    auto crc16 = computeCrc16(this->Raw, length);
-    return this->crc16 == crc16;
+    byte crc8 = computeCrc8(this->Raw, length);
+    return this->crc8 == crc8;
 }
 
 Packet::~Packet()

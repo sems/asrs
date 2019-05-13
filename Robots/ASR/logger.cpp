@@ -16,7 +16,6 @@ void Logger::logInfo(const char *message)
     // in real code you would check for errors in malloc here
     memcpy(result, INFO_PREFIX, len1);
     memcpy(result + len1, message, len2 + 1); // +1 to copy the null-terminator
-    
     SendLogPacket(result);
     free(result);
 }
@@ -37,6 +36,7 @@ void Logger::logError(const char *errorMessage)
 
 void Logger::SendLogPacket(char *message){
     Packet *packet = Packet::createLogPacket(message);
+	
     this->communication.sendPacket(packet);
     delete packet;
 }
