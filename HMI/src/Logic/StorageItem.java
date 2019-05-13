@@ -13,11 +13,19 @@ public class StorageItem {
         this.stock = stock;
     }
 
+    /**
+     * Returns the position coordinates of this item in the storage rack
+     * @return
+     */
     public Location getLocation() {
         String[] parts = this.location.split(",");
         return new Location(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
     }
 
+    /**
+     * Returns the id of this storage item.
+     * @return
+     */
     public int getItemID() {
         return itemID;
     }

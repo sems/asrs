@@ -41,6 +41,12 @@ public class Grid extends Pane {
         getChildren().add(cell);
     }
 
+    /**
+     * Returns the cell on a specific column and row
+     * @param column
+     * @param row
+     * @return
+     */
     public Cell getCell(int column, int row) {
         return cells[row][column];
     }
