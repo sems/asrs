@@ -23,20 +23,15 @@ Packet::Packet(byte commandId, byte payloadLength, byte *payload)
 {
     CommandId = commandId;
     PayloadSize = payloadLength;
-
+    
     byte *raw = new byte[PayloadSize + FIELDS_SIZE];
-    
     *raw = payloadLength;
-    
-    Serial.print(PayloadSize);
     *(raw+1) = commandId;
 
     for(int i = 0; i < payloadLength; i++)
     {
         *(raw + COMMAND_ID_OFFSET + i) = payload[i];
     }
-
-    
 }
 
 Packet* Packet::createLogPacket(char *message){

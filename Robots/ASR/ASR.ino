@@ -7,8 +7,8 @@ Core core(communication);
 
 void setup()
 {
-    communication.initialize();
-    core.logger.logInfo("Core Initialized");
+	communication.initialize();
+	core.logger.logInfo("Core Initialized");
 }
 
 void loop()
