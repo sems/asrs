@@ -26,8 +26,8 @@ public class ASRCommunication implements SerialPortDataListener {
 
 
 
-         //r.start();
-         //r.gotoPos((byte) 3, (byte) 2);
+         r.start();
+         r.gotoPos((byte) 3, (byte) 2);
     }
 
     public void sendPacket(Packet packet) {
@@ -38,11 +38,39 @@ public class ASRCommunication implements SerialPortDataListener {
 
     public void gotoPos(int x, int y) {
         byte[] payload = { (byte) x, (byte) y };
-        final byte commandId = 11;
-
-        Packet packet = new Packet(commandId, payload);
+        Packet packet = new Packet((byte) 11, payload);
 
         sendPacket(packet);
+    }
+
+    public void pick(){
+        Packet p = new Packet((byte) 13, new byte[0]);
+
+        sendPacket(p);
+    }
+
+    public void start(){
+        Packet p = new Packet((byte) 3, new byte[0]);
+
+        sendPacket(p);
+    }
+
+    public void stop(){
+        Packet p = new Packet((byte) 2, new byte[0]);
+
+        sendPacket(p);
+    }
+
+    public void getPos(){
+        Packet p = new Packet((byte) 10, new byte[0]);
+
+        sendPacket(p);
+    }
+
+    public void unload(){
+        Packet p = new Packet((byte) 14, new byte[0]);
+
+        sendPacket(p);
     }
 
     public int getListeningEvents() {
@@ -129,6 +157,8 @@ public class ASRCommunication implements SerialPortDataListener {
             if (size == 1){
                 if(payload[0] == 0){
                     System.out.println("GotoPos success");
+
+                    pick();
                 }
                 else {
                     System.out.println("GotoPos went wrong");

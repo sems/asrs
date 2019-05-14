@@ -10,7 +10,14 @@ public class Packet {
         size = (byte)payload.length;
         this.commandId = commandId;
 
+        this.payload = payload;
+
         byte[] checkBuffer = new byte[size + 2];
+
+        checkBuffer[0] = size;
+        checkBuffer[1] = commandId;
+
+        System.arraycopy(payload, 0, checkBuffer, 2, size);
 
         CRC8 checkSumObj = new CRC8();
         checkSumObj.update(checkBuffer, 0, checkBuffer.length);
