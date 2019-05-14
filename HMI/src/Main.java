@@ -8,6 +8,5 @@ public class Main {
      * @param args the input arguments
      */
     public static void main(String[] args) {
-
     }
 }
