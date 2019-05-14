@@ -1,8 +1,11 @@
 package View.ASR;
 
 import Data.Database.DataServer;
+import Logic.Communication.ASRCommunication;
 import Logic.Location;
 import Logic.Order;
+import Logic.StorageItem;
+import com.fazecast.jSerialComm.SerialPort;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -52,6 +55,7 @@ public class ASRController {
     private ObservableList<Order> waitingOrdersObservableList;
     private ObservableList<Order> packedOrdersObservableList;
 
+    private ASRCommunication asrCommunication;
     private static final int  CELL_SIZE = 160;
     private static final int GRID_HEIGHT = 800;
     private static final int GRID_WIDTH = 800;
@@ -74,7 +78,10 @@ public class ASRController {
         InitializeGrid();
         InitializeTables();
 
-//        displayStorageItem(61);
+        SerialPort port = SerialPort.getCommPorts()[0];
+        asrCommunication = new ASRCommunication(port);
+
+        displayStorageItem(61);
     }
 
     /**
@@ -233,6 +240,14 @@ public class ASRController {
     protected void handlePickOrderAction(ActionEvent event) {
         for (Order order: pickedOrdersObservableList) {
             displayStorageItem(order.getId());
+
+            for (StorageItem storageItem: order.getRoute()) {
+                var location = storageItem.getLocation();
+
+                asrCommunication.gotoPos((byte)location.getX(), (byte)location.getY());
+                asrCommunication.NextItem();
+            }
+
 
            // todo:
             // send command to robot

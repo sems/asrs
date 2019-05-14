@@ -1,3 +1,5 @@
+package Logic.Communication;
+
 import CRC8.CRC8;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
