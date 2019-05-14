@@ -2,8 +2,9 @@
 output/
 HMI/src/resources/config.properties
 HMI/.idea/workspace.xml
-Robots/ASR/Release
-Robots/ASR/__vm
+Robots/ASR/Release/
+Robots/ASR/Debug/
+Robots/ASR/__vm/
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
