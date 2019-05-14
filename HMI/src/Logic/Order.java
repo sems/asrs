@@ -1,7 +1,10 @@
 package Logic;
 
 import Data.Database.DataServer;
+import com.itextpdf.text.DocumentException;
+import resources.pdf;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -89,6 +92,14 @@ public class Order {
         return orderItems;
     }
 
+    public void savePdf(){
+        pdf pdf = new pdf(this);
+        try {
+            pdf.generate();
+        } catch (FileNotFoundException | DocumentException e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     public String toString() {
         return "Logic.Order "+ id +" { \n" +

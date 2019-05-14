@@ -23,6 +23,22 @@ public class OrderItem {
         return this.pickingCompleted != null;
     }
 
+    public int getOrderID() {
+        return orderID;
+    }
+
+    public int getStorageItemID() {
+        return storageItemID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
     public void setPickingCompleted() {
         DataServer tempDS = new DataServer();
         tempDS.completePicking(this.orderID, this.storageItemID);
