@@ -6,6 +6,7 @@ import Logic.Order;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -52,7 +53,9 @@ public class ASRController {
     private ObservableList<Order> packedOrdersObservableList;
 
     private static final int  CELL_SIZE = 160;
-
+    private static final int GRID_HEIGHT = 800;
+    private static final int GRID_WIDTH = 800;
+    private static final int CELLS = 5;
     /**
      * Initialize the screen by passing in the orders that will be displayed.
      * @param orders
@@ -71,7 +74,7 @@ public class ASRController {
         InitializeGrid();
         InitializeTables();
 
-        displayStorageItem(61);
+//        displayStorageItem(61);
     }
 
     /**
@@ -90,7 +93,7 @@ public class ASRController {
             var itemLocation = mapToUIDimensions(current.getLocation());
 
             Circle circle = new Circle();
-            circle.setRadius(4);
+            circle.setRadius(20);
             circle.setStyle("black");
             circle.setLayoutX((itemLocation.getX()));
             circle.setLayoutY((itemLocation.getY()));
@@ -100,6 +103,7 @@ public class ASRController {
                 var nextItemLocation = mapToUIDimensions(route.get(i + 1).getLocation());
 
                 Line line = new Line(circle.getLayoutX(), circle.getLayoutY(), nextItemLocation.getX(), nextItemLocation.getY());
+                line.setStrokeWidth(5);
                 line.setFill(Color.BLUE);
                 gridPane.getChildren().add(line);
             }
@@ -112,18 +116,14 @@ public class ASRController {
      * Draw the grid to the screen.
      */
     private void InitializeGrid() {
-        int rows = 5;
-        int columns = 5;
-        double width = 800;
-        double height = 800;
 
         // create grid and apply style
-        Grid grid = new Grid( columns, rows, width, height);
+        Grid grid = new Grid(CELLS, CELLS, GRID_WIDTH, GRID_HEIGHT);
         grid.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 
         // fill grid with cells
-        for (int row = 0; row < rows; row++) {
-            for (int column = 0; column < columns; column++) {
+        for (int row = 0; row < CELLS; row++) {
+            for (int column = 0; column < CELLS; column++) {
                 Cell cell = new Cell(column, row);
                 grid.add(cell, column, row);
             }
@@ -231,14 +231,34 @@ public class ASRController {
 
     @FXML
     protected void handlePickOrderAction(ActionEvent event) {
+        for (Order order: pickedOrdersObservableList) {
+            displayStorageItem(order.getId());
 
+           // todo:
+            // send command to robot
+            // wait for ack
+            // update status
+            // continue until order picked
+            // repeat
+        }
     }
 
     public void updateOrderItemsPickedStatus(int item, int maxItems) {
-         double progressBarValue = (double)(maxItems / 100 * item) / 100;
+         double progressBarValue = (double)(100/ maxItems * item) / 100;
          progressBar.setProgress(progressBarValue);
 
-        Platform.runLater(() -> progressLabel.setText("Product Items Opgehaald "+ item + " van de "+maxItems));
+         System.out.println(progressBarValue);
+         int count = 1;
+         for (var node: gridPane.getChildren()) {
+            if (node instanceof Line) {
+                count += 1;
+                if (item == count) {
+                    ((Line) node).setStroke(Color.RED);
+                }
+            }
+         }
+
+        Platform.runLater(() -> progressLabel.setText("Product Items Opgehaald "+ item + " van de "+ maxItems));
     }
 
     /**
@@ -247,6 +267,6 @@ public class ASRController {
      * @return
      */
     private Location mapToUIDimensions(Location location) {
-        return new Location((location.getX() * CELL_SIZE) + CELL_SIZE / 2, (location.getY() * CELL_SIZE) + CELL_SIZE / 2);
+        return new Location(((location.getX() * CELL_SIZE)) + CELL_SIZE / 2, (GRID_HEIGHT  - (location.getY() * CELL_SIZE)) - CELL_SIZE / 2);
     }
 }
