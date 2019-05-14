@@ -2,13 +2,11 @@
 #define COMMUNICATION_HPP
 
 #include "arduino.h"
-#include "packet.hpp"
-#include "utils.hpp"
+
+class Packet;
 
 class Communication
 {
-private:
-    
 public:
     void initialize();
     Packet* receivePacket();

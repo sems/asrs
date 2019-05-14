@@ -1,9 +1,10 @@
 #ifndef COMMAND_INFO_HPP
 #define COMMAND_INFO_HPP
 
-#include "communication.hpp"
+#include "Arduino.h"
 
 class Core;
+class Communication;
 
 // Pointer type definition to a function that takes a Core and Communication as arguments
 // Typedef is used, because we don't want to repeat this every time

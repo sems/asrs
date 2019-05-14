@@ -2,6 +2,8 @@
 #define PACKET_HPP
 
 #include "Arduino.h"
+#include "status.hpp"
+
 
 // The communication with the HMI relies on this packet format
 class Packet {
@@ -17,16 +19,19 @@ class Packet {
     byte PayloadSize;
     byte *payload;
     // The CRC16 is a checksum that is used to validate wether the package is corrupted
-    short crc16;
+    byte crc8;
     byte *Raw;
     
     // returns false if the crc16 from the packets is invalid
-    bool validateCrc16();
+    bool validateCrc8();
 
     // destructor to cleanup allocated byte array
     ~Packet();
 
     // Returns an instance of a log packet
     static Packet* createLogPacket(char *message);
+
+	// Returns an instance of a status packet
+	static Packet* createStatusPacket(Status status);
 };
 #endif

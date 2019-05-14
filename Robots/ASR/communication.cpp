@@ -1,4 +1,6 @@
 #include "communication.hpp"
+#include "utils.hpp"
+#include "packet.hpp"
 
 Packet* Communication::receivePacket(){
     if (Serial.available() > 0) 
@@ -17,9 +19,9 @@ Packet* Communication::receivePacket(){
 }
 
 void Communication::sendPacket(Packet *packet){
-    Serial.write(packet->Raw, packet->PayloadSize + 4);
+    Serial.write(packet->Raw, packet->PayloadSize + 3);
 }
 
 void Communication::initialize(){
-    Serial.begin(9600);
+    Serial.begin(115200);
 }

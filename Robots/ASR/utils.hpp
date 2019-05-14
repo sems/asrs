@@ -1,5 +1,8 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
+#include "Arduino.h"
 
-unsigned short computeCrc16(const unsigned char* data_p, unsigned char length);
+uint8_t computeCrc8(const void* data, size_t size);
 #endif
+
+

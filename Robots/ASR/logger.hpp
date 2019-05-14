@@ -2,10 +2,11 @@
 #define LOGGER_HPP
 
 #include "Arduino.h"
-#include "communication.hpp"
 
 extern const char* ERROR_PREFIX;
 extern const char* INFO_PREFIX;
+
+class Communication;
 
 class Logger
 {
