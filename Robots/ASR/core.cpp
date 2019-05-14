@@ -1,6 +1,8 @@
 #include "core.hpp"
+#include "packet.hpp"
+#include "communication.hpp"
 
-Core::Core(Communication &c) : communication(c), logger(c){
+Core::Core(Communication &c) : communication(c), logger(c), started(false){
 
 }
 

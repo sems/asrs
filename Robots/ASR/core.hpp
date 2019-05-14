@@ -1,11 +1,13 @@
 #ifndef CORE_HPP
 #define CORE_HPP
 
-#include "packet.hpp"
-#include "Arduino.h"
-#include "communication.hpp"
-#include "logger.hpp"
+#include "Arduino.h";
 #include "commandInfo.hpp"
+#include "status.hpp"
+#include "logger.hpp"
+
+class Communication;
+
 
 // This is the class that actually controls the ASR
 class Core
@@ -23,7 +25,8 @@ private:
 public:
     Communication &communication;
     Core(Communication &communcation);
-    
+	bool started;
+	Status status;
     Logger logger;
     // This function acts like the main program loop.
     // It's invoked by the program loop and by long running commands
