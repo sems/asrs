@@ -16,7 +16,7 @@ public class ASRCommunication implements SerialPortDataListener {
         comPort = port;
         comPort.openPort();
         comPort.addDataListener(this);
-        // this.start();
+        start();
     }
 
     public static void main(String[] args) {
@@ -194,6 +194,6 @@ public class ASRCommunication implements SerialPortDataListener {
         currentItem = item;
         activeOrder.remove(0);
 
-        // gotoPos(currentItem[0], currentItem[1]);
+        gotoPos(currentItem[0], currentItem[1]);
     }
 }
