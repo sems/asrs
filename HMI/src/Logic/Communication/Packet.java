@@ -1,3 +1,5 @@
+package Logic.Communication;
+
 import CRC8.CRC8;
 
 public class Packet {
