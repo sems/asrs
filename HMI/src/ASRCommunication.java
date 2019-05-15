@@ -24,10 +24,8 @@ public class ASRCommunication implements SerialPortDataListener {
         port.setBaudRate(115200);
         ASRCommunication r = new ASRCommunication(port);
 
-
-
-         r.start();
-         r.gotoPos((byte) 3, (byte) 2);
+        r.start();
+        r.gotoPos((byte) 3, (byte) 2);
     }
 
     public void sendPacket(Packet packet) {
@@ -43,31 +41,31 @@ public class ASRCommunication implements SerialPortDataListener {
         sendPacket(packet);
     }
 
-    public void pick(){
+    public void pick() {
         Packet p = new Packet((byte) 13, new byte[0]);
 
         sendPacket(p);
     }
 
-    public void start(){
+    public void start() {
         Packet p = new Packet((byte) 3, new byte[0]);
 
         sendPacket(p);
     }
 
-    public void stop(){
+    public void stop() {
         Packet p = new Packet((byte) 2, new byte[0]);
 
         sendPacket(p);
     }
 
-    public void getPos(){
+    public void getPos() {
         Packet p = new Packet((byte) 10, new byte[0]);
 
         sendPacket(p);
     }
 
-    public void unload(){
+    public void unload() {
         Packet p = new Packet((byte) 14, new byte[0]);
 
         sendPacket(p);
@@ -83,8 +81,7 @@ public class ASRCommunication implements SerialPortDataListener {
 
         try {
             Thread.sleep(3000);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
 
@@ -139,61 +136,106 @@ public class ASRCommunication implements SerialPortDataListener {
 
         if (packetChecksum == calcChecksum) {
             System.out.println("Packet is valid");
-        } else {
-            System.out.println("Packet is invalid");
-        }
 
-        // getPos response 110
-        if (commandId == 110) {
-            System.out.println("Response to getPos (110)");
-            if(size == 2)
-                System.out.println("Asr is at position x: " + payload[0] + ", y: " + payload[1]);
-            else
-                System.out.println("Size is wrong");
-        }
-
-        //gotoPos reponse 111
-        if (commandId == 111){
-            if (size == 1){
-                if(payload[0] == 0){
-                    System.out.println("GotoPos success");
-
-                    pick();
-                }
-                else {
-                    System.out.println("GotoPos went wrong");
+            if (commandId == 101) {
+                System.out.println("Response to GetStatus (101)");
+                if (size == 1) {
+                    System.out.println("Status " + payload[0]);
+                    System.out.println("Response is correct");
+                    // TODO: Add application call
+                } else {
+                    System.err.println("Size differs from expected");
                 }
             }
-            else{
-                System.out.println("size diverse from expected");
+
+            if (commandId == 102) {
+                System.out.println("Response to Stop (102)");
+                if (size == 1) {
+                    System.out.println("Response is correct");
+                    // TODO: Add application call
+                }
             }
-        }
-    }
 
-    private ArrayList<byte[]> activeOrder;
-
-    private byte[] currentItem;
-
-    private boolean orderComplete = true;
-
-    public void addOrder(byte[][] order) {
-        if (orderComplete) {
-            if (activeOrder.size() > 0) {
-                orderComplete = false;
-                NextItem();
-            } else {
-                System.err.println("There is nothing in the order");
+            if (commandId == 103) {
+                System.out.println("Response to Start (103)");
+                if (size == 1) {
+                    System.out.println("Response is correct");
+                    // TODO: add application call
+                } else {
+                    System.err.println("Size differs from expected");
+                }
             }
+
+            if (commandId == 104) {
+                System.out.println("Message response (104)");
+                if (size == 1) {
+                    System.out.println("Response is correct");
+
+                    for (char c : payload) {
+                        System.out.print(c);
+                    }
+
+                    System.out.print("\n");
+                    // TODO: add application call
+                } else {
+                    System.err.println("Size differs from expected");
+                }
+            }
+
+            // getPos response 110
+            if (commandId == 110) {
+                System.out.println("Response to getPos (110)");
+                if (size == 2) {
+                    System.out.println("Asr is at position x: " + payload[0] + ", y: " + payload[1]);
+
+                    // TODO: add application call
+                } else {
+                    System.err.println("Size differs from expected");
+                }
+            }
+
+            // gotoPos reponse 111
+            if (commandId == 111) {
+                if (size == 1) {
+                    if (payload[0] == 0) {
+                        System.out.println("GotoPos success");
+
+                        // TODO: Add application call
+                    } else {
+                        System.out.println("GotoPos went wrong");
+                    }
+                } else {
+                    System.err.println("size differs from expected");
+                }
+            }
+
+            if (commandId == 113) {
+                if (size == 1) {
+                    if (payload[0] == 0) {
+                        System.out.println("Pick succes");
+
+                        // TODO: Add application call
+                    } else {
+                        System.out.println("Pick went wrong");
+                    }
+                } else {
+                    System.err.println("size differs from expected");
+                }
+            }
+
+            if (commandId == 114) {
+                System.out.println("Response to unload (114)");
+                if (size == 1) {
+                    System.out.println("Response is correct");
+
+                    // TODO: Add Application call
+                } else {
+                    System.err.println("size differs from expected");
+                }
+            }
+
         } else {
-            System.err.println("Order still in progress");
+            System.err.println("Packet is invalid");
         }
-    }
-
-    public void NextItem() {
-        byte item[] = activeOrder.get(0);
-        currentItem = item;
-        activeOrder.remove(0);
-
-        gotoPos(currentItem[0], currentItem[1]);
     }
 }
