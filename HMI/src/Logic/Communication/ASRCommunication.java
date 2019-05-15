@@ -200,7 +200,7 @@ public class ASRCommunication implements SerialPortDataListener {
                 if (size == 1) {
                     System.out.println("Response is correct");
 
-                    for (char c : payload) {
+                    for (byte c : payload) {
                         System.out.print(c);
                     }
 
