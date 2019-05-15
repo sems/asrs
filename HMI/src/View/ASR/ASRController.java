@@ -2,6 +2,7 @@ package View.ASR;
 
 import Data.Database.DataServer;
 import Logic.Communication.ASRCommunication;
+import Logic.Communication.ASRListener;
 import Logic.Location;
 import Logic.Order;
 import Logic.StorageItem;
@@ -9,7 +10,6 @@ import com.fazecast.jSerialComm.SerialPort;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -25,8 +25,12 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
-public class ASRController {
+public class ASRController implements ASRListener {
+    /**
+     * ASR view
+     */
     @FXML
     private ProgressBar progressBar;
     @FXML
@@ -40,6 +44,9 @@ public class ASRController {
     @FXML
     private Pane gridPane;
 
+    /**
+     * BINR view
+     */
     @FXML
     private Rectangle box1;
     @FXML
@@ -49,17 +56,23 @@ public class ASRController {
     @FXML
     private TableView<Order> packedOrdersTableView;
 
-
+    // data bindings to view tables
     private ObservableList<Order> allOrdersObservableList;
     private ObservableList<Order> pickedOrdersObservableList;
     private ObservableList<Order> waitingOrdersObservableList;
     private ObservableList<Order> packedOrdersObservableList;
 
     private ASRCommunication asrCommunication;
+    private LocationAdvancer locationAdvancer;
+
     private static final int  CELL_SIZE = 160;
     private static final int GRID_HEIGHT = 800;
     private static final int GRID_WIDTH = 800;
     private static final int CELLS = 5;
+
+    private ObservableList<Order> allOrdersObservableList;
+    private ObservableList<Order> ordersToPickObservableList;
+
     /**
      * Initialize the screen by passing in the orders that will be displayed.
      * @param orders
@@ -69,7 +82,7 @@ public class ASRController {
         this.pickedOrdersObservableList = FXCollections.observableArrayList();
         this.waitingOrdersObservableList = FXCollections.observableArrayList();
         this.packedOrdersObservableList = FXCollections.observableArrayList();
-
+        this.ordersToPickObservableList = FXCollections.observableArrayList();
 
         Platform.runLater(() -> {
             this.allOrdersObservableList.addAll(orders);
@@ -80,24 +93,19 @@ public class ASRController {
 
         SerialPort port = SerialPort.getCommPorts()[0];
         asrCommunication = new ASRCommunication(port);
-
-        displayStorageItem(61);
+        locationAdvancer = new LocationAdvancer(ordersToPickObservableList, asrCommunication);
     }
 
     /**
      *  Display the storage items of the given order id to the screen.
      *  A line will connect all storage items based on the shortest path.
-      * @param orderId
      */
-    private void displayStorageItem(int orderId) {
-        DataServer ds = new DataServer();
+    private void displayLocations(ArrayList<Location> locations) {
 
-        var route = ds.getOrder(orderId).getRoute();
+        for (int i = 0; i < locations.size(); i++) {
+            var current = locations.get(i);
 
-        for (int i = 0; i < route.size(); i++) {
-            var current = route.get(i);
-
-            var itemLocation = mapToUIDimensions(current.getLocation());
+            var itemLocation = mapToUIDimensions(current);
 
             Circle circle = new Circle();
             circle.setRadius(20);
@@ -106,8 +114,8 @@ public class ASRController {
             circle.setLayoutY((itemLocation.getY()));
 
             // draw the line from current point to next point
-            if(i + 1 < route.size()) {
-                var nextItemLocation = mapToUIDimensions(route.get(i + 1).getLocation());
+            if(i + 1 < locations.size()) {
+                var nextItemLocation = mapToUIDimensions(locations.get(i + 1));
 
                 Line line = new Line(circle.getLayoutX(), circle.getLayoutY(), nextItemLocation.getX(), nextItemLocation.getY());
                 line.setStrokeWidth(5);
@@ -176,7 +184,7 @@ public class ASRController {
         buyerCol1.setMinWidth(200);
         buyerCol1.setCellValueFactory(new PropertyValueFactory<Order, String>("buyer"));
 
-        pickedOrdersTableView.setItems(pickedOrdersObservableList);
+        pickedOrdersTableView.setItems(ordersToPickObservableList);
         pickedOrdersTableView.getColumns().addAll(orderIdCol1, productIDCol1, buyerCol1);
 
         // Initialize the table with products waiting to be packed
@@ -231,30 +239,21 @@ public class ASRController {
         Order selectedItem = (Order)this.pickedOrdersTableView.getSelectionModel().getSelectedItem();
         Platform.runLater(() -> {
             allOrdersTableView.getItems().add(selectedItem);
+<<<<<<< HEAD
             this.pickedOrdersObservableList.removeIf(x -> x.getId() == selectedItem.getId());
             waitingOrdersObservableList.removeIf(x -> x.getId() == selectedItem.getId());
+=======
+            this.ordersToPickObservableList.removeIf(x -> x.getId() == selectedItem.getId());
+>>>>>>> Added event and listeners
         });
     }
 
     @FXML
     protected void handlePickOrderAction(ActionEvent event) {
-        for (Order order: pickedOrdersObservableList) {
-            displayStorageItem(order.getId());
+        if(locationAdvancer.advanceToNextStorageItem()) {
 
-            for (StorageItem storageItem: order.getRoute()) {
-                var location = storageItem.getLocation();
+        } else {
 
-                asrCommunication.gotoPos((byte)location.getX(), (byte)location.getY());
-                asrCommunication.NextItem();
-            }
-
-
-           // todo:
-            // send command to robot
-            // wait for ack
-            // update status
-            // continue until order picked
-            // repeat
         }
     }
 
@@ -262,18 +261,7 @@ public class ASRController {
          double progressBarValue = (double)(100/ maxItems * item) / 100;
          progressBar.setProgress(progressBarValue);
 
-         System.out.println(progressBarValue);
-         int count = 1;
-         for (var node: gridPane.getChildren()) {
-            if (node instanceof Line) {
-                count += 1;
-                if (item == count) {
-                    ((Line) node).setStroke(Color.RED);
-                }
-            }
-         }
 
-        Platform.runLater(() -> progressLabel.setText("Product Items Opgehaald "+ item + " van de "+ maxItems));
     }
 
     /**
@@ -283,5 +271,115 @@ public class ASRController {
      */
     private Location mapToUIDimensions(Location location) {
         return new Location(((location.getX() * CELL_SIZE)) + CELL_SIZE / 2, (GRID_HEIGHT  - (location.getY() * CELL_SIZE)) - CELL_SIZE / 2);
+    }
+
+    @Override
+    public void onPositionResponseReceived(boolean succeeded) {
+        var numberOfItems = locationAdvancer.getCurrentRouteItemsNumber();
+        var currentItem = locationAdvancer.getCurrentRoutePickedItem();
+
+        double progressBarValue = (double)(100 / numberOfItems * currentItem) / 100;
+        progressBar.setProgress(progressBarValue);
+        
+        if (locationAdvancer.advanceToNextStorageItem()) {
+            var currentRouteLocations = locationAdvancer.getCurrentRouteLocations();
+            displayLocations(currentRouteLocations);
+        }else {
+            System.out.println("no more orders");
+        }
+
+        System.out.println(progressBarValue);
+
+        int count = 1;
+        for (var node: gridPane.getChildren()) {
+            if (node instanceof Line) {
+                count += 1;
+                if (currentItem == count) {
+                    ((Line) node).setStroke(Color.RED);
+                }
+            }
+        }
+
+        Platform.runLater(() -> progressLabel.setText("Product Items Opgehaald "+ currentItem + " van de "+ numberOfItems));
+    }
+
+    @Override
+    public void onGetPositionReceived(byte x, byte y) {
+
+    }
+}
+
+class LocationAdvancer {
+    private ObservableList<Order> orders;
+    private ASRCommunication asrCommunication;
+    private ArrayList<Location> currentRoute;
+
+    private int currentOrderPickedIndex = 0;
+    private int currentStorageItemPickedIndex = 0;
+
+    public LocationAdvancer(ObservableList<Order> orders, ASRCommunication asrCommunication) {
+        this.orders = orders;
+        this.asrCommunication = asrCommunication;
+
+        if (orders.size() > 0) {
+            currentRoute = mapLocation(orders.get(0).getRoute());
+        }else {
+            System.out.println("There are no orders for picking.");
+        }
+    }
+
+    /**
+     * Advances to the next storage item, it will advance to the next order if all storage items of an order are picked .
+     *
+     * Returns true in case there are more storage items left.
+     * Returns false in case there are no more orders and storage items.
+      */
+    public boolean advanceToNextStorageItem() {
+        if (currentRoute.size() < currentStorageItemPickedIndex + 1) {
+            currentStorageItemPickedIndex += 1;
+            var nextLocation = currentRoute.get(currentStorageItemPickedIndex);
+            asrCommunication.gotoPos(nextLocation.getX(), nextLocation.getY());
+            return true;
+        }else {
+            System.out.println("No more elements in route");
+
+            if (!advanceToNextOrder()) {
+                // if there are no more orders return
+                return false;
+            } else {
+                // advance to first storage item of new order
+               return  advanceToNextStorageItem();
+            }
+        }
+    }
+    
+    public int getCurrentRouteItemsNumber() {
+        return currentRoute.size();
+    }
+
+    public int getCurrentRoutePickedItem() {
+        return currentStorageItemPickedIndex;
+    }
+
+    public ArrayList<Location> getCurrentRouteLocations() {
+        return currentRoute;
+    }
+
+    /**
+     * Advance to the next order if all storage items are picked of the current order
+     */
+    private boolean advanceToNextOrder() {
+        if (orders.size() < currentOrderPickedIndex + 1) {
+            currentOrderPickedIndex += 1;
+            currentRoute = mapLocation(orders.get(currentOrderPickedIndex).getRoute());
+            return true;
+        } else {
+            // no more orders
+            return false;
+        }
+    }
+
+    private ArrayList<Location> mapLocation(ArrayList<StorageItem> orders) {
+        return orders.stream().map(x -> x.getLocation()).collect(Collectors.toCollection(ArrayList::new));
     }
 }
