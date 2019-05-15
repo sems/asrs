@@ -1,21 +1,23 @@
+package Logic.Communication;
+
 import CRC8.CRC8;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
-
-import java.io.OutputStream;
 import java.util.ArrayList;
 
 /**
  * Wraps the communication to and from the ASR robot.
  */
 public class ASRCommunication implements SerialPortDataListener {
-    SerialPort comPort;
+    private SerialPort comPort;
+    private ASRInitiater asrInitiater;
 
     public ASRCommunication(SerialPort port) {
         comPort = port;
         comPort.openPort();
         comPort.addDataListener(this);
+        asrInitiater = new ASRInitiater();
         start();
     }
 
@@ -28,12 +30,29 @@ public class ASRCommunication implements SerialPortDataListener {
         r.gotoPos((byte) 3, (byte) 2);
     }
 
+    /**
+     * Subscribe to the events from the ASR.
+     * @param listener
+     */
+    public void subscribeToResponses(ASRListener listener) {
+        asrInitiater.addASRListener(listener);
+    }
+
+    /**
+     * Send the given packet to the robot.
+     * @param packet
+     */
     public void sendPacket(Packet packet) {
         byte[] bytes = packet.getBytes();
 
         comPort.writeBytes(bytes, bytes.length);
     }
 
+    /**
+     * Move the robot to a certain x,y position.
+     * @param x
+     * @param y
+     */
     public void gotoPos(int x, int y) {
         byte[] payload = { (byte) x, (byte) y };
         Packet packet = new Packet((byte) 11, payload);
@@ -41,44 +60,54 @@ public class ASRCommunication implements SerialPortDataListener {
         sendPacket(packet);
     }
 
-    public void pick() {
+    /**
+     * Pick the order at a certain position
+     */
+    public void pick(){
         Packet p = new Packet((byte) 13, new byte[0]);
-
         sendPacket(p);
     }
 
-    public void start() {
+    /**
+     * Send the start command to the robot.
+     */
+    public void start(){
         Packet p = new Packet((byte) 3, new byte[0]);
-
         sendPacket(p);
     }
 
-    public void stop() {
+    /**
+     * Send the stop command to the robot.
+     */
+    public void stop(){
         Packet p = new Packet((byte) 2, new byte[0]);
-
         sendPacket(p);
     }
 
-    public void getPos() {
+    /**
+     * Get the current position of the robot
+     */
+    public void getPos(){
         Packet p = new Packet((byte) 10, new byte[0]);
-
         sendPacket(p);
     }
 
-    public void unload() {
+    /**
+     * Unload the picked products.
+     */
+    public void unload(){
         Packet p = new Packet((byte) 14, new byte[0]);
-
         sendPacket(p);
     }
 
+    @Override
     public int getListeningEvents() {
-        return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
+        return 0;
     }
 
     public void serialEvent(SerialPortEvent event) {
         if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
             return;
-
         try {
             Thread.sleep(3000);
         } catch (Exception e) {
