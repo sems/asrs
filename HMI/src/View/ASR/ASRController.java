@@ -58,20 +58,17 @@ public class ASRController implements ASRListener {
 
     // data bindings to view tables
     private ObservableList<Order> allOrdersObservableList;
-    private ObservableList<Order> pickedOrdersObservableList;
     private ObservableList<Order> waitingOrdersObservableList;
     private ObservableList<Order> packedOrdersObservableList;
 
     private ASRCommunication asrCommunication;
     private LocationAdvancer locationAdvancer;
+    private ObservableList<Order> ordersToPickObservableList;
 
     private static final int  CELL_SIZE = 160;
     private static final int GRID_HEIGHT = 800;
     private static final int GRID_WIDTH = 800;
     private static final int CELLS = 5;
-
-    private ObservableList<Order> allOrdersObservableList;
-    private ObservableList<Order> ordersToPickObservableList;
 
     /**
      * Initialize the screen by passing in the orders that will be displayed.
@@ -79,7 +76,6 @@ public class ASRController implements ASRListener {
      */
     public void Initialize(ArrayList<Order> orders) {
         this.allOrdersObservableList = FXCollections.observableArrayList();
-        this.pickedOrdersObservableList = FXCollections.observableArrayList();
         this.waitingOrdersObservableList = FXCollections.observableArrayList();
         this.packedOrdersObservableList = FXCollections.observableArrayList();
         this.ordersToPickObservableList = FXCollections.observableArrayList();
@@ -239,12 +235,8 @@ public class ASRController implements ASRListener {
         Order selectedItem = (Order)this.pickedOrdersTableView.getSelectionModel().getSelectedItem();
         Platform.runLater(() -> {
             allOrdersTableView.getItems().add(selectedItem);
-<<<<<<< HEAD
-            this.pickedOrdersObservableList.removeIf(x -> x.getId() == selectedItem.getId());
             waitingOrdersObservableList.removeIf(x -> x.getId() == selectedItem.getId());
-=======
             this.ordersToPickObservableList.removeIf(x -> x.getId() == selectedItem.getId());
->>>>>>> Added event and listeners
         });
     }
 
@@ -255,13 +247,6 @@ public class ASRController implements ASRListener {
         } else {
 
         }
-    }
-
-    public void updateOrderItemsPickedStatus(int item, int maxItems) {
-         double progressBarValue = (double)(100/ maxItems * item) / 100;
-         progressBar.setProgress(progressBarValue);
-
-
     }
 
     /**
@@ -304,9 +289,7 @@ public class ASRController implements ASRListener {
     }
 
     @Override
-    public void onGetPositionReceived(byte x, byte y) {
-
-    }
+    public void onGetPositionReceived(byte x, byte y) { }
 }
 
 class LocationAdvancer {
@@ -352,7 +335,11 @@ class LocationAdvancer {
             }
         }
     }
-    
+
+    /**
+     * Get the count of items in the current route
+     * @return
+     */
     public int getCurrentRouteItemsNumber() {
         return currentRoute.size();
     }
@@ -361,6 +348,10 @@ class LocationAdvancer {
         return currentStorageItemPickedIndex;
     }
 
+    /**
+     * Get the current route locations
+     * @return
+     */
     public ArrayList<Location> getCurrentRouteLocations() {
         return currentRoute;
     }
