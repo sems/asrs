@@ -18,6 +18,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 
@@ -35,8 +36,20 @@ public class ASRController {
     @FXML
     private Pane gridPane;
 
+    @FXML
+    private Rectangle box1;
+    @FXML
+    private Rectangle box2;
+    @FXML
+    private TableView<Order> waitingOrdersTableView;
+    @FXML
+    private TableView<Order> packedOrdersTableView;
+
+
     private ObservableList<Order> allOrdersObservableList;
     private ObservableList<Order> pickedOrdersObservableList;
+    private ObservableList<Order> waitingOrdersObservableList;
+    private ObservableList<Order> packedOrdersObservableList;
 
     private static final int  CELL_SIZE = 160;
 
@@ -47,6 +60,9 @@ public class ASRController {
     public void Initialize(ArrayList<Order> orders) {
         this.allOrdersObservableList = FXCollections.observableArrayList();
         this.pickedOrdersObservableList = FXCollections.observableArrayList();
+        this.waitingOrdersObservableList = FXCollections.observableArrayList();
+        this.packedOrdersObservableList = FXCollections.observableArrayList();
+
 
         Platform.runLater(() -> {
             this.allOrdersObservableList.addAll(orders);
@@ -155,6 +171,42 @@ public class ASRController {
 
         pickedOrdersTableView.setItems(pickedOrdersObservableList);
         pickedOrdersTableView.getColumns().addAll(orderIdCol1, productIDCol1, buyerCol1);
+
+        // Initialize the table with products waiting to be packed
+        TableColumn orderIdCol2 = new TableColumn("Order ID");
+        orderIdCol2.setMinWidth(100);
+        orderIdCol2.setCellValueFactory(
+                new PropertyValueFactory<Order, String>("id"));
+
+        TableColumn productIDCol2 = new TableColumn("Order Items");
+        productIDCol2.setMinWidth(100);
+        productIDCol2.setCellValueFactory(
+                new PropertyValueFactory<Order, String>("orderItemsCount"));
+
+        TableColumn buyerCol2 = new TableColumn("Koper");
+        buyerCol2.setMinWidth(200);
+        buyerCol2.setCellValueFactory(new PropertyValueFactory<Order, String>("buyer"));
+
+        waitingOrdersTableView.setItems(waitingOrdersObservableList);
+        waitingOrdersTableView.getColumns().addAll(orderIdCol2, productIDCol2, buyerCol2);
+
+        // Initialize the table with products waiting to be packed
+        TableColumn orderIdCol3 = new TableColumn("Order ID");
+        orderIdCol3.setMinWidth(100);
+        orderIdCol3.setCellValueFactory(
+                new PropertyValueFactory<Order, String>("id"));
+
+        TableColumn productIDCol3 = new TableColumn("Order Items");
+        productIDCol3.setMinWidth(100);
+        productIDCol3.setCellValueFactory(
+                new PropertyValueFactory<Order, String>("orderItemsCount"));
+
+        TableColumn buyerCol3 = new TableColumn("Koper");
+        buyerCol3.setMinWidth(200);
+        buyerCol3.setCellValueFactory(new PropertyValueFactory<Order, String>("buyer"));
+
+        packedOrdersTableView.setItems(packedOrdersObservableList);
+        packedOrdersTableView.getColumns().addAll(orderIdCol3, productIDCol3, buyerCol3);
     }
 
     @FXML
@@ -162,6 +214,7 @@ public class ASRController {
         Order selectedItem = this.allOrdersTableView.getSelectionModel().getSelectedItem();
         Platform.runLater(() -> {
             pickedOrdersTableView.getItems().add(selectedItem);
+            waitingOrdersTableView.getItems().add(selectedItem);
             this.allOrdersObservableList.removeIf(x -> x.getId() == selectedItem.getId());
         });
     }
@@ -172,6 +225,7 @@ public class ASRController {
         Platform.runLater(() -> {
             allOrdersTableView.getItems().add(selectedItem);
             this.pickedOrdersObservableList.removeIf(x -> x.getId() == selectedItem.getId());
+            waitingOrdersObservableList.removeIf(x -> x.getId() == selectedItem.getId());
         });
     }
 
