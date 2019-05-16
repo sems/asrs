@@ -57,6 +57,18 @@ public class ASRController implements ASRListener {
     @FXML
     private TextArea logTextBox;
 
+    /**
+     * DEBUG screen
+     */
+    private Button gotoBtn;
+    private Button pickBtn;
+    private Button dropBtn;
+    private Button stopBtn;
+    private Button startBtn;
+    private Button getPosBtn;
+    private TextField xDebugTextField;
+    private TextField yDebugTextField;
+
     // data bindings to view tables
     private ObservableList<Order> allOrdersObservableList;
     private ObservableList<Order> waitingOrdersObservableList;
@@ -251,13 +263,37 @@ public class ASRController implements ASRListener {
         }
     }
 
-    /**
-     * This will map a location with the grid coords X and Y to the correct pixel location on the screen.
-     * @param location
-     * @return
-     */
-    private Location mapToUIDimensions(Location location) {
-        return new Location(((location.getX() * CELL_SIZE)) + CELL_SIZE / 2, (GRID_HEIGHT  - (location.getY() * CELL_SIZE)) - CELL_SIZE / 2);
+    @FXML
+    protected void handleGotoPosDebugButton() {
+        var x = Integer.parseInt(xDebugTextField.getText());
+        var y = Integer.parseInt(yDebugTextField.getText());
+
+        asrCommunication.gotoPos(x, y);
+    }
+
+    @FXML
+    protected void handlePickDebugButton() {
+        asrCommunication.pick();
+    }
+
+    @FXML
+    protected void handleDropDebugButton() {
+        asrCommunication.unload();
+    }
+
+    @FXML
+    protected void handleStartDebugButton() {
+        asrCommunication.start();
+    }
+
+    @FXML
+    protected void handleStopDebugButton() {
+        asrCommunication.stop();
+    }
+
+    @FXML
+    protected void handleGetPosButton() {
+        asrCommunication.getPos();
     }
 
     @Override
@@ -296,6 +332,15 @@ public class ASRController implements ASRListener {
     @Override
     public void onLog(String log) {
         Platform.runLater(() -> logTextBox.appendText(log + "\n"));
+    }
+
+    /**
+     * This will map a location with the grid coords X and Y to the correct pixel location on the screen.
+     * @param location
+     * @return
+     */
+    private Location mapToUIDimensions(Location location) {
+        return new Location(((location.getX() * CELL_SIZE)) + CELL_SIZE / 2, (GRID_HEIGHT  - (location.getY() * CELL_SIZE)) - CELL_SIZE / 2);
     }
 }
 
