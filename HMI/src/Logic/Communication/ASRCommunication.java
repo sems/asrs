@@ -16,6 +16,7 @@ public class ASRCommunication implements SerialPortDataListener {
     public ASRCommunication(SerialPort port) {
         comPort = port;
         comPort.addDataListener(this);
+        comPort.setBaudRate(115200);
         comPort.openPort();
         asrInitiater = new ASRInitiater();
 
