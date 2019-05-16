@@ -3,6 +3,7 @@ package View.ASR;
 import Data.Database.DataServer;
 import Logic.Communication.ASRCommunication;
 import Logic.Communication.ASRListener;
+import Logic.Communication.ErrorCode;
 import Logic.Location;
 import Logic.Order;
 import Logic.StorageItem;
@@ -12,10 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -56,6 +54,9 @@ public class ASRController implements ASRListener {
     @FXML
     private TableView<Order> packedOrdersTableView;
 
+    @FXML
+    private TextArea logTextBox;
+
     // data bindings to view tables
     private ObservableList<Order> allOrdersObservableList;
     private ObservableList<Order> waitingOrdersObservableList;
@@ -89,6 +90,7 @@ public class ASRController implements ASRListener {
 
         SerialPort port = SerialPort.getCommPorts()[0];
         asrCommunication = new ASRCommunication(port);
+        asrCommunication.subscribeToResponses(this);
         locationAdvancer = new LocationAdvancer(ordersToPickObservableList, asrCommunication);
     }
 
@@ -105,7 +107,7 @@ public class ASRController implements ASRListener {
 
             Circle circle = new Circle();
             circle.setRadius(20);
-            circle.setStyle("black");
+            circle.setFill(Color.BLACK);
             circle.setLayoutX((itemLocation.getX()));
             circle.setLayoutY((itemLocation.getY()));
 
@@ -259,7 +261,7 @@ public class ASRController implements ASRListener {
     }
 
     @Override
-    public void onPositionResponseReceived(boolean succeeded) {
+    public void onPositionResponseReceived(ErrorCode errorCode) {
         var numberOfItems = locationAdvancer.getCurrentRouteItemsNumber();
         var currentItem = locationAdvancer.getCurrentRoutePickedItem();
 
@@ -290,6 +292,11 @@ public class ASRController implements ASRListener {
 
     @Override
     public void onGetPositionReceived(byte x, byte y) { }
+
+    @Override
+    public void onLog(String log) {
+        Platform.runLater(() -> logTextBox.appendText(log + "\n"));
+    }
 }
 
 class LocationAdvancer {
