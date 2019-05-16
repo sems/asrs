@@ -4,4 +4,5 @@ package Logic.Communication;
 public interface ASRListener {
     void onPositionResponseReceived(ErrorCode ec);
     void onGetPositionReceived(byte x, byte y);
+    void onLog(String log);
 }

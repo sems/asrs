@@ -13,10 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -57,6 +54,21 @@ public class ASRController implements ASRListener {
     @FXML
     private TableView<Order> packedOrdersTableView;
 
+    @FXML
+    private TextArea logTextBox;
+
+    /**
+     * DEBUG screen
+     */
+    private Button gotoBtn;
+    private Button pickBtn;
+    private Button dropBtn;
+    private Button stopBtn;
+    private Button startBtn;
+    private Button getPosBtn;
+    private TextField xDebugTextField;
+    private TextField yDebugTextField;
+
     // data bindings to view tables
     private ObservableList<Order> allOrdersObservableList;
     private ObservableList<Order> waitingOrdersObservableList;
@@ -90,6 +102,7 @@ public class ASRController implements ASRListener {
 
         SerialPort port = SerialPort.getCommPorts()[0];
         asrCommunication = new ASRCommunication(port);
+        asrCommunication.subscribeToResponses(this);
         locationAdvancer = new LocationAdvancer(ordersToPickObservableList, asrCommunication);
     }
 
@@ -106,7 +119,7 @@ public class ASRController implements ASRListener {
 
             Circle circle = new Circle();
             circle.setRadius(20);
-            circle.setStyle("black");
+            circle.setFill(Color.BLACK);
             circle.setLayoutX((itemLocation.getX()));
             circle.setLayoutY((itemLocation.getY()));
 
@@ -250,17 +263,42 @@ public class ASRController implements ASRListener {
         }
     }
 
-    /**
-     * This will map a location with the grid coords X and Y to the correct pixel location on the screen.
-     * @param location
-     * @return
-     */
-    private Location mapToUIDimensions(Location location) {
-        return new Location(((location.getX() * CELL_SIZE)) + CELL_SIZE / 2, (GRID_HEIGHT  - (location.getY() * CELL_SIZE)) - CELL_SIZE / 2);
+    @FXML
+    protected void handleGotoPosDebugButton() {
+        var x = Integer.parseInt(xDebugTextField.getText());
+        var y = Integer.parseInt(yDebugTextField.getText());
+
+        asrCommunication.gotoPos(x, y);
+    }
+
+    @FXML
+    protected void handlePickDebugButton() {
+        asrCommunication.pick();
+    }
+
+    @FXML
+    protected void handleDropDebugButton() {
+        asrCommunication.unload();
+    }
+
+    @FXML
+    protected void handleStartDebugButton() {
+        asrCommunication.start();
+    }
+
+    @FXML
+    protected void handleStopDebugButton() {
+        asrCommunication.stop();
+    }
+
+    @FXML
+    protected void handleGetPosButton() {
+        asrCommunication.getPos();
     }
 
     @Override
-    public void onPositionResponseReceived(ErrorCode ec) {
+
+    public void onPositionResponseReceived(ErrorCode errorCode) {
         var numberOfItems = locationAdvancer.getCurrentRouteItemsNumber();
         var currentItem = locationAdvancer.getCurrentRoutePickedItem();
 
@@ -291,6 +329,20 @@ public class ASRController implements ASRListener {
 
     @Override
     public void onGetPositionReceived(byte x, byte y) { }
+
+    @Override
+    public void onLog(String log) {
+        Platform.runLater(() -> logTextBox.appendText(log + "\n"));
+    }
+
+    /**
+     * This will map a location with the grid coords X and Y to the correct pixel location on the screen.
+     * @param location
+     * @return
+     */
+    private Location mapToUIDimensions(Location location) {
+        return new Location(((location.getX() * CELL_SIZE)) + CELL_SIZE / 2, (GRID_HEIGHT  - (location.getY() * CELL_SIZE)) - CELL_SIZE / 2);
+    }
 }
 
 class LocationAdvancer {
