@@ -61,10 +61,6 @@ public class OrderItem {
                 name.equals(orderItem.name);
     }
 
-    @Override
-    public int hashCode() {
-        return 0;
-    }
 
     @Override
     public String toString() {
