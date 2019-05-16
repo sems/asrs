@@ -111,6 +111,32 @@ public class ASRCommunication implements SerialPortDataListener {
         sendPacket(p);
     }
 
+    private ErrorCode getErrorCode(byte er){
+        if(er == 0){
+            return ErrorCode.SUCCESS;
+        }
+        if(er == 1){
+            return ErrorCode.UNKNOWN;
+        }
+        if(er == 2){
+            return ErrorCode.OUTOFBOUND;
+        }
+        if(er == 3){
+            return ErrorCode.NOSPACE;
+        }
+        if(er == 4){
+            return ErrorCode.STOPPED;
+        }
+        if(er == 5){
+            return ErrorCode.CHECKSUM;
+        }
+        if(er == 6){
+            return ErrorCode.SIZE;
+        }
+
+        return ErrorCode.UNKNOWN;
+    }
+
     @Override
     public int getListeningEvents() {
         return 0;
@@ -228,8 +254,7 @@ public class ASRCommunication implements SerialPortDataListener {
                     System.out.println("Response to getPos (110)");
                     if (size == 2) {
                         System.out.println("Asr is at position x: " + payload[0] + ", y: " + payload[1]);
-
-                        // TODO: add application call
+                        asrInitiater.onGetPositionReceived(payload[0], payload[1]);
                     } else {
                         System.err.println("Size differs from expected");
                     }
@@ -238,12 +263,13 @@ public class ASRCommunication implements SerialPortDataListener {
                 // gotoPos response 111
                 if (commandId == 111) {
                     if (size == 1) {
-                        if (payload[0] == 0) {
+                        ErrorCode errorCode = getErrorCode(payload[0]);
+                        if (errorCode == ErrorCode.SUCCESS) {
                             System.out.println("GotoPos success");
-
-                            // TODO: Add application call
+                            asrInitiater.onPositionResponseReceived(ErrorCode.SUCCESS);
                         } else {
                             System.out.println("GotoPos went wrong");
+                            asrInitiater.onPositionResponseReceived(errorCode);
                         }
                     } else {
                         System.err.println("size differs from expected");
@@ -252,7 +278,8 @@ public class ASRCommunication implements SerialPortDataListener {
 
                 if (commandId == 113) {
                     if (size == 1) {
-                        if (payload[0] == 0) {
+                        ErrorCode ec = getErrorCode(payload[0]);
+                        if (ec == ErrorCode.SUCCESS) {
                             System.out.println("Pick success");
 
                             // TODO: Add application call
@@ -267,7 +294,10 @@ public class ASRCommunication implements SerialPortDataListener {
                 if (commandId == 114) {
                     System.out.println("Response to unload (114)");
                     if (size == 1) {
-                        System.out.println("Response is correct");
+                        ErrorCode ec = getErrorCode(payload[0]);
+                        if(ec == ErrorCode.SUCCESS) {
+                            System.out.println("Response is correct");
+                        }
 
                         // TODO: Add Application call
                     } else {
