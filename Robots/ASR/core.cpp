@@ -2,7 +2,7 @@
 #include "packet.hpp"
 #include "communication.hpp"
 
-Core::Core(Communication &c) : communication(c), logger(c), started(false){
+Core::Core(Communication &c) : communication(c), logger(c), started(false), longRunningCommandInProgress(false){
 
 }
 

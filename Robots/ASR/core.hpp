@@ -7,6 +7,7 @@
 #include "logger.hpp"
 #include "commands.hpp"
 #include "packet.hpp"
+#include "movement.hpp"
 class Communication;
 
 
@@ -27,6 +28,7 @@ private:
         CommandInfo(UNLOAD_RX, unloadCommand)
     };
 public:
+	Movement movement;
 	// Commands should check and update this variable
 	// and should send an error if a long running command is already in progress
 	bool longRunningCommandInProgress;
