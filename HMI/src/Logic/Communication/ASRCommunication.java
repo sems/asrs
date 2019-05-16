@@ -22,7 +22,7 @@ public class ASRCommunication implements SerialPortDataListener {
 
         try {
             Thread.sleep(5000);
-            //start();
+            start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -112,26 +112,26 @@ public class ASRCommunication implements SerialPortDataListener {
         sendPacket(p);
     }
 
-    private ErrorCode getErrorCode(byte er){
-        if(er == 0){
+    private ErrorCode getErrorCode(byte er) {
+        if (er == 0) {
             return ErrorCode.SUCCESS;
         }
-        if(er == 1){
+        if (er == 1) {
             return ErrorCode.UNKNOWN;
         }
-        if(er == 2){
+        if (er == 2) {
             return ErrorCode.OUTOFBOUND;
         }
-        if(er == 3){
+        if (er == 3) {
             return ErrorCode.NOSPACE;
         }
-        if(er == 4){
+        if (er == 4) {
             return ErrorCode.STOPPED;
         }
-        if(er == 5){
+        if (er == 5) {
             return ErrorCode.CHECKSUM;
         }
-        if(er == 6){
+        if (er == 6) {
             return ErrorCode.SIZE;
         }
 
@@ -139,7 +139,9 @@ public class ASRCommunication implements SerialPortDataListener {
     }
 
     @Override
-    public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_AVAILABLE; }
+    public int getListeningEvents() {
+        return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
+    }
 
     public void serialEvent(SerialPortEvent event) {
         if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
@@ -314,7 +316,7 @@ public class ASRCommunication implements SerialPortDataListener {
                         System.out.println("Unload Response: " + ec);
 
                         // TODO: Add Application call
-                        if(ec == ErrorCode.SUCCESS) {
+                        if (ec == ErrorCode.SUCCESS) {
                             asrInitiater.onLog("Response is correct");
                         }
                     } else {
