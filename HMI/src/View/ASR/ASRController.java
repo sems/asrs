@@ -297,6 +297,7 @@ public class ASRController implements ASRListener {
     }
 
     @Override
+
     public void onPositionResponseReceived(ErrorCode errorCode) {
         var numberOfItems = locationAdvancer.getCurrentRouteItemsNumber();
         var currentItem = locationAdvancer.getCurrentRoutePickedItem();

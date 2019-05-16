@@ -15,13 +15,13 @@ public class ASRCommunication implements SerialPortDataListener {
 
     public ASRCommunication(SerialPort port) {
         comPort = port;
-        comPort.openPort();
         comPort.addDataListener(this);
+        comPort.openPort();
         asrInitiater = new ASRInitiater();
 
         try {
             Thread.sleep(5000);
-            start();
+            //start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -138,9 +138,7 @@ public class ASRCommunication implements SerialPortDataListener {
     }
 
     @Override
-    public int getListeningEvents() {
-        return 0;
-    }
+    public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_AVAILABLE; }
 
     public void serialEvent(SerialPortEvent event) {
         if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
@@ -311,8 +309,11 @@ public class ASRCommunication implements SerialPortDataListener {
                     asrInitiater.onLog("Response to unload (114)");
                     if (size == 1) {
                         ErrorCode ec = getErrorCode(payload[0]);
+
+                        System.out.println("Unload Response: " + ec);
+
+                        // TODO: Add Application call
                         if(ec == ErrorCode.SUCCESS) {
-                            System.out.println("Response is correct");
                             asrInitiater.onLog("Response is correct");
                         }
                     } else {
