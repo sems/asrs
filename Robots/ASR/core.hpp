@@ -5,7 +5,8 @@
 #include "commandInfo.hpp"
 #include "status.hpp"
 #include "logger.hpp"
-
+#include "commands.hpp"
+#include "packet.hpp"
 class Communication;
 
 
@@ -13,16 +14,22 @@ class Communication;
 class Core
 {
 private:
-    static const int COMMAND_COUNT = 1;
+    static const int COMMAND_COUNT = 7;
 
     // This array contains the commands. once a packet is received, the appropriate command will be looked up here
     CommandInfo commands[COMMAND_COUNT] = {
-        CommandInfo(1,false, nullptr)
+        CommandInfo(STATUS_RX, statusCommand),
+        CommandInfo(STOP_RX, stopCommand),
+        CommandInfo(START_RX, startCommand),
+        CommandInfo(GET_POSITION_RX, getPositionCommand),
+        CommandInfo(GOTO_POSITION_RX, gotopositionCommand),
+        CommandInfo(PICK_RX, pickCommand),
+        CommandInfo(UNLOAD_RX, unloadCommand)
     };
-    // Commands should check and update this variable
-    // and should send an error if a long running command is already in progress
-    bool longRunningCommandInProgress;
 public:
+	// Commands should check and update this variable
+	// and should send an error if a long running command is already in progress
+	bool longRunningCommandInProgress;
     Communication &communication;
     Core(Communication &communcation);
 	bool started;
