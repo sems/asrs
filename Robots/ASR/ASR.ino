@@ -1,7 +1,11 @@
+#define LOGGING;
+
 #include "Arduino.h"
 #include "packet.hpp"
 #include "communication.hpp"
 #include "core.hpp"
+
+
 
 Communication communication;
 Core core(communication);

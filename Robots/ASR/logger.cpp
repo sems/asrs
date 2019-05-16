@@ -37,8 +37,5 @@ void Logger::logError(const char *errorMessage)
 }
 
 void Logger::SendLogPacket(char *message){
-    Packet *packet = Packet::createLogPacket(message);
-	
-    this->communication.sendPacket(packet);
-    delete packet;
+    this->communication.sendLogPacket(message);
 }

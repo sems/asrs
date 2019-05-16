@@ -6,10 +6,10 @@
 static const int PAYLOAD_SIZE_OFFSET = 1;
 static const int COMMAND_ID_OFFSET = 2;
 
-// CommandId + payload size + CRC16
+// CommandId + payload size + CRC8
 static const int FIELDS_SIZE = 3;
 
-static const byte INFO_TX_COMMAND_ID = 104;
+
 
 Packet::Packet(byte *raw)
 {
@@ -24,7 +24,7 @@ Packet::Packet(byte commandId, byte payloadLength, byte *payload)
 {
     this->CommandId = commandId;
     this->PayloadSize = payloadLength;
-	this->payload = payload;
+	
 
     byte *raw = new byte[PayloadSize + FIELDS_SIZE];
     raw[0] = payloadLength;
@@ -35,18 +35,11 @@ Packet::Packet(byte commandId, byte payloadLength, byte *payload)
     }
 	this->crc8 = computeCrc8(raw, PayloadSize + 2);
 	raw[COMMAND_ID_OFFSET + PayloadSize] = this->crc8;
+	this->payload = raw + 2;
 	this->Raw = raw;
 }
 
-Packet* Packet::createLogPacket(char *message)
-{
-    return new Packet(INFO_TX_COMMAND_ID, strlen(message),reinterpret_cast<byte*>(message));
-}
 
-Packet* Packet::createStatusPacket(Status status) 
-{
-	return new Packet(INFO_TX_COMMAND_ID, 1, reinterpret_cast<byte*>(&status));
-}
 
 bool Packet::validateCrc8()
 {

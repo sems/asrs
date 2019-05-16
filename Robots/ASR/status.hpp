@@ -3,6 +3,20 @@
 
 #include "Arduino.h"
 
+enum Direction : byte {
+	Left = 0,
+	Right = 1
+};
+
+enum ErrorCode : byte {
+	Success = 0,
+	Negative = 1,
+	PositionOutOfBound = 2,
+	NoMoreLoadingSpace = 3,
+	NotStarted = 4,
+	LongRunningCommandInProgress = 5
+};
+
 enum Status : byte {
 	Stopped = 0,
 	Idle = 1,

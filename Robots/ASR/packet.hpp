@@ -4,6 +4,30 @@
 #include "Arduino.h"
 #include "status.hpp"
 
+#define STATUS_RX 1
+#define STATUS_TX 101
+
+#define STOP_RX 2
+#define STOP_TX 102
+
+#define START_RX 3
+#define START_TX 103
+
+#define INFO_TX 104
+
+#define GET_POSITION_RX 10
+#define GET_POSITION_TX 110
+
+#define GOTO_POSITION_RX 11
+#define GOTO_POSITION_TX 111
+
+#define PICK_RX 13
+#define PICK_TX 113
+
+#define UNLOAD_RX 14
+#define UNLOAD_TX 114
+
+
 
 // The communication with the HMI relies on this packet format
 class Packet {
@@ -32,6 +56,13 @@ class Packet {
     static Packet* createLogPacket(char *message);
 
 	// Returns an instance of a status packet
-	static Packet* createStatusPacket(Status status);
+	static Packet* createStatusPacket(byte commandId,Status status);
+
+	static Packet* createPosPacket(byte commandId, byte x, byte y);
+	
+	static Packet* createErrorPacket(byte commandId, ErrorCode errorCode);
+	
+	// BIN'r
+	//static Packet* createDirectionPacket(Direction direction);
 };
 #endif
