@@ -3,6 +3,7 @@ package View.ASR;
 import Data.Database.DataServer;
 import Logic.Communication.ASRCommunication;
 import Logic.Communication.ASRListener;
+import Logic.Communication.ErrorCode;
 import Logic.Location;
 import Logic.Order;
 import Logic.StorageItem;
@@ -259,7 +260,7 @@ public class ASRController implements ASRListener {
     }
 
     @Override
-    public void onPositionResponseReceived(boolean succeeded) {
+    public void onPositionResponseReceived(ErrorCode ec) {
         var numberOfItems = locationAdvancer.getCurrentRouteItemsNumber();
         var currentItem = locationAdvancer.getCurrentRoutePickedItem();
 
