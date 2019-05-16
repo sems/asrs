@@ -22,4 +22,8 @@ public class ASRInitiater {
             hl.onGetPositionReceived(x, y);
     }
 
+    void onLog(String log) {
+        for (ASRListener hl : asrListeners)
+            hl.onLog(log);
+    }
 }

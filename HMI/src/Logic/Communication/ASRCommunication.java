@@ -161,27 +161,21 @@ public class ASRCommunication implements SerialPortDataListener {
             System.out.println("Payload size: " + size);
             System.out.println("Command Id: " + commandId);
 
+            asrInitiater.onLog("Payload size: " + size + " Command Id: " + commandId);
+
             byte[] payload = new byte[size];
 
             int timeout = 100;
 
             while (comPort.bytesAvailable() < size + 1) {
                 try {
-                    // System.out.println("Not all received - " + comPort.bytesAvailable() + "/ " +
-                    // (size + 1) + " bytes");
                     Thread.sleep(timeout);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
 
-            // System.out.println("All " + (size + 1) + " bytes received");
             comPort.readBytes(payload, size);
-
-            // System.out.println("Payload content:");
-            // for (int i = 0; i < size; i++) {
-            // System.out.println(i + 1 + ": " + payload[i]);
-            // }
 
             byte checkBuffer[] = new byte[1];
             comPort.readBytes(checkBuffer, 1);
@@ -200,62 +194,78 @@ public class ASRCommunication implements SerialPortDataListener {
 
             if (packetChecksum == calcChecksum) {
                 System.out.println("Packet is valid");
+                asrInitiater.onLog("Packet is valid");
 
                 if (commandId == 101) {
                     System.out.println("Response to GetStatus (101)");
+                    asrInitiater.onLog("Response to GetStatus (101)");
                     if (size == 1) {
                         System.out.println("Status " + payload[0]);
+
                         System.out.println("Response is correct");
-                        // TODO: Add application call
+                        asrInitiater.onLog("Response to GetStatus (101)");
                     } else {
                         System.err.println("Size differs from expected");
+                        asrInitiater.onLog("Size differs from expected");
                     }
                 }
 
                 if (commandId == 102) {
                     System.out.println("Response to Stop (102)");
+                    asrInitiater.onLog("Response to Stop (102)");
                     if (size == 1) {
                         System.out.println("Response is correct");
+                        asrInitiater.onLog("Response is correct");
                         // TODO: Add application call
                     }
                 }
 
                 if (commandId == 103) {
                     System.out.println("Response to Start (103)");
+                    asrInitiater.onLog("Response to Start (103)");
                     if (size == 1) {
                         System.out.println("Response is correct");
-
+                        asrInitiater.onLog("Response is correct");
                         // TODO: add application call
                     } else {
                         System.err.println("Size differs from expected");
+                        asrInitiater.onLog("Size differs from expected");
                     }
                 }
 
                 if (commandId == 104) {
                     System.out.println("Message response (104)");
+                    asrInitiater.onLog("Message response (104)");
                     if (size > 0) {
                         System.out.println("Response is correct");
+                        asrInitiater.onLog("Message response (104)");
 
-                        System.out.print("ASR: ");
+                        StringBuilder output = new StringBuilder("ASR: ");
 
                         for (byte c : payload) {
-                            System.out.print((char) c);
+                            output.append((char) c);
                         }
-                        System.out.print("\n");
-                        // TODO: add application call
+                        output.append("\n");
+
+                        System.out.println(output);
+                        asrInitiater.onLog(output.toString());
                     } else {
                         System.err.println("Size differs from expected");
+                        asrInitiater.onLog("Size differs from expected");
                     }
                 }
 
                 // getPos response 110
                 if (commandId == 110) {
                     System.out.println("Response to getPos (110)");
+                    asrInitiater.onLog("Response to getPos (110)");
                     if (size == 2) {
                         System.out.println("Asr is at position x: " + payload[0] + ", y: " + payload[1]);
+                        asrInitiater.onLog("Asr is at position x: " + payload[0] + ", y: " + payload[1]);
                         asrInitiater.onGetPositionReceived(payload[0], payload[1]);
                     } else {
                         System.err.println("Size differs from expected");
+                        asrInitiater.onLog("Size differs from expected");
                     }
                 }
 
@@ -265,13 +275,16 @@ public class ASRCommunication implements SerialPortDataListener {
                         ErrorCode errorCode = getErrorCode(payload[0]);
                         if (errorCode == ErrorCode.SUCCESS) {
                             System.out.println("GotoPos success");
+                            asrInitiater.onLog("GotoPos success");
                             asrInitiater.onPositionResponseReceived(ErrorCode.SUCCESS);
                         } else {
                             System.out.println("GotoPos went wrong");
+                            asrInitiater.onLog("GotoPos went wrong");
                             asrInitiater.onPositionResponseReceived(errorCode);
                         }
                     } else {
                         System.err.println("size differs from expected");
+                        asrInitiater.onLog("Size differs from expected");
                     }
                 }
 
@@ -280,36 +293,46 @@ public class ASRCommunication implements SerialPortDataListener {
                         ErrorCode ec = getErrorCode(payload[0]);
                         if (ec == ErrorCode.SUCCESS) {
                             System.out.println("Pick success");
-
+                            asrInitiater.onLog("Pick success");
                             // TODO: Add application call
                         } else {
                             System.out.println("Pick went wrong");
+                            asrInitiater.onLog("Pick went wrong");
                         }
                     } else {
                         System.err.println("size differs from expected");
+                        asrInitiater.onLog("size differs from expected");
                     }
                 }
 
                 if (commandId == 114) {
                     System.out.println("Response to unload (114)");
+                    asrInitiater.onLog("Response to unload (114)");
                     if (size == 1) {
                         ErrorCode ec = getErrorCode(payload[0]);
 
                         System.out.println("Unload Response: " + ec);
 
                         // TODO: Add Application call
+                        if(ec == ErrorCode.SUCCESS) {
+                            asrInitiater.onLog("Response is correct");
+                        }
                     } else {
                         System.err.println("size differs from expected");
+                        asrInitiater.onLog("size differs from expected");
                     }
                 }
 
             } else {
                 System.err.println("Packet is invalid");
+                asrInitiater.onLog("Packet is invalid");
             }
 
             System.out.println("--= PACKET END =--");
+            asrInitiater.onLog("--= PACKET END =--");
 
             System.out.println("Bytes still available: " + comPort.bytesAvailable());
+            asrInitiater.onLog("Bytes still available: " + comPort.bytesAvailable());
         }
     }
 }
