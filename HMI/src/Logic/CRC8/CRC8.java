@@ -1,11 +1,11 @@
-package CRC8;
+package Logic.CRC8;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * CRC8-CCIT Algorithm
+ * Logic.CRC8-CCIT Algorithm
  *
  *    Width        = 8
  *    Poly         = 0x07
