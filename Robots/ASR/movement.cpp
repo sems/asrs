@@ -39,6 +39,10 @@ void Movement::moveXY(int x, int y)
     long positions[2];
     positions[0] = ccts_a(x, y);
     positions[1] = ccts_b(x, y);
+
+	stepper_A.setMaxSpeed(2000.0f);
+	stepper_B.setMaxSpeed(2000.0f);
+
     steppers1.moveTo(positions);
 }
 
@@ -65,16 +69,27 @@ void Movement::pick(int state)
 		stepper_Z.setMaxSpeed(1200.0); // Set Max Speed of Stepper
 		stepper_Z.setAcceleration(2000.0);
 		stepper_Z.move(-steps_item_width);
+		break;
 	case 1:
-		// TODO: Lift package
+		long positions[2];
+		positions[0] = stepper_A.currentPosition() - 300;
+		positions[1] = stepper_B.currentPosition() + 300;
+
+		stepper_A.setMaxSpeed(700.0f);
+		stepper_B.setMaxSpeed(700.0f);
+
+		steppers1.moveTo(positions);
+
+		break;
 	case 2:
 		stepper_Z.setMaxSpeed(1200.0); // Set Max Speed of Stepper
 		stepper_Z.setAcceleration(2000.0);
 		stepper_Z.move(steps_item_width);
+		picked++;
+		break;
 	default:
 		break;
 	}
-    picked++;
 }
 
 // Drops 1 item

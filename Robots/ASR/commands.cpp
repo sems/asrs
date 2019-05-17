@@ -100,6 +100,12 @@ void gotopositionCommand(Core& core, Communication& communication, Packet& packe
 
 const int maxPick = 4;
 
+bool runBoth(AccelStepper a, AccelStepper b) {
+	bool b_a = a.run();
+	bool b_b = b.run();
+	return b_a || b_a;
+}
+
 void pickCommand(Core& core, Communication& communication, Packet& packet)
 {
 	LOG_INFO("running pick command");
@@ -135,6 +141,8 @@ void pickCommand(Core& core, Communication& communication, Packet& packet)
 				}
 			}
 		}
+
+
 	}
 	else {
 		LOG_ERROR("Picker Full");
