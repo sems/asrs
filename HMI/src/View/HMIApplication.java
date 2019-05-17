@@ -1,8 +1,7 @@
-package View.ASR;
+package View;
 
 import Data.Database.DataServer;
 import javafx.application.Application;
-import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -31,7 +30,7 @@ public class HMIApplication extends Application {
             );
 
             Pane pane = loader.load();
-            ASRController controller = loader.getController();
+            HMIController controller = loader.getController();
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
             Scene scene = new Scene(pane, screenBounds.getWidth(), screenBounds.getHeight());
 

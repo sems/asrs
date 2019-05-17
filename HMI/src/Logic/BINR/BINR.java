@@ -8,13 +8,17 @@ import java.util.ArrayList;
  * BINR packs products in the most efficient box.
  */
 public class BINR {
+    private int leftBoxSize;
+    private int rightBoxSize;
     private Box leftBox;
     private Box rightBox;
     private ArrayList<Box> closedBoxes;
 
-    public BINR() {
-        leftBox = new Box(BoxType.Left, 100);
-        rightBox = new Box(BoxType.Right, 60);
+    public BINR(int leftBoxSize, int rightBoxSize) {
+        this.leftBoxSize = leftBoxSize;
+        this.rightBoxSize = rightBoxSize;
+        leftBox = new Box(BoxType.Left, leftBoxSize);
+        rightBox = new Box(BoxType.Right, rightBoxSize);
         closedBoxes = new ArrayList<>();
     }
 
@@ -77,12 +81,12 @@ public class BINR {
     private void closeRightBox() {
         rightBox.closeBox();
         closedBoxes.add(rightBox);
-        rightBox = new Box(BoxType.Right, 60);
+        rightBox = new Box(BoxType.Right, rightBoxSize);
     }
 
     private void closeLeftBox() {
         leftBox.closeBox();
         closedBoxes.add(leftBox);
-        leftBox = new Box(BoxType.Left, 100);
+        leftBox = new Box(BoxType.Left, leftBoxSize);
     }
 }

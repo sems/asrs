@@ -1,24 +1,23 @@
 package Logic.Communication;
 
-import CRC8.CRC8;
+import Logic.CRC8.CRC8;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
-import java.util.ArrayList;
 
 /**
  * Wraps the communication to and from the ASR robot.
  */
 public class ASRCommunication implements SerialPortDataListener {
     private SerialPort comPort;
-    private ASRInitiater asrInitiater;
+    private ASREvent asrEvent;
 
     public ASRCommunication(SerialPort port) {
         comPort = port;
         comPort.addDataListener(this);
         comPort.setBaudRate(115200);
         comPort.openPort();
-        asrInitiater = new ASRInitiater();
+        asrEvent = new ASREvent();
 
         try {
             Thread.sleep(5000);
@@ -44,8 +43,8 @@ public class ASRCommunication implements SerialPortDataListener {
      * 
      * @param listener
      */
-    public void subscribeToResponses(ASRListener listener) {
-        asrInitiater.addASRListener(listener);
+    public void subscribeToResponses(ASREventListener listener) {
+        asrEvent.addASRListener(listener);
     }
 
     /**
@@ -163,7 +162,7 @@ public class ASRCommunication implements SerialPortDataListener {
             System.out.println("Payload size: " + size);
             System.out.println("Command Id: " + commandId);
 
-            asrInitiater.onLog("Payload size: " + size + " Command Id: " + commandId);
+            asrEvent.onLog("Payload size: " + size + " Command Id: " + commandId);
 
             byte[] payload = new byte[size];
 
@@ -196,51 +195,49 @@ public class ASRCommunication implements SerialPortDataListener {
 
             if (packetChecksum == calcChecksum) {
                 System.out.println("Packet is valid");
-                asrInitiater.onLog("Packet is valid");
+                asrEvent.onLog("Packet is valid");
 
                 if (commandId == 101) {
                     System.out.println("Response to GetStatus (101)");
-                    asrInitiater.onLog("Response to GetStatus (101)");
+                    asrEvent.onLog("Response to GetStatus (101)");
                     if (size == 1) {
                         System.out.println("Status " + payload[0]);
 
                         System.out.println("Response is correct");
-                        asrInitiater.onLog("Response to GetStatus (101)");
+                        asrEvent.onLog("Response to GetStatus (101)");
                     } else {
                         System.err.println("Size differs from expected");
-                        asrInitiater.onLog("Size differs from expected");
+                        asrEvent.onLog("Size differs from expected");
                     }
                 }
 
                 if (commandId == 102) {
                     System.out.println("Response to Stop (102)");
-                    asrInitiater.onLog("Response to Stop (102)");
+                    asrEvent.onLog("Response to Stop (102)");
                     if (size == 1) {
                         System.out.println("Response is correct");
-                        asrInitiater.onLog("Response is correct");
-                        // TODO: Add application call
+                        asrEvent.onLog("Response is correct");
                     }
                 }
 
                 if (commandId == 103) {
                     System.out.println("Response to Start (103)");
-                    asrInitiater.onLog("Response to Start (103)");
+                    asrEvent.onLog("Response to Start (103)");
                     if (size == 1) {
                         System.out.println("Response is correct");
-                        asrInitiater.onLog("Response is correct");
-                        // TODO: add application call
+                        asrEvent.onLog("Response is correct");
                     } else {
                         System.err.println("Size differs from expected");
-                        asrInitiater.onLog("Size differs from expected");
+                        asrEvent.onLog("Size differs from expected");
                     }
                 }
 
                 if (commandId == 104) {
                     System.out.println("Message response (104)");
-                    asrInitiater.onLog("Message response (104)");
+                    asrEvent.onLog("Message response (104)");
                     if (size > 0) {
                         System.out.println("Response is correct");
-                        asrInitiater.onLog("Message response (104)");
+                        asrEvent.onLog("Message response (104)");
 
                         StringBuilder output = new StringBuilder("ASR: ");
 
@@ -250,24 +247,24 @@ public class ASRCommunication implements SerialPortDataListener {
                         output.append("\n");
 
                         System.out.println(output);
-                        asrInitiater.onLog(output.toString());
+                        asrEvent.onLog(output.toString());
                     } else {
                         System.err.println("Size differs from expected");
-                        asrInitiater.onLog("Size differs from expected");
+                        asrEvent.onLog("Size differs from expected");
                     }
                 }
 
                 // getPos response 110
                 if (commandId == 110) {
                     System.out.println("Response to getPos (110)");
-                    asrInitiater.onLog("Response to getPos (110)");
+                    asrEvent.onLog("Response to getPos (110)");
                     if (size == 2) {
                         System.out.println("Asr is at position x: " + payload[0] + ", y: " + payload[1]);
-                        asrInitiater.onLog("Asr is at position x: " + payload[0] + ", y: " + payload[1]);
-                        asrInitiater.onGetPositionReceived(payload[0], payload[1]);
+                        asrEvent.onLog("Asr is at position x: " + payload[0] + ", y: " + payload[1]);
+                        asrEvent.onGetPositionReceived(payload[0], payload[1]);
                     } else {
                         System.err.println("Size differs from expected");
-                        asrInitiater.onLog("Size differs from expected");
+                        asrEvent.onLog("Size differs from expected");
                     }
                 }
 
@@ -277,16 +274,16 @@ public class ASRCommunication implements SerialPortDataListener {
                         ErrorCode errorCode = getErrorCode(payload[0]);
                         if (errorCode == ErrorCode.SUCCESS) {
                             System.out.println("GotoPos success");
-                            asrInitiater.onLog("GotoPos success");
-                            asrInitiater.onPositionResponseReceived(ErrorCode.SUCCESS);
+                            asrEvent.onLog("GotoPos success");
+                            asrEvent.onPositionResponseReceived(ErrorCode.SUCCESS);
                         } else {
                             System.out.println("GotoPos went wrong");
-                            asrInitiater.onLog("GotoPos went wrong");
-                            asrInitiater.onPositionResponseReceived(errorCode);
+                            asrEvent.onLog("GotoPos went wrong");
+                            asrEvent.onPositionResponseReceived(errorCode);
                         }
                     } else {
                         System.err.println("size differs from expected");
-                        asrInitiater.onLog("Size differs from expected");
+                        asrEvent.onLog("Size differs from expected");
                     }
                 }
 
@@ -295,46 +292,46 @@ public class ASRCommunication implements SerialPortDataListener {
                         ErrorCode ec = getErrorCode(payload[0]);
                         if (ec == ErrorCode.SUCCESS) {
                             System.out.println("Pick success");
-                            asrInitiater.onLog("Pick success");
+                            asrEvent.onLog("Pick success");
                             // TODO: Add application call
                         } else {
                             System.out.println("Pick went wrong");
-                            asrInitiater.onLog("Pick went wrong");
+                            asrEvent.onLog("Pick went wrong");
                         }
                     } else {
                         System.err.println("size differs from expected");
-                        asrInitiater.onLog("size differs from expected");
+                        asrEvent.onLog("size differs from expected");
                     }
                 }
 
                 if (commandId == 114) {
                     System.out.println("Response to unload (114)");
-                    asrInitiater.onLog("Response to unload (114)");
+                    asrEvent.onLog("Response to unload (114)");
                     if (size == 1) {
                         ErrorCode ec = getErrorCode(payload[0]);
 
                         System.out.println("Unload Response: " + ec);
 
-                        // TODO: Add Application call
                         if (ec == ErrorCode.SUCCESS) {
-                            asrInitiater.onLog("Response is correct");
+                            asrEvent.onUnloadResponseReceived();
+                            asrEvent.onLog("Response is correct");
                         }
                     } else {
                         System.err.println("size differs from expected");
-                        asrInitiater.onLog("size differs from expected");
+                        asrEvent.onLog("size differs from expected");
                     }
                 }
 
             } else {
                 System.err.println("Packet is invalid");
-                asrInitiater.onLog("Packet is invalid");
+                asrEvent.onLog("Packet is invalid");
             }
 
             System.out.println("--= PACKET END =--");
-            asrInitiater.onLog("--= PACKET END =--");
+            asrEvent.onLog("--= PACKET END =--");
 
             System.out.println("Bytes still available: " + comPort.bytesAvailable());
-            asrInitiater.onLog("Bytes still available: " + comPort.bytesAvailable());
+            asrEvent.onLog("Bytes still available: " + comPort.bytesAvailable());
         }
     }
 }
