@@ -17,7 +17,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="View.ASR.ASRController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="View.HMIController">
   <children>
     <TabPane prefHeight="398.0" prefWidth="656.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
       <tabs>
@@ -133,7 +133,7 @@
                   <items>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                       <children>
-                        <SplitPane dividerPositions="0.3289760348583878, 0.6688453159041394" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
+                        <SplitPane dividerPositions="0.3289760348583878, 0.6710239651416122" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
                           <items>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                               <children>
@@ -152,32 +152,14 @@
                           <items>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                               <children>
-                                <SplitPane dividerPositions="0.5010989010989011" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
+                                <SplitPane dividerPositions="" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
                                   <items>
-                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
-                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                                      <children>
-                                        <Rectangle fx:id="box1" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="200.0" layoutX="70.0" stroke="BLACK" strokeType="INSIDE" width="200.0" AnchorPane.bottomAnchor="1.0" />
-                                      </children>
-                                    </AnchorPane>
+                                    <AnchorPane id="bannl" fx:id="leftBoxPane" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
                                   </items>
                                 </SplitPane>
                               </children>
                             </AnchorPane>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                              <children>
-                                <SplitPane dividerPositions="0.5010989010989011" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
-                                  <items>
-                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
-                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                                      <children>
-                                        <Rectangle fx:id="box2" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="200.0" layoutX="69.0" stroke="BLACK" strokeType="INSIDE" width="200.0" AnchorPane.bottomAnchor="1.0" />
-                                      </children>
-                                    </AnchorPane>
-                                  </items>
-                                </SplitPane>
-                              </children>
-                            </AnchorPane>
+                            <AnchorPane fx:id="rightBoxPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
                           </items>
                         </SplitPane>
                       </children>
@@ -188,27 +170,31 @@
             </AnchorPane>
           </content>
         </Tab>
-        <Tab text="Log">
-          <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-              <children>
-                <TextArea fx:id="logTextBox" prefWidth="200.0" wrapText="true" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0" />
-              </children>
-            </AnchorPane>
-          </content>
-        </Tab>
         <Tab text="DEBUG">
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
-                <Button fx:id="gotoBtn" layoutX="39.0" layoutY="31.0" mnemonicParsing="false" onAction="#handleGotoPosDebugButton" prefHeight="45.0" prefWidth="339.0" text="GOTO" />
-                <Button fx:id="pickBtn" layoutX="39.0" layoutY="86.0" mnemonicParsing="false" onAction="#handlePickDebugButton" prefHeight="45.0" prefWidth="339.0" text="PICK" />
-                <Button fx:id="dropBtn" layoutX="39.0" layoutY="147.0" mnemonicParsing="false" onAction="#handleDropDebugButton" prefHeight="50.0" prefWidth="339.0" text="DROP" />
-                <TextField fx:id="xDebugTextField" layoutX="399.0" layoutY="30.0" prefHeight="45.0" prefWidth="200.0" />
-                <TextField fx:id="yDebugTextField" layoutX="623.0" layoutY="31.0" prefHeight="45.0" prefWidth="200.0" />
-                <Button fx:id="startBtn" layoutX="38.0" layoutY="209.0" mnemonicParsing="false" onAction="#handleStartDebugButton" prefHeight="50.0" prefWidth="339.0" text="START" />
-                <Button fx:id="stopBtn" layoutX="36.0" layoutY="273.0" mnemonicParsing="false" onAction="#handleStopDebugButton" prefHeight="50.0" prefWidth="339.0" text="STOP" />
-                <Button id="stopBtn" fx:id="getPosBtn" layoutX="33.0" layoutY="336.0" mnemonicParsing="false" onAction="#handleGetPosButton" prefHeight="50.0" prefWidth="344.0" text="Get pos" />
+                <SplitPane dividerPositions="0.5523138832997988" focusTraversable="true" prefHeight="445.0" prefWidth="996.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
+                  <items>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                      <children>
+                        <TextField fx:id="yDebugTextField" layoutX="463.0" layoutY="14.0" prefHeight="45.0" prefWidth="69.0" />
+                      </children>
+                    </AnchorPane>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                      <children>
+                        <TextArea fx:id="logTextBox" prefHeight="465.0" prefWidth="996.0" wrapText="true" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0" />
+                      </children>
+                    </AnchorPane>
+                  </items>
+                </SplitPane>
+                <TextField fx:id="xDebugTextField" layoutX="368.0" layoutY="14.0" prefHeight="45.0" prefWidth="69.0" />
+                <Button fx:id="gotoBtn" layoutX="17.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleGotoPosDebugButton" prefHeight="45.0" prefWidth="339.0" text="GOTO" />
+                <Button fx:id="pickBtn" layoutX="17.0" layoutY="69.0" mnemonicParsing="false" onAction="#handlePickDebugButton" prefHeight="45.0" prefWidth="339.0" text="PICK" />
+                <Button fx:id="dropBtn" layoutX="17.0" layoutY="132.0" mnemonicParsing="false" onAction="#handleDropDebugButton" prefHeight="50.0" prefWidth="339.0" text="DROP" />
+                <Button fx:id="startBtn" layoutX="16.0" layoutY="195.0" mnemonicParsing="false" onAction="#handleStartDebugButton" prefHeight="50.0" prefWidth="339.0" text="START" />
+                <Button fx:id="stopBtn" layoutX="14.0" layoutY="259.0" mnemonicParsing="false" onAction="#handleStopDebugButton" prefHeight="50.0" prefWidth="339.0" text="STOP" />
+                <Button id="stopBtn" fx:id="getPosBtn" layoutX="11.0" layoutY="322.0" mnemonicParsing="false" onAction="#handleGetPosButton" prefHeight="50.0" prefWidth="344.0" text="Get pos" />
               </children>
             </AnchorPane>
           </content>
