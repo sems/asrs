@@ -17,8 +17,8 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" exported="" name="com.fazecast:jSerialComm:2.5.1" level="project" />
-    <orderEntry type="library" exported="" name="javafx-swt" level="project" />
+    <orderEntry type="library" name="com.fazecast:jSerialComm:2.5.1" level="project" />
+    <orderEntry type="library" name="javafx-swt" level="project" />
     <orderEntry type="library" name="com.itextpdf:itextpdf:5.5.13" level="project" />
   </component>
 </module>
