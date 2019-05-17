@@ -121,7 +121,8 @@ void pickCommand(Core& core, Communication& communication, Packet& packet)
 	if (core.movement.picked < maxPick) {
 		int state = 0;
 		while (state < 3) {
-			core.movement.pick(state);
+			// Sends current state and increments it
+			core.movement.pick(state++);
 
 			while (core.movement.stepper_Z.run() || core.movement.steppers1.run())
 			{
@@ -139,8 +140,6 @@ void pickCommand(Core& core, Communication& communication, Packet& packet)
 		LOG_ERROR("Picker Full");
 		communication.sendErrorPacket(PICK_TX, ErrorCode::NoMoreLoadingSpace);
 	}
-
-	// TODO Jim doe je ding
 
 	communication.sendErrorPacket(PICK_TX, ErrorCode::Success);
 	core.longRunningCommandInProgress = false;
