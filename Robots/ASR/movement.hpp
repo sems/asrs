@@ -51,7 +51,7 @@ public:
 	int ccts_b(int x, int y);
 
 	//picks up an item with the Z-axis (fork thingy)
-	void pick();
+	void pick(int state);
 
 	//drops an item with the Z-axis (fork thingy)
 	void drop();

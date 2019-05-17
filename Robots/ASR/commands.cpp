@@ -98,21 +98,47 @@ void gotopositionCommand(Core& core, Communication& communication, Packet& packe
 	core.longRunningCommandInProgress = false;
 }
 
+const int maxPick = 4;
+
 void pickCommand(Core& core, Communication& communication, Packet& packet)
 {
 	LOG_INFO("running pick command");
 	if (!core.started)
 	{
-		communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::NotStarted);
+		communication.sendErrorPacket(PICK_TX, ErrorCode::NotStarted);
 		return;
 	}
 
 	if (core.longRunningCommandInProgress)
 	{
-		communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::LongRunningCommandInProgress);
+		communication.sendErrorPacket(PICK_TX, ErrorCode::LongRunningCommandInProgress);
 		return;
 	}
+
 	core.longRunningCommandInProgress = true;
+
+	//Only run steps if there is room on the picker
+	if (core.movement.picked < maxPick) {
+		int state = 0;
+		while (state < 3) {
+			core.movement.pick(state);
+
+			while (core.movement.stepper_Z.run() || core.movement.steppers1.run())
+			{
+				core.pollProgramLoop();
+				if (!core.started) {
+					LOG_ERROR("Stopped");
+					communication.sendErrorPacket(PICK_TX, ErrorCode::NotStarted);
+					core.longRunningCommandInProgress = false;
+					return;
+				}
+			}
+		}
+	}
+	else {
+		LOG_ERROR("Picker Full");
+		communication.sendErrorPacket(PICK_TX, ErrorCode::NoMoreLoadingSpace);
+	}
 
 	// TODO Jim doe je ding
 
