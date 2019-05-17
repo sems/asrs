@@ -50,8 +50,7 @@ https://cloud.githubusercontent.com/assets/13655997/9081538/fe9085e0-3b97-11e5-9
 */
 int Movement::ccts_a(int x, int y) //Convert Coordinate to Steps for motor a
 {
-    int a = ((x * steps_per_unit_lenght) - xpos) + ((y * steps_per_unit_height) - ypos);
-    return a;
+    return ((x * steps_per_unit_lenght) - xpos) + ((y * steps_per_unit_height) - ypos);
 }
 int Movement::ccts_b(int x, int y) //Convert Coordinate to Steps for motor b
 {
