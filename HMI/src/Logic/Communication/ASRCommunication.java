@@ -16,15 +16,15 @@ public class ASRCommunication implements SerialPortDataListener {
         comPort = port;
         comPort.addDataListener(this);
         comPort.setBaudRate(115200);
-        comPort.openPort();
+        comPort.openPort(2000);
         asrEvent = new ASREvent();
 
-        try {
-            Thread.sleep(5000);
-            start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        start();
+    }
+
+    public void close(){
+        stop();
+        comPort.closePort();
     }
 
     public static void main(String[] args) {
@@ -275,11 +275,11 @@ public class ASRCommunication implements SerialPortDataListener {
                         if (errorCode == ErrorCode.SUCCESS) {
                             System.out.println("GotoPos success");
                             asrEvent.onLog("GotoPos success");
-                            asrEvent.onPositionResponseReceived(ErrorCode.SUCCESS);
+//                            asrEvent.onPositionResponseReceived(ErrorCode.SUCCESS);
                         } else {
                             System.out.println("GotoPos went wrong");
                             asrEvent.onLog("GotoPos went wrong");
-                            asrEvent.onPositionResponseReceived(errorCode);
+//                            asrEvent.onPositionResponseReceived(errorCode);
                         }
                     } else {
                         System.err.println("size differs from expected");
@@ -290,13 +290,11 @@ public class ASRCommunication implements SerialPortDataListener {
                 if (commandId == 113) {
                     if (size == 1) {
                         ErrorCode ec = getErrorCode(payload[0]);
+                        asrEvent.onLog("Pick response: " + ec);
                         if (ec == ErrorCode.SUCCESS) {
-                            System.out.println("Pick success");
-                            asrEvent.onLog("Pick success");
                             // TODO: Add application call
                         } else {
-                            System.out.println("Pick went wrong");
-                            asrEvent.onLog("Pick went wrong");
+                            // TODO: Something went wrong
                         }
                     } else {
                         System.err.println("size differs from expected");
@@ -330,8 +328,8 @@ public class ASRCommunication implements SerialPortDataListener {
             System.out.println("--= PACKET END =--");
             asrEvent.onLog("--= PACKET END =--");
 
-            System.out.println("Bytes still available: " + comPort.bytesAvailable());
-            asrEvent.onLog("Bytes still available: " + comPort.bytesAvailable());
+            //System.out.println("Bytes still available: " + comPort.bytesAvailable());
+            //asrEvent.onLog("Bytes still available: " + comPort.bytesAvailable());
         }
     }
 }

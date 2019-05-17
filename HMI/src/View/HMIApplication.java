@@ -15,6 +15,12 @@ import java.io.IOException;
 
 public class HMIApplication extends Application {
     FXMLLoader loader = null;
+    private HMIController controller;
+
+    @Override
+    public void stop(){
+        controller.asrCommunication.close();
+    }
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -30,7 +36,7 @@ public class HMIApplication extends Application {
             );
 
             Pane pane = loader.load();
-            HMIController controller = loader.getController();
+            controller = loader.getController();
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
             Scene scene = new Scene(pane, screenBounds.getWidth(), screenBounds.getHeight());
 
