@@ -3,13 +3,18 @@
 #include "core.hpp"
 #include "communication.hpp"
 #include "constants.hpp"
+#include "movement.hpp"
+
+#define LOGGING;
 
 //This define is used to disable code generation for logs
 
 #ifdef LOGGING
 #define LOG_INFO(MESSAGE) core.logger.logInfo(MESSAGE)
+#define LOG_ERROR(MESSAGE) core.logger.logError(MESSAGE)
 #else
 #define LOG_INFO(MESSAGE)
+#define LOG_ERROR(MESSAGE)
 #endif // LOGGING
 
 
@@ -36,8 +41,9 @@ void startCommand(Core& core, Communication& communication, Packet& packet)
 void getPositionCommand(Core& core, Communication& communication, Packet& packet)
 {
 	LOG_INFO("running getPos command");
-
-	communication.sendPosPacket(GET_POSITION_TX, 44, 44);
+	XY_POSITION_ARRAY xy = core.movement.getXYPos();
+	
+	communication.sendPosPacket(GET_POSITION_TX,static_cast<byte>(xy.x), static_cast<byte>(xy.y));
 }
 
 // Long running commands
@@ -46,12 +52,14 @@ void gotopositionCommand(Core& core, Communication& communication, Packet& packe
 	LOG_INFO("running gotoPositionCommand");
 	if (!core.started)
 	{
+		LOG_ERROR("Not started");
 		communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::NotStarted);
 		return;
 	}
 
 	if (core.longRunningCommandInProgress)
 	{
+		LOG_ERROR("Long running command already in progress");
 		communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::LongRunningCommandInProgress);
 		return;
 	}
@@ -61,13 +69,31 @@ void gotopositionCommand(Core& core, Communication& communication, Packet& packe
 
 	if (x >= MAX_WIDTH_ASR || y >= MAX_HEIGHT_ASR)
 	{
+		LOG_ERROR("Pos out of bound");
 		communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::PositionOutOfBound);
 		return;
 	}
 	core.longRunningCommandInProgress = true;
-	
-	//TODO Jim doe je ding
+	LOG_INFO("begin move");
+	core.movement.moveXY(x, y);
 
+	int counter = 0;
+	while (core.movement.steppers1.run())
+	{
+		counter++;
+		if (counter % 100 == 0) {
+			core.pollProgramLoop();
+			if (!core.started)
+			{
+				LOG_ERROR("Stopped");
+				communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::NotStarted);
+				core.longRunningCommandInProgress = false;
+				return;
+			}
+			counter = 0;
+		}
+	}
+	LOG_INFO("done");
 	communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::Success);
 	core.longRunningCommandInProgress = false;
 }
