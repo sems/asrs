@@ -54,8 +54,7 @@ int Movement::ccts_a(int x, int y) //Convert Coordinate to Steps for motor a
 }
 int Movement::ccts_b(int x, int y) //Convert Coordinate to Steps for motor b
 {
-    int b = ((x * steps_per_unit_lenght) - xpos) - ((y * steps_per_unit_height) - ypos);
-    return b;
+    return ((x * steps_per_unit_lenght) - xpos) - ((y * steps_per_unit_height) - ypos);
 }
 
 // Picks one item.
