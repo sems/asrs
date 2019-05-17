@@ -1,6 +1,6 @@
-package Logic.Communication;
 
-import CRC8.CRC8;
+package Logic.Communication;
+import Logic.CRC8.CRC8;
 
 public class Packet {
     private byte size;
