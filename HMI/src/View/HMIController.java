@@ -1,12 +1,15 @@
-package View.ASR;
+package View;
 
-import Data.Database.DataServer;
+import Logic.BINR.BINR;
 import Logic.Communication.ASRCommunication;
-import Logic.Communication.ASRListener;
+import Logic.Communication.ASREventListener;
+import Logic.Communication.BINREventListener;
 import Logic.Communication.ErrorCode;
 import Logic.Location;
 import Logic.Order;
-import Logic.StorageItem;
+import View.ASR.Cell;
+import View.ASR.Grid;
+import View.ASR.LocationAdvancer;
 import com.fazecast.jSerialComm.SerialPort;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -15,17 +18,16 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
-public class ASRController implements ASRListener {
+public class HMIController implements ASREventListener, BINREventListener {
     /**
      * ASR view
      */
@@ -46,36 +48,46 @@ public class ASRController implements ASRListener {
      * BINR view
      */
     @FXML
-    private Rectangle box1;
-    @FXML
-    private Rectangle box2;
-    @FXML
     private TableView<Order> waitingOrdersTableView;
     @FXML
     private TableView<Order> packedOrdersTableView;
 
     @FXML
-    private TextArea logTextBox;
+    private AnchorPane leftBoxPane;
+
+    @FXML
+    private AnchorPane rightBoxPane;
 
     /**
      * DEBUG screen
      */
+    @FXML
     private Button gotoBtn;
+    @FXML
     private Button pickBtn;
+    @FXML
     private Button dropBtn;
+    @FXML
     private Button stopBtn;
+    @FXML
     private Button startBtn;
+    @FXML
     private Button getPosBtn;
+    @FXML
     private TextField xDebugTextField;
+    @FXML
     private TextField yDebugTextField;
+    @FXML
+    private TextArea logTextBox;
 
     // data bindings to view tables
     private ObservableList<Order> allOrdersObservableList;
     private ObservableList<Order> waitingOrdersObservableList;
     private ObservableList<Order> packedOrdersObservableList;
 
-    private ASRCommunication asrCommunication;
+    public ASRCommunication asrCommunication;
     private LocationAdvancer locationAdvancer;
+    private BINR binr;
     private ObservableList<Order> ordersToPickObservableList;
 
     private static final int  CELL_SIZE = 160;
@@ -104,6 +116,7 @@ public class ASRController implements ASRListener {
         asrCommunication = new ASRCommunication(port);
         asrCommunication.subscribeToResponses(this);
         locationAdvancer = new LocationAdvancer(ordersToPickObservableList, asrCommunication);
+        binr = new BINR((int)leftBoxPane.getHeight(), (int)rightBoxPane.getHeight());
     }
 
     /**
@@ -149,7 +162,7 @@ public class ASRController implements ASRListener {
         // fill grid with cells
         for (int row = 0; row < CELLS; row++) {
             for (int column = 0; column < CELLS; column++) {
-                Cell cell = new Cell(column, row);
+                View.ASR.Cell cell = new Cell(column, row);
                 grid.add(cell, column, row);
             }
         }
@@ -234,6 +247,8 @@ public class ASRController implements ASRListener {
         packedOrdersTableView.getColumns().addAll(orderIdCol3, productIDCol3, buyerCol3);
     }
 
+    /** ======== button events ========= **/
+
     @FXML
     protected void handleAddOrderAction(ActionEvent event) {
         Order selectedItem = this.allOrdersTableView.getSelectionModel().getSelectedItem();
@@ -296,8 +311,15 @@ public class ASRController implements ASRListener {
         asrCommunication.getPos();
     }
 
-    @Override
+    @FXML
+    protected void handleHomeButton() {
+        asrCommunication.home();
+    }
 
+
+    /** ======== robot events ========= **/
+
+    @Override
     public void onPositionResponseReceived(ErrorCode errorCode) {
         var numberOfItems = locationAdvancer.getCurrentRouteItemsNumber();
         var currentItem = locationAdvancer.getCurrentRoutePickedItem();
@@ -335,6 +357,11 @@ public class ASRController implements ASRListener {
         Platform.runLater(() -> logTextBox.appendText(log + "\n"));
     }
 
+    @Override
+    public void onUnloadResponseReceived() {
+        // todo: advance to next unload
+    }
+
     /**
      * This will map a location with the grid coords X and Y to the correct pixel location on the screen.
      * @param location
@@ -343,87 +370,10 @@ public class ASRController implements ASRListener {
     private Location mapToUIDimensions(Location location) {
         return new Location(((location.getX() * CELL_SIZE)) + CELL_SIZE / 2, (GRID_HEIGHT  - (location.getY() * CELL_SIZE)) - CELL_SIZE / 2);
     }
-}
 
-class LocationAdvancer {
-    private ObservableList<Order> orders;
-    private ASRCommunication asrCommunication;
-    private ArrayList<Location> currentRoute;
+    @Override
+    public void responseReceived() {
 
-    private int currentOrderPickedIndex = 0;
-    private int currentStorageItemPickedIndex = 0;
-
-    public LocationAdvancer(ObservableList<Order> orders, ASRCommunication asrCommunication) {
-        this.orders = orders;
-        this.asrCommunication = asrCommunication;
-
-        if (orders.size() > 0) {
-            currentRoute = mapLocation(orders.get(0).getRoute());
-        }else {
-            System.out.println("There are no orders for picking.");
-        }
-    }
-
-    /**
-     * Advances to the next storage item, it will advance to the next order if all storage items of an order are picked .
-     *
-     * Returns true in case there are more storage items left.
-     * Returns false in case there are no more orders and storage items.
-      */
-    public boolean advanceToNextStorageItem() {
-        if (currentRoute.size() < currentStorageItemPickedIndex + 1) {
-            currentStorageItemPickedIndex += 1;
-            var nextLocation = currentRoute.get(currentStorageItemPickedIndex);
-            asrCommunication.gotoPos(nextLocation.getX(), nextLocation.getY());
-            return true;
-        }else {
-            System.out.println("No more elements in route");
-
-            if (!advanceToNextOrder()) {
-                // if there are no more orders return
-                return false;
-            } else {
-                // advance to first storage item of new order
-               return  advanceToNextStorageItem();
-            }
-        }
-    }
-
-    /**
-     * Get the count of items in the current route
-     * @return
-     */
-    public int getCurrentRouteItemsNumber() {
-        return currentRoute.size();
-    }
-
-    public int getCurrentRoutePickedItem() {
-        return currentStorageItemPickedIndex;
-    }
-
-    /**
-     * Get the current route locations
-     * @return
-     */
-    public ArrayList<Location> getCurrentRouteLocations() {
-        return currentRoute;
-    }
-
-    /**
-     * Advance to the next order if all storage items are picked of the current order
-     */
-    private boolean advanceToNextOrder() {
-        if (orders.size() < currentOrderPickedIndex + 1) {
-            currentOrderPickedIndex += 1;
-            currentRoute = mapLocation(orders.get(currentOrderPickedIndex).getRoute());
-            return true;
-        } else {
-            // no more orders
-            return false;
-        }
-    }
-
-    private ArrayList<Location> mapLocation(ArrayList<StorageItem> orders) {
-        return orders.stream().map(x -> x.getLocation()).collect(Collectors.toCollection(ArrayList::new));
     }
 }
+
