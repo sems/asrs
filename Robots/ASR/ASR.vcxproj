@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="ASR_Release|Win32">
+      <Configuration>ASR_Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -31,6 +35,13 @@
     <PlatformToolset>
     </PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASR_Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset />
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -46,7 +57,21 @@
     <PlatformToolset>
     </PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASR_Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset />
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASR_Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -64,10 +89,16 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ASR_Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ASR_Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -80,13 +111,31 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\ASR;$(ProjectDir)..\..\..\..\..\Documents\Arduino\libraries\AccelStepper\src;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\libraries;$(ProjectDir)..\..\..\..\..\Documents\Arduino\libraries;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\variants\standard;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\avr\include;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\avr;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\lib\gcc\avr\4.9.2\include;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\lib\gcc\avr\4.9.3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>$(ProjectDir)__vm\.ASR.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
-      <PreprocessorDefinitions>__AVR_atmega328p__;__AVR_ATmega328P__;_VMDEBUG=1;F_CPU=16000000L;ARDUINO=10808;ARDUINO_AVR_UNO;ARDUINO_ARCH_AVR;__cplusplus=201103L;_VMICRO_INTELLISENSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__AVR_atmega328p__;__AVR_ATmega328P__;PROJECT_NAME="$(ProjectName)";_VMDEBUG=1;F_CPU=16000000L;ARDUINO=10808;ARDUINO_AVR_UNO;ARDUINO_ARCH_AVR;__cplusplus=201103L;_VMICRO_INTELLISENSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\ASR;$(ProjectDir)..\..\..\..\..\Documents\Arduino\libraries\AccelStepper\src;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\libraries;$(ProjectDir)..\..\..\..\..\Documents\Arduino\libraries;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\variants\standard;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\avr\include;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\avr;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\lib\gcc\avr\4.9.2\include;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\lib\gcc\avr\4.9.3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(ProjectDir)__vm\.ASR.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PreprocessorDefinitions>__AVR_atmega328p__;__AVR_ATmega328P__;PROJECT_NAME="$(ProjectName)";F_CPU=16000000L;ARDUINO=10808;ARDUINO_AVR_UNO;ARDUINO_ARCH_AVR;__cplusplus=201103L;_VMICRO_INTELLISENSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ASR_Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
@@ -126,6 +175,7 @@
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Binr.hpp" />
     <ClInclude Include="commandInfo.hpp" />
     <ClInclude Include="commands.hpp" />
     <ClInclude Include="communication.hpp" />
@@ -134,6 +184,7 @@
     <ClInclude Include="logger.hpp" />
     <ClInclude Include="movement.hpp" />
     <ClInclude Include="packet.hpp" />
+    <ClInclude Include="predef.hpp" />
     <ClInclude Include="status.hpp" />
     <ClInclude Include="utils.hpp" />
     <ClInclude Include="__vm\.ASR.vsarduino.h" />

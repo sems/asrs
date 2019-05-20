@@ -1,6 +1,7 @@
 #ifndef MOVEMENT_HPP
 #define MOVEMENT_HPP
 
+#include "predef.hpp"
 #include "arduino.h"
 #include "AccelStepper.h"
 #include "MultiStepper.h"

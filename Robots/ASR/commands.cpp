@@ -5,6 +5,10 @@
 #include "constants.hpp"
 #include "movement.hpp"
 
+#ifndef ASR
+#include "Binr.hpp"
+#endif // ASR
+
 #define LOGGING;
 
 //This define is used to disable code generation for logs
@@ -16,7 +20,6 @@
 #define LOG_INFO(MESSAGE)
 #define LOG_ERROR(MESSAGE)
 #endif // LOGGING
-
 
 void statusCommand(Core& core, Communication& communication, Packet& packet)
 {
@@ -37,6 +40,8 @@ void startCommand(Core& core, Communication& communication, Packet& packet)
 	core.started = true;
 	communication.sendErrorPacket(START_TX, ErrorCode::Success);
 }
+
+#ifdef ASR
 
 void getPositionCommand(Core& core, Communication& communication, Packet& packet)
 {
@@ -98,6 +103,8 @@ void gotopositionCommand(Core& core, Communication& communication, Packet& packe
 	core.longRunningCommandInProgress = false;
 }
 
+
+
 void pickCommand(Core& core, Communication& communication, Packet& packet)
 {
 	LOG_INFO("running pick command");
@@ -125,3 +132,43 @@ void unloadCommand(Core& core, Communication& communication, Packet& packet)
 	LOG_INFO("unload command");
 	communication.sendErrorPacket(UNLOAD_TX, ErrorCode::Success);
 }
+
+#else
+
+void binrDrop(Core& core, Communication& communication, Packet& packet) {
+	LOG_INFO("binr drop");
+
+	if (!core.started)
+	{
+		communication.sendErrorPacket(DROP_BINR_TX, ErrorCode::NotStarted);
+		return;
+	}
+
+	if (core.longRunningCommandInProgress)
+	{
+		communication.sendErrorPacket(DROP_BINR_TX, ErrorCode::LongRunningCommandInProgress);
+		return;
+	}
+	core.longRunningCommandInProgress = true;
+
+
+	Direction dir = static_cast<Direction>(packet.payload[0]);
+	if (dir == Direction::Left) {
+		binRSetMotorDirLeft();
+	}
+	else {
+		binRSetMotorDirRight();
+	}
+	binRStartMotor();
+	while (binRIsLaserBlocked()) { // wait untill product is on belt
+		core.pollProgramLoop();
+		delay(100);
+	}
+	binRStopMotor();
+
+
+	communication.sendErrorPacket(DROP_BINR_TX, ErrorCode::Success);
+	core.longRunningCommandInProgress = false;
+}
+
+#endif // ASR

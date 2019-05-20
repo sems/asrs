@@ -1,6 +1,6 @@
 #ifndef STATUS_HPP
 #define STATUS_HPP
-
+#include "predef.hpp"
 #include "Arduino.h"
 
 enum Direction : byte {

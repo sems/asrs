@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_HPP
 #define CONSTANTS_HPP
 
+#include "predef.hpp"
+
 #define STATUS_RX 1
 #define STATUS_TX 101
 

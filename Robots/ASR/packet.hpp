@@ -1,8 +1,10 @@
 #ifndef PACKET_HPP
 #define PACKET_HPP
 
+#include "predef.hpp"
 #include "Arduino.h"
 #include "status.hpp"
+
 
 #define STATUS_RX 1
 #define STATUS_TX 101
@@ -14,6 +16,9 @@
 #define START_TX 103
 
 #define INFO_TX 104
+
+#define DROP_BINR_RX 20
+#define DROP_BINR_TX 120
 
 #define GET_POSITION_RX 10
 #define GET_POSITION_TX 110

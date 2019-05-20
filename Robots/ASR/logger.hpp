@@ -1,6 +1,7 @@
 #ifndef LOGGER_HPP
 #define LOGGER_HPP
 
+#include "predef.hpp"
 #include "Arduino.h"
 
 extern const char* ERROR_PREFIX;

@@ -1,5 +1,7 @@
 #ifndef COMMUNICATION_HPP
 #define COMMUNICATION_HPP
+
+#include "predef.hpp"
 #include "status.hpp"
 #include "arduino.h"
 
@@ -16,6 +18,5 @@ public:
 	void sendErrorPacket(byte commandId, ErrorCode errorCode);
     void sendPacket(Packet *packet);
 };
-
 
 #endif

@@ -77,5 +77,11 @@
     <ClInclude Include="movement.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="predef.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Binr.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

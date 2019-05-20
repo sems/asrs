@@ -1,6 +1,7 @@
 #ifndef COMMAND_INFO_HPP
 #define COMMAND_INFO_HPP
 
+#include "predef.hpp"
 #include "Arduino.h"
 
 class Core;
