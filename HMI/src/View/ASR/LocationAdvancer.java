@@ -3,6 +3,7 @@ package View.ASR;
 import Logic.Communication.ASRCommunication;
 import Logic.Location;
 import Logic.Order;
+import Logic.OrderItem;
 import Logic.StorageItem;
 import javafx.collections.ObservableList;
 
@@ -36,9 +37,9 @@ public class LocationAdvancer {
       */
     public boolean advanceToNextStorageItem() {
         if (currentRoute.size() < currentStorageItemPickedIndex + 1) {
-            currentStorageItemPickedIndex += 1;
             var nextLocation = currentRoute.get(currentStorageItemPickedIndex);
             asrCommunication.gotoPos(nextLocation.getX(), nextLocation.getY());
+            currentStorageItemPickedIndex += 1;
             return true;
         }else {
             System.out.println("No more elements in route");
@@ -66,13 +67,24 @@ public class LocationAdvancer {
     }
 
     /**
-     * Get the current route locations
+     * Returns the current route locations
      * @return
      */
     public ArrayList<Location> getCurrentRouteLocations() {
         return currentRoute;
     }
 
+    /**
+     * Returns the current route order items.
+     * @return
+     */
+    public ArrayList<OrderItem> getCurrentRouteOrderItems() {
+        return orders.get(currentOrderPickedIndex).getOrderItems();
+    }
+
+    public int getCurrentRouteOrderItemPickedIndex() {
+        return currentOrderPickedIndex;
+    }
     /**
      * Advance to the next order if all storage items are picked of the current order
      */
@@ -88,6 +100,6 @@ public class LocationAdvancer {
     }
 
     private ArrayList<Location> mapLocation(ArrayList<StorageItem> orders) {
-        return orders.stream().map(x -> x.getLocation()).collect(Collectors.toCollection(ArrayList::new));
+        return orders.stream().map(StorageItem::getLocation).collect(Collectors.toCollection(ArrayList::new));
     }
 }

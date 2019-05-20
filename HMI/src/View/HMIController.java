@@ -1,9 +1,18 @@
 package View;
 
 import Logic.BINR.BINR;
+<<<<<<< HEAD
 import Logic.Communication.*;
+=======
+import Logic.BINR.BoxType;
+import Logic.Communication.ASRCommunication;
+import Logic.Communication.ASREventListener;
+import Logic.Communication.BINREventListener;
+import Logic.Communication.ErrorCode;
+>>>>>>> pick order
 import Logic.Location;
 import Logic.Order;
+import Logic.OrderItem;
 import View.ASR.Cell;
 import View.ASR.Grid;
 import View.ASR.LocationAdvancer;
@@ -21,6 +30,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 
 import java.beans.Expression;
 import java.rmi.server.ExportException;
@@ -279,11 +289,57 @@ public class HMIController implements ASREventListener, BINREventListener {
 
     @FXML
     protected void handlePickOrderAction(ActionEvent event) {
-        if(locationAdvancer.advanceToNextStorageItem()) {
+        locationAdvancer = new LocationAdvancer(ordersToPickObservableList, asrCommunication);
+        binr = new BINR((int)leftBoxPane.getHeight(), (int)rightBoxPane.getHeight());
 
-        } else {
-
+        var rightBox = binr.getBoxByType(BoxType.Right);
+        for (var storedItem: rightBox.getStoredItems()) {
+            drawProduct(rightBox.getBoxType(), storedItem);
         }
+
+        var leftBox = binr.getBoxByType(BoxType.Left);
+        for (var storedItem: leftBox.getStoredItems()) {
+            drawProduct(leftBox.getBoxType(), storedItem);
+        }
+
+        if(locationAdvancer.advanceToNextStorageItem()) {
+           onLog("There is a next storage item");
+        } else {
+            onLog("There is no next next storage item");
+        }
+    }
+
+    private void drawProduct(BoxType boxType, OrderItem orderItem) {
+        Rectangle rectangle = new Rectangle();
+        rectangle.setWidth(leftBoxPane.getWidth());
+        rectangle.setHeight(orderItem.getPrdocutHeight());
+        rectangle.setFill(Color.RED);
+        rectangle.setStroke(Color.BLACK);
+        rectangle.setStrokeWidth(4);
+
+        AnchorPane boxPane = null;
+
+        if (boxType== BoxType.Left) {
+            boxPane = leftBoxPane;
+        }
+        if (boxType == BoxType.Right) {
+            boxPane = rightBoxPane;
+        }
+
+        int maxHeight = boxPane.heightProperty().intValue();
+
+        for (var node: boxPane.getChildren()) {
+            if (node instanceof Rectangle) {
+                maxHeight -= ((Rectangle)node).getHeight();
+            }
+        }
+
+        maxHeight = maxHeight - (int)rectangle.getHeight();
+
+        rectangle.setLayoutY(maxHeight);
+        boxPane.getChildren().add(rectangle);
+
+        System.out.println(orderItem.toString() + " height: " + orderItem.getPrdocutHeight());
     }
 
     @FXML
@@ -388,26 +444,27 @@ public class HMIController implements ASREventListener, BINREventListener {
         double progressBarValue = (double)(100 / numberOfItems * currentItem) / 100;
         progressBar.setProgress(progressBarValue);
         
-        if (locationAdvancer.advanceToNextStorageItem()) {
-            var currentRouteLocations = locationAdvancer.getCurrentRouteLocations();
-            displayLocations(currentRouteLocations);
-        }else {
-            System.out.println("no more orders");
-        }
-
-        System.out.println(progressBarValue);
-
-        int count = 1;
-        for (var node: gridPane.getChildren()) {
-            if (node instanceof Line) {
-                count += 1;
-                if (currentItem == count) {
-                    ((Line) node).setStroke(Color.RED);
-                }
-            }
-        }
+//        if (locationAdvancer.advanceToNextStorageItem()) {
+//            var currentRouteLocations = locationAdvancer.getCurrentRouteLocations();
+//            displayLocations(currentRouteLocations);
+//        }else {
+//            System.out.println("no more orders");
+//        }
+//
+//        System.out.println(progressBarValue);
+//
+//        int count = 1;
+//        for (var node: gridPane.getChildren()) {
+//            if (node instanceof Line) {
+//                count += 1;
+//                if (currentItem == count) {
+//                    ((Line) node).setStroke(Color.RED);
+//                }
+//            }
+//        }
 
         Platform.runLater(() -> progressLabel.setText("Product Items Opgehaald "+ currentItem + " van de "+ numberOfItems));
+        onLog("Product Items Opgehaald "+ currentItem + " van de "+ numberOfItems);
     }
 
     @Override
@@ -420,7 +477,19 @@ public class HMIController implements ASREventListener, BINREventListener {
 
     @Override
     public void onUnloadResponseReceived() {
-        // todo: advance to next unload
+        locationAdvancer.advanceToNextStorageItem();
+        onLog("Pack item into box");
+        binr.packItems(locationAdvancer.getCurrentRouteOrderItems().get(locationAdvancer.getCurrentRouteOrderItemPickedIndex()));
+
+        onLog("Visualizing box");
+        leftBoxPane.getChildren().clear();
+        rightBoxPane.getChildren().clear();
+
+        for (var box: binr.getClosedBoxes()) {
+            for (var storedItem: box.getStoredItems()) {
+                drawProduct(box.getBoxType(), storedItem);
+            }
+        }
     }
 
     /**
@@ -437,4 +506,3 @@ public class HMIController implements ASREventListener, BINREventListener {
 
     }
 }
-

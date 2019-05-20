@@ -1,6 +1,6 @@
 package Logic.BINR;
 
-import Logic.StorageItem;
+import Logic.OrderItem;
 
 import java.util.ArrayList;
 
@@ -23,33 +23,30 @@ public class BINR {
     }
 
     /**
-     * Packs the given items into the most efficient box.
-     * @param itemsToPack
+     * Packs the given item into the most efficient box.
+     * @param item
      */
-    public void packItems(ArrayList<StorageItem> itemsToPack) {
-        for (var item: itemsToPack) {
-            var productHeight = item.getPrdocutHeight();
+    public void packItems(OrderItem item) {
+        var productHeight = item.getPrdocutHeight();
 
-            if (leftBox.getFreeHeightSpace() <= productHeight) {
-                // item fits in left box
-                leftBox.addStorageItem(item);
-            } else if (rightBox.getFreeHeightSpace() <= productHeight) {
-                // item fits in right box
-                rightBox.addStorageItem(item);
+        if (leftBox.getFreeHeightSpace() >= productHeight) {
+            // item fits in left box
+            leftBox.addOrderItem(item);
+        } else if (rightBox.getFreeHeightSpace() >= productHeight) {
+            // item fits in right box
+            rightBox.addOrderItem(item);
+        } else {
+            // item doesn't fit in either right or left box, create new box.
+            leftBox.closeBox();
+
+            // check the most filled box and close that one.
+            if (rightBox.getFreeHeightSpace() > leftBox.getFreeHeightSpace()) {
+                closeLeftBox();
+            } else if (rightBox.getFreeHeightSpace() < leftBox.getFreeHeightSpace()) {
+                closeRightBox();
             } else {
-                // item doesn't fit in either right or left box, create new box.
-                leftBox.closeBox();
-
-                // check the most filled box and close that one.
-                if (rightBox.getFreeHeightSpace() > leftBox.getFreeHeightSpace()) {
-                    closeLeftBox();
-                }
-                else if (rightBox.getFreeHeightSpace() < leftBox.getFreeHeightSpace()) {
-                    closeRightBox();
-                } else {
-                    // free space is the same in each box, close the right one.
-                    closeRightBox();
-                }
+                // free space is the same in each box, close the right one.
+                closeRightBox();
             }
         }
     }
