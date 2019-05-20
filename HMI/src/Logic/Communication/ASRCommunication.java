@@ -103,6 +103,11 @@ public class ASRCommunication implements SerialPortDataListener {
         sendPacket(p);
     }
 
+    public void home() {
+        Packet p = new Packet((byte) 15, new byte[0]);
+        sendPacket(p);
+    }
+
     /**
      * Unload the picked products.
      */
@@ -317,6 +322,22 @@ public class ASRCommunication implements SerialPortDataListener {
                     } else {
                         System.err.println("size differs from expected");
                         asrEvent.onLog("size differs from expected");
+                    }
+                }
+
+                if (commandId == 115) {
+                    asrEvent.onLog("Response to Homing (115) ");
+                    if (size == 0){
+                        ErrorCode ec = getErrorCode(payload[0]);
+
+                        asrEvent.onLog("Homing response: " + ec);
+
+                        if (ec == ErrorCode.SUCCESS) {
+                            // ASR EVENT
+                        }
+                    }
+                    else {
+                        asrEvent.onLog("Unexpected size");
                     }
                 }
 

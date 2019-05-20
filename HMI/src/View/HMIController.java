@@ -311,6 +311,12 @@ public class HMIController implements ASREventListener, BINREventListener {
         asrCommunication.getPos();
     }
 
+    @FXML
+    protected void handleHomeButton() {
+        asrCommunication.home();
+    }
+
+
     /** ======== robot events ========= **/
 
     @Override
