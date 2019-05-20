@@ -5,5 +5,3 @@
 
 uint8_t computeCrc8(const void* data, size_t size);
 #endif
-
-

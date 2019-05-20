@@ -12,12 +12,12 @@ class Communication;
 class Logger
 {
 private:
-    Communication &communication;
-    void SendLogPacket(char *message); 
+	Communication& communication;
+	void SendLogPacket(char* message);
 public:
-    Logger(Communication &communication);
-    void logInfo(const char *message);
-    void logError(const char *errorMessage);
+	Logger(Communication& communication);
+	void logInfo(const char* message);
+	void logError(const char* errorMessage);
 };
 
 #endif

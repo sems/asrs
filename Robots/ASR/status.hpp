@@ -3,12 +3,14 @@
 #include "predef.hpp"
 #include "Arduino.h"
 
-enum Direction : byte {
+enum Direction : byte
+{
 	Left = 0,
 	Right = 1
 };
 
-enum ErrorCode : byte {
+enum ErrorCode : byte
+{
 	Success = 0,
 	Negative = 1,
 	PositionOutOfBound = 2,
@@ -17,7 +19,8 @@ enum ErrorCode : byte {
 	LongRunningCommandInProgress = 5
 };
 
-enum Status : byte {
+enum Status : byte
+{
 	Stopped = 0,
 	Idle = 1,
 	Moving = 2,

@@ -10,16 +10,17 @@ class Packet;
 
 // Pointer type definition to a function that takes a Core and Communication as arguments
 // Typedef is used, because we don't want to repeat this every time
-typedef void *(*command_ptr)(Core &core, Communication &communication, Packet &packet);
+typedef void(*command_ptr)(Core& core, Communication& communication, Packet& packet);
 
-class CommandInfo{
+class CommandInfo
+{
 public:
-    CommandInfo(int id, command_ptr command);
-    // The id of the command
-    byte Id;
+	CommandInfo(int id, command_ptr command);
+	// The id of the command
+	byte Id;
 
-    // A function pointer to the command
-    command_ptr Command;
+	// A function pointer to the command
+	command_ptr Command;
 };
 
 #include "core.hpp"

@@ -1,4 +1,3 @@
-
 #include "predef.hpp"
 #include "Arduino.h"
 #include "packet.hpp"
@@ -9,16 +8,13 @@
 #include "Binr.hpp"
 #endif // ASR
 
-
 Communication communication;
 Core core(communication);
-
-
 
 void setup()
 {
 #ifndef ASR
-	binRInitialize();
+	BinR::initialize();
 #else
 	pinMode(8, OUTPUT);
 	digitalWrite(8, LOW);

@@ -3,39 +3,47 @@
 
 #include "Arduino.h"
 
-//Arduino pin for laser detection
-#define laserPin 2
+namespace BinR 
+{
+	//Arduino pin for laser detection
+#define LASER_PIN 2
 
 //Arduino pin for power for motor
-#define powPin 5
+#define POWER_PIN 5
 
 //Arduino pin for motor direction
-#define dirPin 4
+#define DIR_PIN 4
 
-inline void binRInitialize() {
-	pinMode(powPin, OUTPUT);  // motor power
-	pinMode(dirPin, OUTPUT);  // motor direction
-	pinMode(laserPin, INPUT); // laser detection
+	inline void initialize()
+	{
+		pinMode(POWER_PIN, OUTPUT); // motor power
+		pinMode(DIR_PIN, OUTPUT); // motor direction
+		pinMode(LASER_PIN, INPUT); // laser detection
+	}
+
+	inline void set_motor_dir_left()
+	{
+		digitalWrite(DIR_PIN, LOW);
+	}
+
+	inline void set_motor_dir_right()
+	{
+		digitalWrite(DIR_PIN, HIGH);
+	}
+
+	inline bool is_laser_blocked()
+	{
+		return digitalRead(LASER_PIN) == LOW;
+	}
+
+	inline void stop_motor()
+	{
+		digitalWrite(POWER_PIN, LOW);
+	}
+
+	inline void start_motor()
+	{
+		digitalWrite(POWER_PIN, HIGH);
+	}
 }
-
-inline void binRSetMotorDirLeft() {
-	digitalWrite(dirPin, LOW);
-}
-
-inline void binRSetMotorDirRight() {
-	digitalWrite(dirPin, HIGH);
-}
-
-inline bool binRIsLaserBlocked() {
-	return digitalRead(laserPin) == LOW;
-}
-
-inline void binRStopMotor() {
-	digitalWrite(powPin, LOW);
-}
-
-inline void binRStartMotor() {
-	digitalWrite(powPin, HIGH);
-}
-
 #endif
