@@ -71,6 +71,8 @@ public:
 	void homeX();
 
 	void homeY();
+
+	void gotToZeroZero();
 };
 
 

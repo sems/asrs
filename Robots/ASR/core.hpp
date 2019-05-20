@@ -15,7 +15,7 @@ class Communication;
 class Core
 {
 private:
-    static const int COMMAND_COUNT = 7;
+    static const int COMMAND_COUNT = 8;
 
     // This array contains the commands. once a packet is received, the appropriate command will be looked up here
     CommandInfo commands[COMMAND_COUNT] = {
@@ -25,7 +25,8 @@ private:
         CommandInfo(GET_POSITION_RX, getPositionCommand),
         CommandInfo(GOTO_POSITION_RX, gotopositionCommand),
         CommandInfo(PICK_RX, pickCommand),
-        CommandInfo(UNLOAD_RX, unloadCommand)
+        CommandInfo(UNLOAD_RX, unloadCommand),
+		CommandInfo(HOME_RX, homeCommand)
     };
 public:
 	Movement movement;

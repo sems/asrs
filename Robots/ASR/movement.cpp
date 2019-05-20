@@ -14,6 +14,10 @@ Movement::Movement() {
 	this->ypos = 0;
 	this->picked = 0;
 
+	pinMode(LIMIT_SWITCH_X, INPUT_PULLUP);
+	pinMode(LIMIT_SWITCH_Y, INPUT_PULLUP);
+	pinMode(LIMIT_SWITCH_Z, INPUT_PULLUP);
+
 	this->stepper_A = AccelStepper(1, 2, 5);
 	this->stepper_B = AccelStepper(1, 3, 6);
 	this->stepper_Z = AccelStepper(1, 4, 7);
@@ -28,6 +32,9 @@ const float unit_lenght_in_mm = 74.8;
 const float unit_height_in_mm = 54.8;
 const float steps_per_unit_lenght = steps_per_mm_0 * unit_lenght_in_mm;
 const float steps_per_unit_height = steps_per_mm_0 * unit_height_in_mm;
+
+const int x_mm_offset = 100;
+const int y_mm_offset = 120;
 
 const int steps_item_width = 400;
 
@@ -130,7 +137,7 @@ void Movement::homeZ()
     stepper_Z.setMaxSpeed(1000.0);     // Set Max Speed of Stepper (Slower to get better accuracy)
     stepper_Z.setAcceleration(2000.0); // Set Acceleration of Stepper
 
-    while (digitalRead(LIMIT_SWITCH_Y))
+    while (digitalRead(LIMIT_SWITCH_Z))
     {                                       // Make the Stepper move CCW until the switch is activated
         stepper_Z.moveTo(initial_homing_Z); // Set the position to move to
         initial_homing_Z++;                 // Decrease by 1 for next move if needed
@@ -144,7 +151,7 @@ void Movement::homeZ()
     stepper_Z.setAcceleration(800.0); // Set Acceleration of Stepper
     initial_homing_Z = -1;
 
-    while (!digitalRead(LIMIT_SWITCH_Y))
+    while (!digitalRead(LIMIT_SWITCH_Z))
     { // Make the Stepper move CW until the switch is deactivated
         stepper_Z.moveTo(initial_homing_Z);
         stepper_Z.run();
@@ -166,7 +173,7 @@ void Movement::homeX()
     stepper_B.setMaxSpeed(1000.0);
     stepper_B.setAcceleration(1000.0);
 
-    while (digitalRead(LIMIT_SWITCH_Y))
+    while (digitalRead(LIMIT_SWITCH_X))
     {                                       // Make the Stepper move CCW until the switch is activated
         stepper_A.moveTo(initial_homing_A); // Set the position to move to
         stepper_B.moveTo(initial_homing_B); // Set the position to move to
@@ -187,7 +194,7 @@ void Movement::homeX()
     initial_homing_A = 1;
     initial_homing_B = 1;
 
-    while (!digitalRead(LIMIT_SWITCH_Y))
+    while (!digitalRead(LIMIT_SWITCH_X))
     {                                       // Make the Stepper move CW until the switch is deactivated
         stepper_A.moveTo(initial_homing_A); // Set the position to move to
         stepper_B.moveTo(initial_homing_B);
@@ -247,4 +254,13 @@ void Movement::homeY()
 
     stepper_B.setCurrentPosition(0);
     stepper_A.setCurrentPosition(0);
+}
+
+void Movement::gotToZeroZero()
+{
+	long positions[2];
+	positions[0] = ((steps_per_mm_0 * x_mm_offset) - 0) + ((steps_per_mm_0 * -y_mm_offset) - 0);
+	positions[1] = ((steps_per_mm_0 * x_mm_offset) - 0) - ((steps_per_mm_0 * -y_mm_offset) - 0);
+	steppers1.moveTo(positions);
+	steppers1.runSpeedToPosition();
 }

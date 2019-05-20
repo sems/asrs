@@ -158,3 +158,32 @@ void unloadCommand(Core& core, Communication& communication, Packet& packet)
 	LOG_INFO("unload command");
 	communication.sendErrorPacket(UNLOAD_TX, ErrorCode::Success);
 }
+
+void homeCommand(Core& core, Communication& communication, Packet& packet)
+{
+	LOG_INFO("running homing command");
+	if (!core.started)
+	{
+		communication.sendErrorPacket(HOME_TX, ErrorCode::NotStarted);
+		return;
+	}
+
+	if (core.longRunningCommandInProgress)
+	{
+		communication.sendErrorPacket(HOME_TX, ErrorCode::LongRunningCommandInProgress);
+		return;
+	}
+
+	core.longRunningCommandInProgress = true;
+
+			core.movement.homeZ();
+			core.movement.homeX();
+			core.movement.homeY();
+			core.movement.gotToZeroZero();
+			core.movement.stepper_A.setCurrentPosition(0);
+			core.movement.stepper_B.setCurrentPosition(0);
+			core.movement.stepper_Z.setCurrentPosition(0);
+
+	communication.sendErrorPacket(HOME_TX, ErrorCode::Success);
+	core.longRunningCommandInProgress = false;
+}

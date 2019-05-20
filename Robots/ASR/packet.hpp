@@ -27,6 +27,9 @@
 #define UNLOAD_RX 14
 #define UNLOAD_TX 114
 
+#define HOME_RX 15
+#define HOME_TX 115
+
 
 
 // The communication with the HMI relies on this packet format

@@ -16,5 +16,6 @@ void getPositionCommand(Core& core, Communication& communication, Packet& packet
 void gotopositionCommand(Core& core, Communication& communication, Packet& packet);
 void pickCommand(Core& core, Communication& communication, Packet& packet);
 void unloadCommand(Core& core, Communication& communication, Packet& packet);
+void homeCommand(Core& core, Communication& communication, Packet& packet);
 
 #endif
