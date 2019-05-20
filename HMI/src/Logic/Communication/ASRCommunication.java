@@ -260,7 +260,7 @@ public class ASRCommunication implements SerialPortDataListener {
                     asrEvent.onLog("Message response (104)");
                     if (size > 0) {
                         System.out.println("Response is correct");
-                        asrEvent.onLog("Message response (104)");
+                        asrEvent.onLog("Response is correct");
 
                         StringBuilder output = new StringBuilder("ASR: ");
 
@@ -298,11 +298,11 @@ public class ASRCommunication implements SerialPortDataListener {
                         if (errorCode == ErrorCode.SUCCESS) {
                             System.out.println("GotoPos success");
                             asrEvent.onLog("GotoPos success");
-//                            asrEvent.onPositionResponseReceived(ErrorCode.SUCCESS);
+                            asrEvent.onPositionResponseReceived(ErrorCode.SUCCESS);
                         } else {
                             System.out.println("GotoPos went wrong");
                             asrEvent.onLog("GotoPos went wrong");
-//                            asrEvent.onPositionResponseReceived(errorCode);
+                            asrEvent.onPositionResponseReceived(errorCode);
                         }
                     } else {
                         System.err.println("size differs from expected");

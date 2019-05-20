@@ -22,6 +22,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
@@ -36,6 +37,8 @@ import java.beans.Expression;
 import java.rmi.server.ExportException;
 import java.util.ArrayList;
 
+import static java.util.stream.Collectors.toCollection;
+
 public class HMIController implements ASREventListener, BINREventListener {
     /**
      * ASR view
@@ -48,8 +51,6 @@ public class HMIController implements ASREventListener, BINREventListener {
     private TableView<Order> allOrdersTableView;
     @FXML
     private TableView<Order> pickedOrdersTableView;
-    @FXML
-    private GridPane asrGrid;
     @FXML
     private Pane gridPane;
 
@@ -110,6 +111,8 @@ public class HMIController implements ASREventListener, BINREventListener {
     private static final int GRID_WIDTH = 800;
     private static final int CELLS = 5;
 
+    private ArrayList<Node> gridNodes = new ArrayList<>();
+
     /**
      * Initialize the screen by passing in the orders that will be displayed.
      * @param orders
@@ -142,7 +145,7 @@ public class HMIController implements ASREventListener, BINREventListener {
      *  A line will connect all storage items based on the shortest path.
      */
     private void displayLocations(ArrayList<Location> locations) {
-
+        System.out.println("Drawing locations, locations: " + locations.size());
         for (int i = 0; i < locations.size(); i++) {
             var current = locations.get(i);
 
@@ -161,10 +164,10 @@ public class HMIController implements ASREventListener, BINREventListener {
                 Line line = new Line(circle.getLayoutX(), circle.getLayoutY(), nextItemLocation.getX(), nextItemLocation.getY());
                 line.setStrokeWidth(5);
                 line.setFill(Color.BLUE);
-                gridPane.getChildren().add(line);
+                gridNodes.add(line);
             }
 
-            gridPane.getChildren().add(circle);
+            gridNodes.add(circle);
         }
     }
 
@@ -289,26 +292,28 @@ public class HMIController implements ASREventListener, BINREventListener {
 
     @FXML
     protected void handlePickOrderAction(ActionEvent event) {
+        // initialize the logic for moving the robot trough the picking process.
         locationAdvancer = new LocationAdvancer(ordersToPickObservableList, asrCommunication);
+
+        // calculate the most efficient boxes.
         binr = new BINR((int)leftBoxPane.getHeight(), (int)rightBoxPane.getHeight());
+        binr.packItems(locationAdvancer.getCurrentRouteOrderItems());
 
-        var rightBox = binr.getBoxByType(BoxType.Right);
-        for (var storedItem: rightBox.getStoredItems()) {
-            drawProduct(rightBox.getBoxType(), storedItem);
-        }
+        // display the locations of all the products in the current route.
+        var currentRouteLocations = locationAdvancer.getCurrentRouteLocations();
+        displayLocations(currentRouteLocations);
 
-        var leftBox = binr.getBoxByType(BoxType.Left);
-        for (var storedItem: leftBox.getStoredItems()) {
-            drawProduct(leftBox.getBoxType(), storedItem);
-        }
-
-        if(locationAdvancer.advanceToNextStorageItem()) {
-           onLog("There is a next storage item");
-        } else {
-            onLog("There is no next next storage item");
+        // advance to the first storage item position
+        if(!locationAdvancer.advanceToNextStorageItem()) {
+            onLog("There are no more storage items");
         }
     }
 
+    /**
+     * Draw the prdocyut
+     * @param boxType
+     * @param orderItem
+     */
     private void drawProduct(BoxType boxType, OrderItem orderItem) {
         Rectangle rectangle = new Rectangle();
         rectangle.setWidth(leftBoxPane.getWidth());
@@ -444,26 +449,33 @@ public class HMIController implements ASREventListener, BINREventListener {
         double progressBarValue = (double)(100 / numberOfItems * currentItem) / 100;
         progressBar.setProgress(progressBarValue);
         
-//        if (locationAdvancer.advanceToNextStorageItem()) {
-//            var currentRouteLocations = locationAdvancer.getCurrentRouteLocations();
-//            displayLocations(currentRouteLocations);
-//        }else {
-//            System.out.println("no more orders");
-//        }
-//
-//        System.out.println(progressBarValue);
-//
-//        int count = 1;
-//        for (var node: gridPane.getChildren()) {
-//            if (node instanceof Line) {
-//                count += 1;
-//                if (currentItem == count) {
-//                    ((Line) node).setStroke(Color.RED);
-//                }
-//            }
-//        }
+        if (locationAdvancer.advanceToNextStorageItem()) {
+            System.out.println("there are next items");
+        }else {
+            System.out.println("no more orders");
+        }
 
-        Platform.runLater(() -> progressLabel.setText("Product Items Opgehaald "+ currentItem + " van de "+ numberOfItems));
+        System.out.println(progressBarValue);
+
+        int count = 1;
+        for (var node : gridNodes) {
+            if (node instanceof Line) {
+                count += 1;
+                System.out.println("current item: " + currentItem + "count: " + count);
+                if (currentItem == count) {
+                    System.out.println("Coloring item");
+                    ((Line) node).setStroke(Color.RED);
+                }
+            }
+        }
+
+        Platform.runLater(() -> {
+            gridPane.getChildren().clear();
+            gridPane.getChildren().addAll(gridNodes);
+                progressLabel.setText("Product Items Opgehaald "+ currentItem + " van de "+ numberOfItems);
+            }
+        );
+
         onLog("Product Items Opgehaald "+ currentItem + " van de "+ numberOfItems);
     }
 
@@ -478,8 +490,6 @@ public class HMIController implements ASREventListener, BINREventListener {
     @Override
     public void onUnloadResponseReceived() {
         locationAdvancer.advanceToNextStorageItem();
-        onLog("Pack item into box");
-        binr.packItems(locationAdvancer.getCurrentRouteOrderItems().get(locationAdvancer.getCurrentRouteOrderItemPickedIndex()));
 
         onLog("Visualizing box");
         leftBoxPane.getChildren().clear();

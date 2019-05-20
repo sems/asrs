@@ -36,13 +36,14 @@ public class LocationAdvancer {
      * Returns false in case there are no more orders and storage items.
       */
     public boolean advanceToNextStorageItem() {
-        if (currentRoute.size() < currentStorageItemPickedIndex + 1) {
+        if (currentStorageItemPickedIndex < currentRoute.size()) {
             var nextLocation = currentRoute.get(currentStorageItemPickedIndex);
             asrCommunication.gotoPos(nextLocation.getX(), nextLocation.getY());
+            System.out.println("Advancing to " + "x: " + nextLocation.getX() + " y: "+ nextLocation.getY());
             currentStorageItemPickedIndex += 1;
             return true;
         }else {
-            System.out.println("No more elements in route");
+            System.out.println("No more elements in route. current route size: " + currentRoute.size() + " current index: " + currentStorageItemPickedIndex);
 
             if (!advanceToNextOrder()) {
                 // if there are no more orders return
