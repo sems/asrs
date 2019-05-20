@@ -98,23 +98,56 @@ void gotopositionCommand(Core& core, Communication& communication, Packet& packe
 	core.longRunningCommandInProgress = false;
 }
 
+const int maxPick = 4;
+
+bool runBoth(AccelStepper a, AccelStepper b) {
+	bool b_a = a.run();
+	bool b_b = b.run();
+	return b_a || b_a;
+}
+
 void pickCommand(Core& core, Communication& communication, Packet& packet)
 {
 	LOG_INFO("running pick command");
 	if (!core.started)
 	{
-		communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::NotStarted);
+		communication.sendErrorPacket(PICK_TX, ErrorCode::NotStarted);
 		return;
 	}
 
 	if (core.longRunningCommandInProgress)
 	{
-		communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::LongRunningCommandInProgress);
+		communication.sendErrorPacket(PICK_TX, ErrorCode::LongRunningCommandInProgress);
 		return;
 	}
+
 	core.longRunningCommandInProgress = true;
 
-	// TODO Jim doe je ding
+	//Only run steps if there is room on the picker
+	if (core.movement.picked < maxPick) {
+		int state = 0;
+		while (state < 3) {
+			// Sends current state and increments it
+			core.movement.pick(state++);
+
+			while (core.movement.stepper_Z.run() || core.movement.steppers1.run())
+			{
+				core.pollProgramLoop();
+				if (!core.started) {
+					LOG_ERROR("Stopped");
+					communication.sendErrorPacket(PICK_TX, ErrorCode::NotStarted);
+					core.longRunningCommandInProgress = false;
+					return;
+				}
+			}
+		}
+
+
+	}
+	else {
+		LOG_ERROR("Picker Full");
+		communication.sendErrorPacket(PICK_TX, ErrorCode::NoMoreLoadingSpace);
+	}
 
 	communication.sendErrorPacket(PICK_TX, ErrorCode::Success);
 	core.longRunningCommandInProgress = false;

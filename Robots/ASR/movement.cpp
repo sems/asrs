@@ -30,7 +30,6 @@ const float steps_per_unit_lenght = steps_per_mm_0 * unit_lenght_in_mm;
 const float steps_per_unit_height = steps_per_mm_0 * unit_height_in_mm;
 
 const int steps_item_width = 400;
-const int max_items = 4;
 
 //sets the steps and direction for the motors to move to.
 // Doesn't actually move the ASR
@@ -40,6 +39,10 @@ void Movement::moveXY(int x, int y)
     long positions[2];
     positions[0] = ccts_a(x, y);
     positions[1] = ccts_b(x, y);
+
+	stepper_A.setMaxSpeed(2000.0f);
+	stepper_B.setMaxSpeed(2000.0f);
+
     steppers1.moveTo(positions);
 }
 
@@ -58,19 +61,35 @@ int Movement::ccts_b(int x, int y) //Convert Coordinate to Steps for motor b
 }
 
 // Picks one item.
-void Movement::pick()
+void Movement::pick(int state)
 {
-    if (picked < max_items)
-    {
-        stepper_Z.setMaxSpeed(1200.0); // Set Max Speed of Stepper
-        stepper_Z.setAcceleration(2000.0);
-        stepper_Z.moveTo(-steps_item_width);
-        picked++;
-    }
-    else
-    {
-        // send error message
-    }
+	switch (state)
+	{
+	case 0:
+		stepper_Z.setMaxSpeed(1200.0); // Set Max Speed of Stepper
+		stepper_Z.setAcceleration(2000.0);
+		stepper_Z.move(-steps_item_width);
+		break;
+	case 1:
+		long positions[2];
+		positions[0] = stepper_A.currentPosition() - 300;
+		positions[1] = stepper_B.currentPosition() + 300;
+
+		stepper_A.setMaxSpeed(700.0f);
+		stepper_B.setMaxSpeed(700.0f);
+
+		steppers1.moveTo(positions);
+
+		break;
+	case 2:
+		stepper_Z.setMaxSpeed(1200.0); // Set Max Speed of Stepper
+		stepper_Z.setAcceleration(2000.0);
+		stepper_Z.move(steps_item_width);
+		picked++;
+		break;
+	default:
+		break;
+	}
 }
 
 // Drops 1 item

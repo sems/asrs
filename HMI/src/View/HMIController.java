@@ -85,7 +85,7 @@ public class HMIController implements ASREventListener, BINREventListener {
     private ObservableList<Order> waitingOrdersObservableList;
     private ObservableList<Order> packedOrdersObservableList;
 
-    private ASRCommunication asrCommunication;
+    public ASRCommunication asrCommunication;
     private LocationAdvancer locationAdvancer;
     private BINR binr;
     private ObservableList<Order> ordersToPickObservableList;
