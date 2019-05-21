@@ -37,13 +37,15 @@ static const uint8_t CRC_TABLE[256] = {
 	0xE6, 0xE1, 0xE8, 0xEF, 0xFA, 0xFD, 0xF4, 0xF3
 };
 
-uint8_t computeCrc8(const void* data, size_t size) {
+uint8_t computeCrc8(const void* data, size_t size)
+{
 	uint8_t val = 0;
 
 	uint8_t* pos = (uint8_t*)data;
 	uint8_t* end = pos + size;
 
-	while (pos < end) {
+	while (pos < end)
+	{
 		val = CRC_TABLE[val ^ *pos];
 		pos++;
 	}
