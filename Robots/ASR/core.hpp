@@ -18,7 +18,6 @@ class Communication;
 #define COMMAND_COUNT 4
 #endif // ASR
 
-
 // This is the class that actually controls the ASR
 class Core
 {

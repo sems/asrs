@@ -58,14 +58,14 @@ void gotopositionCommand(Core& core, Communication& communication, Packet& packe
 	if (!core.started)
 	{
 		LOG_ERROR("Not started");
-		communication.sendErrorPacket(GOTO_POSITION_TX, NotStarted);
+		communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::NotStarted);
 		return;
 	}
 
 	if (core.longRunningCommandInProgress)
 	{
 		LOG_ERROR("Long running command already in progress");
-		communication.sendErrorPacket(GOTO_POSITION_TX, LongRunningCommandInProgress);
+		communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::LongRunningCommandInProgress);
 		return;
 	}
 
@@ -75,7 +75,7 @@ void gotopositionCommand(Core& core, Communication& communication, Packet& packe
 	if (x >= MAX_WIDTH_ASR || y >= MAX_HEIGHT_ASR)
 	{
 		LOG_ERROR("Pos out of bound");
-		communication.sendErrorPacket(GOTO_POSITION_TX, PositionOutOfBound);
+		communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::PositionOutOfBound);
 		return;
 	}
 	core.longRunningCommandInProgress = true;
@@ -92,7 +92,7 @@ void gotopositionCommand(Core& core, Communication& communication, Packet& packe
 			if (!core.started)
 			{
 				LOG_ERROR("Stopped");
-				communication.sendErrorPacket(GOTO_POSITION_TX, NotStarted);
+				communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::NotStarted);
 				core.longRunningCommandInProgress = false;
 				return;
 			}
@@ -100,7 +100,7 @@ void gotopositionCommand(Core& core, Communication& communication, Packet& packe
 		}
 	}
 	LOG_INFO("done");
-	communication.sendErrorPacket(GOTO_POSITION_TX, Success);
+	communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::Success);
 	core.longRunningCommandInProgress = false;
 }
 
@@ -117,15 +117,16 @@ void pickCommand(Core& core, Communication& communication, Packet& packet)
 	LOG_INFO("running pick command");
 	if (!core.started)
 	{
-		communication.sendErrorPacket(PICK_TX, NotStarted);
+		communication.sendErrorPacket(PICK_TX, ErrorCode::NotStarted);
 		return;
 	}
 
 	if (core.longRunningCommandInProgress)
 	{
-		communication.sendErrorPacket(PICK_TX, LongRunningCommandInProgress);
+		communication.sendErrorPacket(PICK_TX, ErrorCode::LongRunningCommandInProgress);
 		return;
 	}
+
 	core.longRunningCommandInProgress = true;
 
 	//Only run steps if there is room on the picker
@@ -153,6 +154,7 @@ void pickCommand(Core& core, Communication& communication, Packet& packet)
 		LOG_ERROR("Picker Full");
 		communication.sendErrorPacket(PICK_TX, ErrorCode::NoMoreLoadingSpace);
 	}
+
 
 	communication.sendErrorPacket(PICK_TX, Success);
 	core.longRunningCommandInProgress = false;

@@ -32,7 +32,6 @@ const float steps_per_unit_height = steps_per_mm_0 * unit_height_in_mm;
 
 const int steps_item_width = 400;
 
-
 //sets the steps and direction for the motors to move to.
 // Doesn't actually move the ASR
 void Movement::moveXY(int x, int y)
@@ -55,14 +54,11 @@ https://cloud.githubusercontent.com/assets/13655997/9081538/fe9085e0-3b97-11e5-9
 */
 int Movement::ccts_a(int x, int y) //Convert Coordinate to Steps for motor a
 {
-	int a = ((x * steps_per_unit_lenght) - xpos) + ((y * steps_per_unit_height) - ypos);
-	return a;
+    return ((x * steps_per_unit_lenght) - xpos) + ((y * steps_per_unit_height) - ypos);
 }
-
 int Movement::ccts_b(int x, int y) //Convert Coordinate to Steps for motor b
 {
-	int b = ((x * steps_per_unit_lenght) - xpos) - ((y * steps_per_unit_height) - ypos);
-	return b;
+    return ((x * steps_per_unit_lenght) - xpos) - ((y * steps_per_unit_height) - ypos);
 }
 
 // Picks one item.
