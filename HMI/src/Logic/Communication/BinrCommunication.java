@@ -19,7 +19,12 @@ public class BinrCommunication implements SerialPortDataListener {
         comPort.openPort(3000);
         asrEvent = new ASREvent();
 
-        start();
+        try{
+            Thread.sleep(3000);
+            start();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void close(){
@@ -51,7 +56,10 @@ public class BinrCommunication implements SerialPortDataListener {
      */
 
     public void moveLeft(){
-        Packet p = new Packet((byte) 20, new byte[0]);
+        byte[] data = new byte[1];
+        data[0] = 0;
+
+        Packet p = new Packet((byte) 20, data);
         sendPacket(p);
     }
 
@@ -60,8 +68,20 @@ public class BinrCommunication implements SerialPortDataListener {
      */
 
     public void moveRight(){
-        Packet p = new Packet((byte) 20, new byte[1]);
+        byte[] data = new byte[1];
+        data[0] = 1;
+
+        Packet p = new Packet((byte) 20, data);
         sendPacket(p);
+    }
+
+    /**
+     * Subscribe to the events from the ASR.
+     *
+     * @param listener
+     */
+    public void subscribeToResponses(ASREventListener listener) {
+        asrEvent.addASRListener(listener);
     }
 
     /**
@@ -286,6 +306,18 @@ public class BinrCommunication implements SerialPortDataListener {
                     } else {
                         System.err.println("size differs from expected");
                         asrEvent.onLog("size differs from expected");
+                    }
+                }
+
+                if (commandId == 120){
+                    if (size == 1){
+                        ErrorCode ec = getErrorCode(payload[0]);
+                        asrEvent.onLog("Drop response: " + ec);
+
+                        //TODO: Timon code
+                    }
+                    else {
+                        System.err.println("Unexpected size");
                     }
                 }
 
