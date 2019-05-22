@@ -309,11 +309,11 @@ public class HMIController implements ASREventListener, BINREventListener {
 
         }else {
             onLog(">>>> Order picking process starting");
-            drawGridAndRoute();
             // display the locations of all the products in the current route.
             var currentRouteLocations = locationAdvancer.getCurrentRouteLocations();
 //            binr.packItems(locationAdvancer.getCurrentRouteOrderItems());
             displayLocations(currentRouteLocations);
+            drawGridAndRoute();
             orderPickProcessRunning = true;
             processStatus = Progress.Picking;
         }
@@ -487,31 +487,33 @@ public class HMIController implements ASREventListener, BINREventListener {
         double progressBarValue = (double)(100 / numberOfItems * currentItem) / 100;
         progressBar.setProgress(progressBarValue);
 
+
+
+        // advance to next storage item
+        var status = locationAdvancer.advanceToNextStorageItem();
+
         Platform.runLater(() -> {
                     gridPane.getChildren().clear();
                     InitializeGrid();
                     gridPane.getChildren().addAll(gridNodes);
-                    progressLabel.setText("Product Items Opgehaald "+ locationAdvancer.getCurrentRoutePickedItem() + " van de " + locationAdvancer.getCurrentRouteItemsNumber());
+                    progressLabel.setText("Product Items Opgehaald "+ (locationAdvancer.getCurrentRoutePickedItem() - 1) + " van de " + locationAdvancer.getCurrentRouteItemsNumber());
                 }
         );
 
-        // advance to next storage item
-        var status = locationAdvancer.advanceToNextStorageItem();
+        displayLocations(locationAdvancer.getCurrentRouteLocations());
+        drawGridAndRoute();
 
         if (status == LocationAdvanceStatus.NewStorageItemPicked) {
             System.out.println(">>>> Advancing to next storage item");
 
             gridNodes.clear();
-            displayLocations(locationAdvancer.getCurrentRouteLocations());
-            drawGridAndRoute();
-
             onLog("Product Items Opgehaald "+ currentItem + " van de "+ numberOfItems);
         }
         else if (status == LocationAdvanceStatus.NoNewOrdersToPick) {
             System.out.println(">>>> There are no more storage items left for picking");
 
             if (orderPickProcessRunning) {
-                asrCommunication.gotoPos(0, -1);
+                asrCommunication.gotoPos(0, 0);
                 processStatus = Progress.Unloading;
             }
 
