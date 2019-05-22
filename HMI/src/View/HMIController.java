@@ -77,6 +77,11 @@ public class HMIController implements ASREventListener, BINREventListener {
     @FXML
     private TextArea logTextBox;
 
+    @FXML
+    private TextField asrCommTextfield;
+    @FXML
+    private TextField binrCommTextfield;
+
     // data bindings to view tables
     private ObservableList<Order> allOrdersObservableList;
     private ObservableList<Order> waitingOrdersObservableList;
@@ -325,6 +330,36 @@ public class HMIController implements ASREventListener, BINREventListener {
     @FXML
     protected void handleRight() {
         binrCommunication.moveRight();
+    }
+  
+    @FXML
+    protected void handleSaveCommButton(){
+        int portAsr;
+        int portBinr;
+
+        try{
+            portAsr = Integer.parseInt(asrCommTextfield.getText());
+            portBinr = Integer.parseInt(binrCommTextfield.getText());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            onLog(e.toString());
+
+            portAsr = 0;
+            portBinr = 1;
+        }
+
+        SerialPort newPortAsr = SerialPort.getCommPorts()[portAsr];
+        newPortAsr.setBaudRate(115200);
+
+        try{
+            asrCommunication.close();
+            asrCommunication = new ASRCommunication(newPortAsr);
+            asrCommunication.subscribeToResponses(this);
+        }
+        catch (Exception e){
+            onLog(e.toString());
+        }
     }
 
 
