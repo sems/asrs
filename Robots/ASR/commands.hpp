@@ -19,12 +19,9 @@ void stopCommand(Core& core, Communication& communication, Packet& packet);
 // Only needed if the ARS or BINr are stopped
 void startCommand(Core& core, Communication& communication, Packet& packet);
 
-<<<<<<< HEAD
 // Returns the position of the ASR picker. position of 255 means unknown.
 void getPositionCommand(Core& core, Communication& communication, Packet& packet);
 
-=======
->>>>>>> master
 // Long running commands
 void gotopositionCommand(Core& core, Communication& communication, Packet& packet);
 void pickCommand(Core& core, Communication& communication, Packet& packet);

@@ -8,21 +8,6 @@
 #ifndef ASR
 #include "Binr.hpp"
 #endif // ASR
-<<<<<<< HEAD
-=======
-
-#define LOGGING
-
-//This define is used to disable code generation for logs
-
-#ifdef LOGGING
-#define LOG_INFO(MESSAGE) core.logger.logInfo(MESSAGE)
-#define LOG_ERROR(MESSAGE) core.logger.logError(MESSAGE)
-#else
-#define LOG_INFO(MESSAGE)
-#define LOG_ERROR(MESSAGE)
-#endif // LOGGING
->>>>>>> master
 
 void statusCommand(Core& core, Communication& communication, Packet& packet)
 {
