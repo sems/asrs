@@ -10,9 +10,15 @@ public class BINREvent {
         binrEventListeners.add(toAdd);
     }
 
-    public void onResponseReceived() {
+    public void onDropResponseReceived() {
         // Notify everybody that may be interested.
         for (BINREventListener hl : binrEventListeners)
-            hl.responseReceived();
+            hl.dropResponseReceived();
     }
+
+    public void onLog(String log) {
+        for (BINREventListener hl : binrEventListeners)
+            hl.onLog(log);
+    }
+
 }
