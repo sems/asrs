@@ -1,10 +1,7 @@
 package View;
 
 import Logic.BINR.BINR;
-import Logic.Communication.ASRCommunication;
-import Logic.Communication.ASREventListener;
-import Logic.Communication.BINREventListener;
-import Logic.Communication.ErrorCode;
+import Logic.Communication.*;
 import Logic.Location;
 import Logic.Order;
 import View.ASR.Cell;
@@ -80,12 +77,18 @@ public class HMIController implements ASREventListener, BINREventListener {
     @FXML
     private TextArea logTextBox;
 
+    @FXML
+    private TextField asrCommTextfield;
+    @FXML
+    private TextField binrCommTextfield;
+
     // data bindings to view tables
     private ObservableList<Order> allOrdersObservableList;
     private ObservableList<Order> waitingOrdersObservableList;
     private ObservableList<Order> packedOrdersObservableList;
 
     public ASRCommunication asrCommunication;
+    public BinrCommunication binrCommunication;
     private LocationAdvancer locationAdvancer;
     private BINR binr;
     private ObservableList<Order> ordersToPickObservableList;
@@ -112,9 +115,12 @@ public class HMIController implements ASREventListener, BINREventListener {
         InitializeGrid();
         InitializeTables();
 
-        SerialPort port = SerialPort.getCommPorts()[0];
-        asrCommunication = new ASRCommunication(port);
+        SerialPort asrPort = SerialPort.getCommPorts()[0];
+        SerialPort binrPort = SerialPort.getCommPorts()[1];
+        asrCommunication = new ASRCommunication(asrPort);
         asrCommunication.subscribeToResponses(this);
+        binrCommunication= new BinrCommunication(binrPort);
+        binrCommunication.subscribeToResponses(this);
         locationAdvancer = new LocationAdvancer(ordersToPickObservableList, asrCommunication);
         binr = new BINR((int)leftBoxPane.getHeight(), (int)rightBoxPane.getHeight());
     }
@@ -314,6 +320,46 @@ public class HMIController implements ASREventListener, BINREventListener {
     @FXML
     protected void handleHomeButton() {
         asrCommunication.home();
+    }
+
+    @FXML
+    protected void handleLeft() {
+        binrCommunication.moveLeft();
+    }
+
+    @FXML
+    protected void handleRight() {
+        binrCommunication.moveRight();
+    }
+  
+    @FXML
+    protected void handleSaveCommButton(){
+        int portAsr;
+        int portBinr;
+
+        try{
+            portAsr = Integer.parseInt(asrCommTextfield.getText());
+            portBinr = Integer.parseInt(binrCommTextfield.getText());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            onLog(e.toString());
+
+            portAsr = 0;
+            portBinr = 1;
+        }
+
+        SerialPort newPortAsr = SerialPort.getCommPorts()[portAsr];
+        newPortAsr.setBaudRate(115200);
+
+        try{
+            asrCommunication.close();
+            asrCommunication = new ASRCommunication(newPortAsr);
+            asrCommunication.subscribeToResponses(this);
+        }
+        catch (Exception e){
+            onLog(e.toString());
+        }
     }
 
 
