@@ -26,7 +26,7 @@
 #define UNLOAD_RX 14
 #define UNLOAD_TX 114
 
-#define MAX_WIDTH_ASR 5
+#define MAX_WIDTH_ASR 6
 #define MAX_HEIGHT_ASR 5
 
 

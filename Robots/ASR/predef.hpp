@@ -1,4 +1,4 @@
 #ifndef PREDEF_HPP
 #define PREDEF_HPP
-#define ASR
+//#define ASR
 #endif

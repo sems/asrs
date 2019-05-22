@@ -9,34 +9,24 @@
 #include "Binr.hpp"
 #endif // ASR
 
-#define LOGGING
-
-//This define is used to disable code generation for logs
-
-#ifdef LOGGING
-#define LOG_INFO(MESSAGE) core.logger.logInfo(MESSAGE)
-#define LOG_ERROR(MESSAGE) core.logger.logError(MESSAGE)
-#else
-#define LOG_INFO(MESSAGE)
-#define LOG_ERROR(MESSAGE)
-#endif // LOGGING
 
 void statusCommand(Core& core, Communication& communication, Packet& packet)
 {
-	LOG_INFO("running status command");
+	core.logger.logInfo("running status command");
 	communication.sendStatusPacket(STATUS_TX, core.status);
 }
 
+
 void stopCommand(Core& core, Communication& communication, Packet& packet)
 {
-	LOG_INFO("running stop command");
+	core.logger.logInfo("running stop command");
 	core.started = false;
 	communication.sendErrorPacket(STOP_TX, Success);
 }
 
 void startCommand(Core& core, Communication& communication, Packet& packet)
 {
-	LOG_INFO("running start command");
+	core.logger.logInfo("running start command");
 	core.started = true;
 	communication.sendErrorPacket(START_TX, Success);
 }
@@ -45,7 +35,7 @@ void startCommand(Core& core, Communication& communication, Packet& packet)
 
 void getPositionCommand(Core& core, Communication& communication, Packet& packet)
 {
-	LOG_INFO("running getPos command");
+	core.logger.logInfo("running getPos command");
 	XY_POSITION_ARRAY xy = core.movement.getXYPos();
 
 	communication.sendPosPacket(GET_POSITION_TX, static_cast<byte>(xy.x), static_cast<byte>(xy.y));
@@ -54,17 +44,17 @@ void getPositionCommand(Core& core, Communication& communication, Packet& packet
 // Long running commands
 void gotopositionCommand(Core& core, Communication& communication, Packet& packet)
 {
-	LOG_INFO("running gotoPositionCommand");
+	core.logger.logInfo("running gotoPositionCommand");
 	if (!core.started)
 	{
-		LOG_ERROR("Not started");
+		core.logger.logError("Not started");
 		communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::NotStarted);
 		return;
 	}
 
 	if (core.longRunningCommandInProgress)
 	{
-		LOG_ERROR("Long running command already in progress");
+		core.logger.logInfo("Long running command already in progress");
 		communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::LongRunningCommandInProgress);
 		return;
 	}
@@ -74,12 +64,12 @@ void gotopositionCommand(Core& core, Communication& communication, Packet& packe
 
 	if (x >= MAX_WIDTH_ASR || y >= MAX_HEIGHT_ASR)
 	{
-		LOG_ERROR("Pos out of bound");
+		core.logger.logInfo("Pos out of bound");
 		communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::PositionOutOfBound);
 		return;
 	}
 	core.longRunningCommandInProgress = true;
-	LOG_INFO("begin move");
+	core.logger.logInfo("begin move");
 	core.movement.moveXY(x, y);
 
 	int counter = 0;
@@ -91,7 +81,7 @@ void gotopositionCommand(Core& core, Communication& communication, Packet& packe
 			core.pollProgramLoop();
 			if (!core.started)
 			{
-				LOG_ERROR("Stopped");
+				core.logger.logError("Stopped");
 				communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::NotStarted);
 				core.longRunningCommandInProgress = false;
 				return;
@@ -99,7 +89,7 @@ void gotopositionCommand(Core& core, Communication& communication, Packet& packe
 			counter = 0;
 		}
 	}
-	LOG_INFO("done");
+	core.logger.logInfo("done");
 	communication.sendErrorPacket(GOTO_POSITION_TX, ErrorCode::Success);
 	core.longRunningCommandInProgress = false;
 }
@@ -114,7 +104,7 @@ bool runBoth(AccelStepper a, AccelStepper b) {
 
 void pickCommand(Core& core, Communication& communication, Packet& packet)
 {
-	LOG_INFO("running pick command");
+	core.logger.logInfo("running pick command");
 	if (!core.started)
 	{
 		communication.sendErrorPacket(PICK_TX, ErrorCode::NotStarted);
@@ -140,7 +130,7 @@ void pickCommand(Core& core, Communication& communication, Packet& packet)
 			{
 				core.pollProgramLoop();
 				if (!core.started) {
-					LOG_ERROR("Stopped");
+					core.logger.logError("Stopped");
 					communication.sendErrorPacket(PICK_TX, ErrorCode::NotStarted);
 					core.longRunningCommandInProgress = false;
 					return;
@@ -151,7 +141,7 @@ void pickCommand(Core& core, Communication& communication, Packet& packet)
 
 	}
 	else {
-		LOG_ERROR("Picker Full");
+		core.logger.logError("Picker Full");
 		communication.sendErrorPacket(PICK_TX, ErrorCode::NoMoreLoadingSpace);
 	}
 
@@ -162,14 +152,14 @@ void pickCommand(Core& core, Communication& communication, Packet& packet)
 
 void unloadCommand(Core& core, Communication& communication, Packet& packet)
 {
-	LOG_INFO("unload command");
+	core.logger.logInfo("unload command");
 	communication.sendErrorPacket(UNLOAD_TX, Success);
 }
 
 #else
 
 void binrDrop(Core& core, Communication& communication, Packet& packet) {
-	LOG_INFO("binr drop");
+	core.logger.logInfo("binr drop");
 
 	if (!core.started)
 	{
