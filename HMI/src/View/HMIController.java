@@ -1,10 +1,7 @@
 package View;
 
 import Logic.BINR.BINR;
-import Logic.Communication.ASRCommunication;
-import Logic.Communication.ASREventListener;
-import Logic.Communication.BINREventListener;
-import Logic.Communication.ErrorCode;
+import Logic.Communication.*;
 import Logic.Location;
 import Logic.Order;
 import View.ASR.Cell;
@@ -79,6 +76,11 @@ public class HMIController implements ASREventListener, BINREventListener {
     private TextField yDebugTextField;
     @FXML
     private TextArea logTextBox;
+
+    @FXML
+    private TextField asrCommTextfield;
+    @FXML
+    private TextField binrCommTextfield;
 
     // data bindings to view tables
     private ObservableList<Order> allOrdersObservableList;
@@ -314,6 +316,37 @@ public class HMIController implements ASREventListener, BINREventListener {
     @FXML
     protected void handleHomeButton() {
         asrCommunication.home();
+    }
+
+    @FXML
+    protected void handleSaveCommButton(){
+        int portAsr;
+        int portBinr;
+
+        try{
+            portAsr = Integer.parseInt(asrCommTextfield.getText());
+            portBinr = Integer.parseInt(binrCommTextfield.getText());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            onLog(e.toString());
+
+            portAsr = 0;
+            portBinr = 1;
+        }
+
+        SerialPort newPortAsr = SerialPort.getCommPorts()[portAsr];
+        newPortAsr.setBaudRate(115200);
+
+        try{
+            asrCommunication.close();
+            asrCommunication = new ASRCommunication(newPortAsr);
+            asrCommunication.subscribeToResponses(this);
+        }
+        catch (Exception e){
+            onLog(e.toString());
+        }
+
     }
 
 
