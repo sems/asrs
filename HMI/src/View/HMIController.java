@@ -88,6 +88,7 @@ public class HMIController implements ASREventListener, BINREventListener {
     private ObservableList<Order> packedOrdersObservableList;
 
     public ASRCommunication asrCommunication;
+    public BinrCommunication binrCommunication;
     private LocationAdvancer locationAdvancer;
     private BINR binr;
     private ObservableList<Order> ordersToPickObservableList;
@@ -114,9 +115,12 @@ public class HMIController implements ASREventListener, BINREventListener {
         InitializeGrid();
         InitializeTables();
 
-        SerialPort port = SerialPort.getCommPorts()[0];
-        asrCommunication = new ASRCommunication(port);
+        SerialPort asrPort = SerialPort.getCommPorts()[0];
+        SerialPort binrPort = SerialPort.getCommPorts()[1];
+        asrCommunication = new ASRCommunication(asrPort);
         asrCommunication.subscribeToResponses(this);
+        binrCommunication= new BinrCommunication(binrPort);
+        binrCommunication.subscribeToResponses(this);
         locationAdvancer = new LocationAdvancer(ordersToPickObservableList, asrCommunication);
         binr = new BINR((int)leftBoxPane.getHeight(), (int)rightBoxPane.getHeight());
     }
@@ -319,6 +323,16 @@ public class HMIController implements ASREventListener, BINREventListener {
     }
 
     @FXML
+    protected void handleLeft() {
+        binrCommunication.moveLeft();
+    }
+
+    @FXML
+    protected void handleRight() {
+        binrCommunication.moveRight();
+    }
+  
+    @FXML
     protected void handleSaveCommButton(){
         int portAsr;
         int portBinr;
@@ -346,7 +360,6 @@ public class HMIController implements ASREventListener, BINREventListener {
         catch (Exception e){
             onLog(e.toString());
         }
-
     }
 
 

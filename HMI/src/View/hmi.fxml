@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.HMIController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.HMIController">
   <children>
     <TabPane prefHeight="398.0" prefWidth="656.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
       <tabs>
@@ -176,6 +176,8 @@
                       <children>
                         <TextField fx:id="yDebugTextField" layoutX="463.0" layoutY="14.0" prefHeight="45.0" prefWidth="69.0" />
                                     <Button id="stopBtn" fx:id="homeBtn1" layoutX="14.0" layoutY="378.0" mnemonicParsing="false" onAction="#handleHomeButton" prefHeight="50.0" prefWidth="344.0" text="Home" />
+                                    <Button layoutX="463.0" layoutY="220.0" mnemonicParsing="false" onAction="#handleRight" text="Right" />
+                                    <Button layoutX="383.0" layoutY="220.0" mnemonicParsing="false" onAction="#handleLeft" text="Left" />
                                     <Label layoutX="403.0" layoutY="95.0" text="ASR Comm" />
                                     <Label layoutX="548.0" layoutY="95.0" text="BINr Comm" />
                                     <TextField fx:id="asrCommTextfield" layoutX="397.0" layoutY="112.0" prefHeight="25.0" prefWidth="75.0" />
