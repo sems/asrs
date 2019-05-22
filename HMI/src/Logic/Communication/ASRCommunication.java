@@ -16,10 +16,15 @@ public class ASRCommunication implements SerialPortDataListener {
         comPort = port;
         comPort.addDataListener(this);
         comPort.setBaudRate(115200);
-        comPort.openPort(3000);
+        comPort.openPort();
         asrEvent = new ASREvent();
 
-        start();
+        try{
+            Thread.sleep(3000);
+            start();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void close(){
@@ -175,6 +180,8 @@ public class ASRCommunication implements SerialPortDataListener {
 
             while (comPort.bytesAvailable() < size + 1) {
                 try {
+                    asrEvent.onLog("ASR: Not all bytes received " + comPort.bytesAvailable() + "/" + size + 1);
+                    System.err.println("Not all bytes received " + comPort.bytesAvailable() + "/" + size + 1);
                     Thread.sleep(timeout);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
