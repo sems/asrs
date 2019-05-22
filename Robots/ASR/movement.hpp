@@ -1,7 +1,6 @@
 #ifndef MOVEMENT_HPP
 #define MOVEMENT_HPP
 
-#include "predef.hpp"
 #include "arduino.h"
 #include "AccelStepper.h"
 #include "MultiStepper.h"
@@ -17,7 +16,8 @@ struct XY_POSITION_ARRAY
 };
 
 extern const int max_items;
-extern const int steps_item_width;
+extern const long steps_item_width;
+extern const long steps_to_neutral;
 
 class Movement
 {
@@ -72,7 +72,10 @@ public:
 	void homeX();
 
 	void homeY();
+
+	void gotToZeroZero();
 };
+
 
 
 #endif

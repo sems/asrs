@@ -26,6 +26,9 @@
 #define UNLOAD_RX 14
 #define UNLOAD_TX 114
 
+#define HOME_RX 15
+#define HOME_TX 115
+
 #define MAX_WIDTH_ASR 6
 #define MAX_HEIGHT_ASR 5
 
