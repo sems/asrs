@@ -16,7 +16,7 @@ public class BinrCommunication implements SerialPortDataListener {
         comPort = port;
         comPort.addDataListener(this);
         comPort.setBaudRate(115200);
-        comPort.openPort(3000);
+        comPort.openPort();
         binrEvent = new BINREvent();
 
         try{
@@ -161,6 +161,8 @@ public class BinrCommunication implements SerialPortDataListener {
 
             while (comPort.bytesAvailable() < size + 1) {
                 try {
+                    binrEvent.onLog("BINr: Not all bytes received " + comPort.bytesAvailable() + "/" + size + 1);
+                    System.err.println("Not all bytes received " + comPort.bytesAvailable() + "/" + size + 1);
                     Thread.sleep(timeout);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
