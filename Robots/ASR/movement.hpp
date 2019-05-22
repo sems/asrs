@@ -16,7 +16,8 @@ struct XY_POSITION_ARRAY
 };
 
 extern const int max_items;
-extern const int steps_item_width;
+extern const long steps_item_width;
+extern const long steps_to_neutral;
 
 class Movement
 {

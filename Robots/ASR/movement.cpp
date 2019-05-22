@@ -36,7 +36,18 @@ const float steps_per_unit_height = steps_per_mm_0 * unit_height_in_mm;
 const int x_mm_offset = 100;
 const int y_mm_offset = 120;
 
-const int steps_item_width = 400;
+
+/*
+4096 steps / rotation
+48 mm /rotation
+16 mm item width (2 lego units)
+
+1365 steps / item (we're gonna modify this to just pick up everything or something idk)
+
+85 1/3 steps / mm
+*/
+const long steps_item_width = 4500;
+const long steps_to_neutral = -9500;
 
 //sets the steps and direction for the motors to move to.
 // Doesn't actually move the ASR
@@ -73,14 +84,20 @@ void Movement::pick(int state)
 	switch (state)
 	{
 	case 0:
-		stepper_Z.setMaxSpeed(1200.0); // Set Max Speed of Stepper
-		stepper_Z.setAcceleration(2000.0);
-		stepper_Z.move(-steps_item_width);
+		stepper_Z.setMaxSpeed(2000.0f); // Set Max Speed of Stepper
+		stepper_Z.setAcceleration(1000.0f);
+		stepper_Z.moveTo(steps_to_neutral);
 		break;
 	case 1:
+		stepper_Z.setMaxSpeed(2000.0f); // Set Max Speed of Stepper
+		stepper_Z.setAcceleration(1000.0f);
+		stepper_Z.move(-steps_item_width);
+		//stepper_Z.move(-steps_item_width + (-steps_item_width * picked));
+		break;
+	case 2:
 		long positions[2];
-		positions[0] = stepper_A.currentPosition() - 300;
-		positions[1] = stepper_B.currentPosition() + 300;
+		positions[0] = stepper_A.currentPosition() - 500;
+		positions[1] = stepper_B.currentPosition() + 500;
 
 		stepper_A.setMaxSpeed(700.0f);
 		stepper_B.setMaxSpeed(700.0f);
@@ -88,10 +105,11 @@ void Movement::pick(int state)
 		steppers1.moveTo(positions);
 
 		break;
-	case 2:
-		stepper_Z.setMaxSpeed(1200.0); // Set Max Speed of Stepper
-		stepper_Z.setAcceleration(2000.0);
-		stepper_Z.move(steps_item_width);
+	case 3:
+		//delay(5000);
+		stepper_Z.setMaxSpeed(2000.0f); // Set Max Speed of Stepper
+		stepper_Z.setAcceleration(1000.0f);
+		stepper_Z.moveTo(steps_to_neutral);
 		picked++;
 		break;
 	default:
@@ -142,7 +160,7 @@ void Movement::homeZ()
         stepper_Z.moveTo(initial_homing_Z); // Set the position to move to
         initial_homing_Z++;                 // Decrease by 1 for next move if needed
         stepper_Z.run();                    // Start moving the stepper
-        delay(5);
+        //delay(4);
     }
     //Serial.println("Z limit switch activated");
 
@@ -156,7 +174,7 @@ void Movement::homeZ()
         stepper_Z.moveTo(initial_homing_Z);
         stepper_Z.run();
         initial_homing_Z--;
-        delay(5);
+        //delay(4);
     }
 
     stepper_Z.setCurrentPosition(0);
