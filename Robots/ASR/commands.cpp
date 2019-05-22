@@ -121,7 +121,7 @@ void pickCommand(Core& core, Communication& communication, Packet& packet)
 	//Only run steps if there is room on the picker
 	if (core.movement.picked < maxPick) {
 		int state = 0;
-		while (state < 3) {
+		while (state < 4) {
 			// Sends current state and increments it
 			core.movement.pick(state++);
 
@@ -153,6 +153,35 @@ void unloadCommand(Core& core, Communication& communication, Packet& packet)
 {
 	core.logger.logInfo("unload command");
 	communication.sendErrorPacket(UNLOAD_TX, Success);
+}
+
+void homeCommand(Core& core, Communication& communication, Packet& packet)
+{
+	core.logger.logInfo("running homing command");
+	if (!core.started)
+	{
+		communication.sendErrorPacket(HOME_TX, ErrorCode::NotStarted);
+		return;
+	}
+
+	if (core.longRunningCommandInProgress)
+	{
+		communication.sendErrorPacket(HOME_TX, ErrorCode::LongRunningCommandInProgress);
+		return;
+	}
+
+	core.longRunningCommandInProgress = true;
+
+			core.movement.homeZ();
+			//core.movement.homeX();
+			//core.movement.homeY();
+			//core.movement.gotToZeroZero();
+			//core.movement.stepper_A.setCurrentPosition(0);
+			//core.movement.stepper_B.setCurrentPosition(0);
+			//core.movement.stepper_Z.setCurrentPosition(0);
+
+	communication.sendErrorPacket(HOME_TX, ErrorCode::Success);
+	core.longRunningCommandInProgress = false;
 }
 
 #else

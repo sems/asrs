@@ -2,6 +2,7 @@
 #define CORE_HPP
 
 #include "predef.hpp"
+#include "constants.hpp"
 #include "Arduino.h"
 #include "commandInfo.hpp"
 #include "status.hpp"
@@ -13,7 +14,7 @@
 class Communication;
 
 #ifdef ASR
-#define COMMAND_COUNT 7
+#define COMMAND_COUNT 8
 #else
 #define COMMAND_COUNT 4
 #endif // ASR
@@ -32,7 +33,8 @@ private:
 		CommandInfo(GET_POSITION_RX, getPositionCommand),
 		CommandInfo(GOTO_POSITION_RX, gotopositionCommand),
 		CommandInfo(PICK_RX, pickCommand),
-		CommandInfo(UNLOAD_RX, unloadCommand)
+		CommandInfo(UNLOAD_RX, unloadCommand),
+		CommandInfo(HOME_RX, homeCommand)
 #else
 		CommandInfo(DROP_BINR_RX, binrDrop),
 

@@ -3,8 +3,7 @@
 #include "AccelStepper.h"
 #include "MultiStepper.h"
 
-Movement::Movement()
-{
+Movement::Movement() {
 	this->isOk = false;
 	this->homed = false;
 	this->isReady = false;
@@ -14,6 +13,10 @@ Movement::Movement()
 	this->xpos = 0;
 	this->ypos = 0;
 	this->picked = 0;
+
+	pinMode(LIMIT_SWITCH_X, INPUT_PULLUP);
+	pinMode(LIMIT_SWITCH_Y, INPUT_PULLUP);
+	pinMode(LIMIT_SWITCH_Z, INPUT_PULLUP);
 
 	this->stepper_A = AccelStepper(1, 2, 5);
 	this->stepper_B = AccelStepper(1, 3, 6);
@@ -30,21 +33,35 @@ const float unit_height_in_mm = 54.8;
 const float steps_per_unit_lenght = steps_per_mm_0 * unit_lenght_in_mm;
 const float steps_per_unit_height = steps_per_mm_0 * unit_height_in_mm;
 
-const int steps_item_width = 400;
+const int x_mm_offset = 100;
+const int y_mm_offset = 120;
+
+
+/*
+4096 steps / rotation
+48 mm /rotation
+16 mm item width (2 lego units)
+
+1365 steps / item (we're gonna modify this to just pick up everything or something idk)
+
+85 1/3 steps / mm
+*/
+const long steps_item_width = 4500;
+const long steps_to_neutral = -9500;
 
 //sets the steps and direction for the motors to move to.
 // Doesn't actually move the ASR
 void Movement::moveXY(int x, int y)
 {
 	y = y * -1;
-	long positions[2];
-	positions[0] = ccts_a(x, y);
-	positions[1] = ccts_b(x, y);
+    long positions[2];
+    positions[0] = ccts_a(x, y);
+    positions[1] = ccts_b(x, y);
 
 	stepper_A.setMaxSpeed(2000.0f);
 	stepper_B.setMaxSpeed(2000.0f);
 
-	steppers1.moveTo(positions);
+    steppers1.moveTo(positions);
 }
 
 /*
@@ -67,14 +84,20 @@ void Movement::pick(int state)
 	switch (state)
 	{
 	case 0:
-		stepper_Z.setMaxSpeed(1200.0); // Set Max Speed of Stepper
-		stepper_Z.setAcceleration(2000.0);
-		stepper_Z.move(-steps_item_width);
+		stepper_Z.setMaxSpeed(2000.0f); // Set Max Speed of Stepper
+		stepper_Z.setAcceleration(1000.0f);
+		stepper_Z.moveTo(steps_to_neutral);
 		break;
 	case 1:
+		stepper_Z.setMaxSpeed(2000.0f); // Set Max Speed of Stepper
+		stepper_Z.setAcceleration(1000.0f);
+		stepper_Z.move(-steps_item_width);
+		//stepper_Z.move(-steps_item_width + (-steps_item_width * picked));
+		break;
+	case 2:
 		long positions[2];
-		positions[0] = stepper_A.currentPosition() - 300;
-		positions[1] = stepper_B.currentPosition() + 300;
+		positions[0] = stepper_A.currentPosition() - 500;
+		positions[1] = stepper_B.currentPosition() + 500;
 
 		stepper_A.setMaxSpeed(700.0f);
 		stepper_B.setMaxSpeed(700.0f);
@@ -82,10 +105,11 @@ void Movement::pick(int state)
 		steppers1.moveTo(positions);
 
 		break;
-	case 2:
-		stepper_Z.setMaxSpeed(1200.0); // Set Max Speed of Stepper
-		stepper_Z.setAcceleration(2000.0);
-		stepper_Z.move(steps_item_width);
+	case 3:
+		//delay(5000);
+		stepper_Z.setMaxSpeed(2000.0f); // Set Max Speed of Stepper
+		stepper_Z.setAcceleration(1000.0f);
+		stepper_Z.moveTo(steps_to_neutral);
 		picked++;
 		break;
 	default:
@@ -97,159 +121,164 @@ void Movement::pick(int state)
 // Does not move to usual drop spot.
 void Movement::drop()
 {
-	if (picked > 0)
-	{
-		stepper_Z.setMaxSpeed(1200.0); // Set Max Speed of Stepper
-		stepper_Z.setAcceleration(2000.0);
-		stepper_Z.moveTo(steps_item_width);
-		picked--;
-	}
-	else
-	{
-		// send error message
-	}
+    if (picked > 0)
+    {
+        stepper_Z.setMaxSpeed(1200.0); // Set Max Speed of Stepper
+        stepper_Z.setAcceleration(2000.0);
+        stepper_Z.moveTo(steps_item_width);
+        picked--;
+    }
+    else
+    {
+        // send error message
+    }
 }
 
 //sets the steppers to move to the usual drop spot
 void Movement::prepareDrop()
 {
-	moveXY(-1, 2);
+    moveXY(-1, 2);
 }
 
 XY_POSITION_ARRAY Movement::getXYPos()
 {
-	xyPos.x = 0.5 * (stepper_A.currentPosition() + stepper_B.currentPosition()) / steps_per_unit_lenght;
-	xyPos.y = 0.5 * (stepper_A.currentPosition() - stepper_B.currentPosition()) / steps_per_unit_height;
-	return xyPos;
+    xyPos.x = 0.5 * (stepper_A.currentPosition() + stepper_B.currentPosition()) / steps_per_unit_lenght;
+    xyPos.y = 0.5 * (stepper_A.currentPosition() - stepper_B.currentPosition()) / steps_per_unit_height;
+    return xyPos;
 }
 
 void Movement::homeZ()
 {
-	//Serial.println("homing Z (depth)");
 
-	stepper_Z.setMaxSpeed(1000.0); // Set Max Speed of Stepper (Slower to get better accuracy)
-	stepper_Z.setAcceleration(2000.0); // Set Acceleration of Stepper
+    //Serial.println("homing Z (depth)");
 
-	while (digitalRead(LIMIT_SWITCH_Y))
-	{
-		// Make the Stepper move CCW until the switch is activated
-		stepper_Z.moveTo(initial_homing_Z); // Set the position to move to
-		initial_homing_Z++; // Decrease by 1 for next move if needed
-		stepper_Z.run(); // Start moving the stepper
-		delay(5);
-	}
-	//Serial.println("Z limit switch activated");
+    stepper_Z.setMaxSpeed(1000.0);     // Set Max Speed of Stepper (Slower to get better accuracy)
+    stepper_Z.setAcceleration(2000.0); // Set Acceleration of Stepper
 
-	stepper_Z.setCurrentPosition(0); // Set the current position as zero for now
-	stepper_Z.setMaxSpeed(800.0); // Set Max Speed of Stepper (Slower to get better accuracy)
-	stepper_Z.setAcceleration(800.0); // Set Acceleration of Stepper
-	initial_homing_Z = -1;
+    while (digitalRead(LIMIT_SWITCH_Z))
+    {                                       // Make the Stepper move CCW until the switch is activated
+        stepper_Z.moveTo(initial_homing_Z); // Set the position to move to
+        initial_homing_Z++;                 // Decrease by 1 for next move if needed
+        stepper_Z.run();                    // Start moving the stepper
+        //delay(4);
+    }
+    //Serial.println("Z limit switch activated");
 
-	while (!digitalRead(LIMIT_SWITCH_Y))
-	{
-		// Make the Stepper move CW until the switch is deactivated
-		stepper_Z.moveTo(initial_homing_Z);
-		stepper_Z.run();
-		initial_homing_Z--;
-		delay(5);
-	}
+    stepper_Z.setCurrentPosition(0);  // Set the current position as zero for now
+    stepper_Z.setMaxSpeed(800.0);     // Set Max Speed of Stepper (Slower to get better accuracy)
+    stepper_Z.setAcceleration(800.0); // Set Acceleration of Stepper
+    initial_homing_Z = -1;
 
-	stepper_Z.setCurrentPosition(0);
-	//Serial.println("Z homed");
+    while (!digitalRead(LIMIT_SWITCH_Z))
+    { // Make the Stepper move CW until the switch is deactivated
+        stepper_Z.moveTo(initial_homing_Z);
+        stepper_Z.run();
+        initial_homing_Z--;
+        //delay(4);
+    }
+
+    stepper_Z.setCurrentPosition(0);
+    //Serial.println("Z homed");
 }
 
 void Movement::homeX()
 {
-	//Serial.println("homing X");
 
-	stepper_A.setMaxSpeed(1000.0); // Set Max Speed of Stepper (Slower to get better accuracy)
-	stepper_A.setAcceleration(1000.0); // Set Acceleration of Stepper
-	stepper_B.setMaxSpeed(1000.0);
-	stepper_B.setAcceleration(1000.0);
+    //Serial.println("homing X");
 
-	while (digitalRead(LIMIT_SWITCH_Y))
-	{
-		// Make the Stepper move CCW until the switch is activated
-		stepper_A.moveTo(initial_homing_A); // Set the position to move to
-		stepper_B.moveTo(initial_homing_B); // Set the position to move to
-		initial_homing_A--; // Decrease by 1 for next move if needed
-		initial_homing_B--;
-		stepper_A.run(); // Start moving the stepper
-		stepper_B.run(); // Start moving the stepper
-		delay(5);
-	}
-	//Serial.println("X limit switch activated");
+    stepper_A.setMaxSpeed(1000.0);     // Set Max Speed of Stepper (Slower to get better accuracy)
+    stepper_A.setAcceleration(1000.0); // Set Acceleration of Stepper
+    stepper_B.setMaxSpeed(1000.0);
+    stepper_B.setAcceleration(1000.0);
 
-	stepper_A.setCurrentPosition(0); // Set the current position as zero for now
-	stepper_A.setMaxSpeed(800.0); // Set Max Speed of Stepper (Slower to get better accuracy)
-	stepper_A.setAcceleration(800.0); // Set Acceleration of Stepper
-	stepper_B.setCurrentPosition(0); // Set the current position as zero for now
-	stepper_B.setMaxSpeed(800.0); // Set Max Speed of Stepper (Slower to get better accuracy)
-	stepper_B.setAcceleration(800.0); // Set Acceleration of Stepper
-	initial_homing_A = 1;
-	initial_homing_B = 1;
+    while (digitalRead(LIMIT_SWITCH_X))
+    {                                       // Make the Stepper move CCW until the switch is activated
+        stepper_A.moveTo(initial_homing_A); // Set the position to move to
+        stepper_B.moveTo(initial_homing_B); // Set the position to move to
+        initial_homing_A--;                 // Decrease by 1 for next move if needed
+        initial_homing_B--;
+        stepper_A.run(); // Start moving the stepper
+        stepper_B.run(); // Start moving the stepper
+        delay(5);
+    }
+    //Serial.println("X limit switch activated");
 
-	while (!digitalRead(LIMIT_SWITCH_Y))
-	{
-		// Make the Stepper move CW until the switch is deactivated
-		stepper_A.moveTo(initial_homing_A); // Set the position to move to
-		stepper_B.moveTo(initial_homing_B);
-		stepper_A.run();
-		stepper_B.run();
-		initial_homing_A++;
-		initial_homing_B++;
-		delay(5);
-	}
+    stepper_A.setCurrentPosition(0);  // Set the current position as zero for now
+    stepper_A.setMaxSpeed(800.0);     // Set Max Speed of Stepper (Slower to get better accuracy)
+    stepper_A.setAcceleration(800.0); // Set Acceleration of Stepper
+    stepper_B.setCurrentPosition(0);  // Set the current position as zero for now
+    stepper_B.setMaxSpeed(800.0);     // Set Max Speed of Stepper (Slower to get better accuracy)
+    stepper_B.setAcceleration(800.0); // Set Acceleration of Stepper
+    initial_homing_A = 1;
+    initial_homing_B = 1;
 
-	stepper_B.setCurrentPosition(0);
-	stepper_A.setCurrentPosition(0);
-	//Serial.println("X homed");
+    while (!digitalRead(LIMIT_SWITCH_X))
+    {                                       // Make the Stepper move CW until the switch is deactivated
+        stepper_A.moveTo(initial_homing_A); // Set the position to move to
+        stepper_B.moveTo(initial_homing_B);
+        stepper_A.run();
+        stepper_B.run();
+        initial_homing_A++;
+        initial_homing_B++;
+        delay(5);
+    }
+
+    stepper_B.setCurrentPosition(0);
+    stepper_A.setCurrentPosition(0);
+    //Serial.println("X homed");
 }
 
 void Movement::homeY()
 {
-	initial_homing_A = -1;
-	initial_homing_B = 1;
+    initial_homing_A = -1;
+    initial_homing_B = 1;
 
-	stepper_A.setMaxSpeed(1000.0); // Set Max Speed of Stepper (Slower to get better accuracy)
-	stepper_A.setAcceleration(1000.0); // Set Acceleration of Stepper
-	stepper_B.setMaxSpeed(1000.0);
-	stepper_B.setAcceleration(1000.0);
+    stepper_A.setMaxSpeed(1000.0);     // Set Max Speed of Stepper (Slower to get better accuracy)
+    stepper_A.setAcceleration(1000.0); // Set Acceleration of Stepper
+    stepper_B.setMaxSpeed(1000.0);
+    stepper_B.setAcceleration(1000.0);
 
-	while (digitalRead(LIMIT_SWITCH_Y))
-	{
-		// Make the Stepper move CCW until the switch is activated
-		stepper_A.moveTo(initial_homing_A); // Set the position to move to
-		stepper_B.moveTo(initial_homing_B); // Set the position to move to
-		initial_homing_A++; // Decrease by 1 for next move if needed
-		initial_homing_B--;
-		stepper_A.run(); // Start moving the stepper
-		stepper_B.run(); // Start moving the stepper
-		delay(5);
-	}
+    while (digitalRead(LIMIT_SWITCH_Y))
+    {                                       // Make the Stepper move CCW until the switch is activated
+        stepper_A.moveTo(initial_homing_A); // Set the position to move to
+        stepper_B.moveTo(initial_homing_B); // Set the position to move to
+        initial_homing_A++;                 // Decrease by 1 for next move if needed
+        initial_homing_B--;
+        stepper_A.run(); // Start moving the stepper
+        stepper_B.run(); // Start moving the stepper
+        delay(5);
+    }
+    
 
+    stepper_A.setCurrentPosition(0);  // Set the current position as zero for now
+    stepper_A.setMaxSpeed(800.0);     // Set Max Speed of Stepper (Slower to get better accuracy)
+    stepper_A.setAcceleration(800.0); // Set Acceleration of Stepper
+    stepper_B.setCurrentPosition(0);  // Set the current position as zero for now
+    stepper_B.setMaxSpeed(800.0);     // Set Max Speed of Stepper (Slower to get better accuracy)
+    stepper_B.setAcceleration(800.0); // Set Acceleration of Stepper
+    initial_homing_A = 1;
+    initial_homing_B = -1;
 
-	stepper_A.setCurrentPosition(0); // Set the current position as zero for now
-	stepper_A.setMaxSpeed(800.0); // Set Max Speed of Stepper (Slower to get better accuracy)
-	stepper_A.setAcceleration(800.0); // Set Acceleration of Stepper
-	stepper_B.setCurrentPosition(0); // Set the current position as zero for now
-	stepper_B.setMaxSpeed(800.0); // Set Max Speed of Stepper (Slower to get better accuracy)
-	stepper_B.setAcceleration(800.0); // Set Acceleration of Stepper
-	initial_homing_A = 1;
-	initial_homing_B = -1;
+    while (!digitalRead(LIMIT_SWITCH_Y))
+    {                                       // Make the Stepper move CW until the switch is deactivated
+        stepper_A.moveTo(initial_homing_A); // Set the position to move to
+        stepper_B.moveTo(initial_homing_B);
+        stepper_A.run();
+        stepper_B.run();
+        initial_homing_A--;
+        initial_homing_B++;
+        delay(5);
+    }
 
-	while (!digitalRead(LIMIT_SWITCH_Y))
-	{
-		// Make the Stepper move CW until the switch is deactivated
-		stepper_A.moveTo(initial_homing_A); // Set the position to move to
-		stepper_B.moveTo(initial_homing_B);
-		stepper_A.run();
-		stepper_B.run();
-		initial_homing_A--;
-		initial_homing_B++;
-		delay(5);
-	}
+    stepper_B.setCurrentPosition(0);
+    stepper_A.setCurrentPosition(0);
+}
 
-	stepper_B.setCurrentPosition(0);
-	stepper_A.setCurrentPosition(0);
+void Movement::gotToZeroZero()
+{
+	long positions[2];
+	positions[0] = ((steps_per_mm_0 * x_mm_offset) - 0) + ((steps_per_mm_0 * -y_mm_offset) - 0);
+	positions[1] = ((steps_per_mm_0 * x_mm_offset) - 0) - ((steps_per_mm_0 * -y_mm_offset) - 0);
+	steppers1.moveTo(positions);
+	steppers1.runSpeedToPosition();
 }

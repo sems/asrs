@@ -27,5 +27,5 @@ void gotopositionCommand(Core& core, Communication& communication, Packet& packe
 void pickCommand(Core& core, Communication& communication, Packet& packet);
 void unloadCommand(Core& core, Communication& communication, Packet& packet);
 void binrDrop(Core& core, Communication& communication, Packet& packet);
-
+void homeCommand(Core& core, Communication& communication, Packet& packet);
 #endif
