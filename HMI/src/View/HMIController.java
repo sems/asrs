@@ -22,6 +22,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
+import java.beans.Expression;
+import java.rmi.server.ExportException;
 import java.util.ArrayList;
 
 public class HMIController implements ASREventListener, BINREventListener {
@@ -349,15 +351,28 @@ public class HMIController implements ASREventListener, BINREventListener {
             portBinr = 1;
         }
 
-        SerialPort newPortAsr = SerialPort.getCommPorts()[portAsr];
-        newPortAsr.setBaudRate(115200);
+        SerialPort newPortAsr;
+        SerialPort newPortBinr;
 
         try{
             asrCommunication.close();
+            newPortAsr = SerialPort.getCommPorts()[portAsr];
+            newPortAsr.setBaudRate(115200);
             asrCommunication = new ASRCommunication(newPortAsr);
             asrCommunication.subscribeToResponses(this);
+        } catch (Exception e){
+            e.printStackTrace();
+            onLog(e.toString());
         }
-        catch (Exception e){
+
+        try{
+            binrCommunication.close();
+            newPortBinr = SerialPort.getCommPorts()[portBinr];
+            newPortBinr.setBaudRate(115200);
+            binrCommunication = new BinrCommunication(newPortBinr);
+            binrCommunication.subscribeToResponses(this);
+        } catch (Exception e){
+            e.printStackTrace();
             onLog(e.toString());
         }
     }
@@ -418,7 +433,7 @@ public class HMIController implements ASREventListener, BINREventListener {
     }
 
     @Override
-    public void responseReceived() {
+    public void dropResponseReceived() {
 
     }
 }

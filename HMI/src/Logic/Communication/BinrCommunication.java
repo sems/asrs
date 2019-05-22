@@ -10,14 +10,14 @@ import com.fazecast.jSerialComm.SerialPortEvent;
  */
 public class BinrCommunication implements SerialPortDataListener {
     private SerialPort comPort;
-    private ASREvent asrEvent;
+    private BINREvent binrEvent;
 
     public BinrCommunication(SerialPort port) {
         comPort = port;
         comPort.addDataListener(this);
         comPort.setBaudRate(115200);
         comPort.openPort(3000);
-        asrEvent = new ASREvent();
+        binrEvent = new BINREvent();
 
         try{
             Thread.sleep(3000);
@@ -80,8 +80,8 @@ public class BinrCommunication implements SerialPortDataListener {
      *
      * @param listener
      */
-    public void subscribeToResponses(ASREventListener listener) {
-        asrEvent.addASRListener(listener);
+    public void subscribeToResponses(BINREventListener listener) {
+        binrEvent.addBINRListener(listener);
     }
 
     /**
@@ -137,6 +137,8 @@ public class BinrCommunication implements SerialPortDataListener {
 
         while (comPort.bytesAvailable() > 0) {
             System.out.println("--= NEW PACKET =--");
+            binrEvent.onLog("--= NEW PACKET =--");
+
             byte[] sizeBuffer = new byte[1];
             comPort.readBytes(sizeBuffer, 1);
             byte size = sizeBuffer[0];
@@ -151,7 +153,7 @@ public class BinrCommunication implements SerialPortDataListener {
             System.out.println("Payload size: " + size);
             System.out.println("Command Id: " + commandId);
 
-            asrEvent.onLog("Payload size: " + size + " Command Id: " + commandId);
+            binrEvent.onLog("Payload size: " + size + " Command Id: " + commandId);
 
             byte[] payload = new byte[size];
 
@@ -184,51 +186,51 @@ public class BinrCommunication implements SerialPortDataListener {
 
             if (packetChecksum == calcChecksum) {
                 System.out.println("Packet is valid");
-                asrEvent.onLog("Packet is valid");
+                binrEvent.onLog("Packet is valid");
 
                 if (commandId == 101) {
                     System.out.println("Response to GetStatus (101)");
-                    asrEvent.onLog("Response to GetStatus (101)");
+                    binrEvent.onLog("Response to GetStatus (101)");
                     if (size == 1) {
                         System.out.println("Status " + payload[0]);
 
                         System.out.println("Response is correct");
-                        asrEvent.onLog("Response to GetStatus (101)");
+                        binrEvent.onLog("Response to GetStatus (101)");
                     } else {
                         System.err.println("Size differs from expected");
-                        asrEvent.onLog("Size differs from expected");
+                        binrEvent.onLog("Size differs from expected");
                     }
                 }
 
                 if (commandId == 102) {
                     System.out.println("Response to Stop (102)");
-                    asrEvent.onLog("Response to Stop (102)");
+                    binrEvent.onLog("Response to Stop (102)");
                     if (size == 1) {
                         System.out.println("Response is correct");
-                        asrEvent.onLog("Response is correct");
+                        binrEvent.onLog("Response is correct");
                     }
                 }
 
                 if (commandId == 103) {
                     System.out.println("Response to Start (103)");
-                    asrEvent.onLog("Response to Start (103)");
+                    binrEvent.onLog("Response to Start (103)");
                     if (size == 1) {
                         System.out.println("Response is correct");
-                        asrEvent.onLog("Response is correct");
+                        binrEvent.onLog("Response is correct");
                     } else {
                         System.err.println("Size differs from expected");
-                        asrEvent.onLog("Size differs from expected");
+                        binrEvent.onLog("Size differs from expected");
                     }
                 }
 
                 if (commandId == 104) {
                     System.out.println("Message response (104)");
-                    asrEvent.onLog("Message response (104)");
+                    binrEvent.onLog("Message response (104)");
                     if (size > 0) {
                         System.out.println("Response is correct");
-                        asrEvent.onLog("Message response (104)");
+                        binrEvent.onLog("Message response (104)");
 
-                        StringBuilder output = new StringBuilder("ASR: ");
+                        StringBuilder output = new StringBuilder("BINr: ");
 
                         for (byte c : payload) {
                             output.append((char) c);
@@ -236,83 +238,17 @@ public class BinrCommunication implements SerialPortDataListener {
                         output.append("\n");
 
                         System.out.println(output);
-                        asrEvent.onLog(output.toString());
+                        binrEvent.onLog(output.toString());
                     } else {
                         System.err.println("Size differs from expected");
-                        asrEvent.onLog("Size differs from expected");
-                    }
-                }
-
-                // getPos response 110
-                if (commandId == 110) {
-                    System.out.println("Response to getPos (110)");
-                    asrEvent.onLog("Response to getPos (110)");
-                    if (size == 2) {
-                        System.out.println("Asr is at position x: " + payload[0] + ", y: " + payload[1]);
-                        asrEvent.onLog("Asr is at position x: " + payload[0] + ", y: " + payload[1]);
-                        asrEvent.onGetPositionReceived(payload[0], payload[1]);
-                    } else {
-                        System.err.println("Size differs from expected");
-                        asrEvent.onLog("Size differs from expected");
-                    }
-                }
-
-                // gotoPos response 111
-                if (commandId == 111) {
-                    if (size == 1) {
-                        ErrorCode errorCode = getErrorCode(payload[0]);
-                        if (errorCode == ErrorCode.SUCCESS) {
-                            System.out.println("GotoPos success");
-                            asrEvent.onLog("GotoPos success");
-//                            asrEvent.onPositionResponseReceived(ErrorCode.SUCCESS);
-                        } else {
-                            System.out.println("GotoPos went wrong");
-                            asrEvent.onLog("GotoPos went wrong");
-//                            asrEvent.onPositionResponseReceived(errorCode);
-                        }
-                    } else {
-                        System.err.println("size differs from expected");
-                        asrEvent.onLog("Size differs from expected");
-                    }
-                }
-
-                if (commandId == 113) {
-                    if (size == 1) {
-                        ErrorCode ec = getErrorCode(payload[0]);
-                        asrEvent.onLog("Pick response: " + ec);
-                        if (ec == ErrorCode.SUCCESS) {
-                            // TODO: Add application call
-                        } else {
-                            // TODO: Something went wrong
-                        }
-                    } else {
-                        System.err.println("size differs from expected");
-                        asrEvent.onLog("size differs from expected");
-                    }
-                }
-
-                if (commandId == 114) {
-                    System.out.println("Response to unload (114)");
-                    asrEvent.onLog("Response to unload (114)");
-                    if (size == 1) {
-                        ErrorCode ec = getErrorCode(payload[0]);
-
-                        System.out.println("Unload Response: " + ec);
-
-                        if (ec == ErrorCode.SUCCESS) {
-                            asrEvent.onUnloadResponseReceived();
-                            asrEvent.onLog("Response is correct");
-                        }
-                    } else {
-                        System.err.println("size differs from expected");
-                        asrEvent.onLog("size differs from expected");
+                        binrEvent.onLog("Size differs from expected");
                     }
                 }
 
                 if (commandId == 120){
                     if (size == 1){
                         ErrorCode ec = getErrorCode(payload[0]);
-                        asrEvent.onLog("Drop response: " + ec);
+                        binrEvent.onLog("Drop response: " + ec);
 
                         //TODO: Timon code
                     }
@@ -323,11 +259,11 @@ public class BinrCommunication implements SerialPortDataListener {
 
             } else {
                 System.err.println("Packet is invalid");
-                asrEvent.onLog("Packet is invalid");
+                binrEvent.onLog("Packet is invalid");
             }
 
             System.out.println("--= PACKET END =--");
-            asrEvent.onLog("--= PACKET END =--");
+            binrEvent.onLog("--= PACKET END =--");
 
             //System.out.println("Bytes still available: " + comPort.bytesAvailable());
             //asrEvent.onLog("Bytes still available: " + comPort.bytesAvailable());

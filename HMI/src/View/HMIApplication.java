@@ -19,7 +19,17 @@ public class HMIApplication extends Application {
 
     @Override
     public void stop(){
-        controller.asrCommunication.close();
+        try{
+            controller.asrCommunication.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        try{
+            controller.binrCommunication.close();
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
