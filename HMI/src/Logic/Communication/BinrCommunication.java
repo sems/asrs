@@ -159,11 +159,22 @@ public class BinrCommunication implements SerialPortDataListener {
 
             int timeout = 100;
 
-            while (comPort.bytesAvailable() < size + 1) {
+            int tries = 0;
+            while (comPort.bytesAvailable() < size + 1 && tries < 3) {
                 try {
+                    tries++;
                     binrEvent.onLog("BINr: Not all bytes received " + comPort.bytesAvailable() + "/" + size + 1);
+                    binrEvent.onLog("BINr: Try: " + tries);
                     System.err.println("Not all bytes received " + comPort.bytesAvailable() + "/" + size + 1);
                     Thread.sleep(timeout);
+
+                    if(tries > 3){
+                        binrEvent.onLog("BINr: Clearing Buffer after " + tries + " tries");
+                        while(comPort.bytesAvailable() > 0){
+                            comPort.readBytes(new byte[0], 1);
+                        }
+                    }
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
