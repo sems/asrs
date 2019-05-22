@@ -1,15 +1,12 @@
 package View;
 
 import Logic.BINR.BINR;
-<<<<<<< HEAD
 import Logic.Communication.*;
-=======
 import Logic.BINR.BoxType;
 import Logic.Communication.ASRCommunication;
 import Logic.Communication.ASREventListener;
 import Logic.Communication.BINREventListener;
 import Logic.Communication.ErrorCode;
->>>>>>> pick order
 import Logic.Location;
 import Logic.Order;
 import Logic.OrderItem;
@@ -135,7 +132,7 @@ public class HMIController implements ASREventListener, BINREventListener {
 
         InitializeGrid();
         InitializeTables();
-        
+
         SerialPort asrPort = SerialPort.getCommPorts()[0];
         SerialPort binrPort = SerialPort.getCommPorts()[1];
         asrCommunication = new ASRCommunication(asrPort);
@@ -144,6 +141,7 @@ public class HMIController implements ASREventListener, BINREventListener {
         binrCommunication.subscribeToResponses(this);
         locationAdvancer = new LocationAdvancer(ordersToPickObservableList, asrCommunication);
         binr = new BINR((int)leftBoxPane.getHeight(), (int)rightBoxPane.getHeight());
+        processStatus = Progress.Idling;
     }
 
     /**
@@ -314,7 +312,7 @@ public class HMIController implements ASREventListener, BINREventListener {
             drawGridAndRoute();
             // display the locations of all the products in the current route.
             var currentRouteLocations = locationAdvancer.getCurrentRouteLocations();
-            binr.packItems(locationAdvancer.getCurrentRouteOrderItems());
+//            binr.packItems(locationAdvancer.getCurrentRouteOrderItems());
             displayLocations(currentRouteLocations);
             orderPickProcessRunning = true;
             processStatus = Progress.Picking;
@@ -454,7 +452,7 @@ public class HMIController implements ASREventListener, BINREventListener {
     /** ======== robot events ========= **/
     @Override
     public void onPositionResponseReceived(ErrorCode errorCode) {
-        if(orderPickProcessRunning)
+        if(processStatus == Progress.Picking)
             asrCommunication.pick();
     }
 
