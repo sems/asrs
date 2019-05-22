@@ -15,6 +15,7 @@ import Logic.Order;
 import Logic.OrderItem;
 import View.ASR.Cell;
 import View.ASR.Grid;
+import View.ASR.LocationAdvanceStatus;
 import View.ASR.LocationAdvancer;
 import com.fazecast.jSerialComm.SerialPort;
 import javafx.application.Platform;
@@ -26,7 +27,6 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -37,7 +37,11 @@ import java.beans.Expression;
 import java.rmi.server.ExportException;
 import java.util.ArrayList;
 
-import static java.util.stream.Collectors.toCollection;
+enum Progress{
+    Picking,
+    Unloading,
+    Idling
+}
 
 public class HMIController implements ASREventListener, BINREventListener {
     /**
@@ -112,6 +116,8 @@ public class HMIController implements ASREventListener, BINREventListener {
     private static final int CELLS = 5;
 
     private ArrayList<Node> gridNodes = new ArrayList<>();
+    private boolean orderPickProcessRunning;
+    private Progress processStatus;
 
     /**
      * Initialize the screen by passing in the orders that will be displayed.
@@ -129,7 +135,7 @@ public class HMIController implements ASREventListener, BINREventListener {
 
         InitializeGrid();
         InitializeTables();
-
+        
         SerialPort asrPort = SerialPort.getCommPorts()[0];
         SerialPort binrPort = SerialPort.getCommPorts()[1];
         asrCommunication = new ASRCommunication(asrPort);
@@ -282,7 +288,7 @@ public class HMIController implements ASREventListener, BINREventListener {
 
     @FXML
     protected void handleRemoveOrderAction(ActionEvent event) {
-        Order selectedItem = (Order)this.pickedOrdersTableView.getSelectionModel().getSelectedItem();
+        Order selectedItem = this.pickedOrdersTableView.getSelectionModel().getSelectedItem();
         Platform.runLater(() -> {
             allOrdersTableView.getItems().add(selectedItem);
             waitingOrdersObservableList.removeIf(x -> x.getId() == selectedItem.getId());
@@ -294,18 +300,24 @@ public class HMIController implements ASREventListener, BINREventListener {
     protected void handlePickOrderAction(ActionEvent event) {
         // initialize the logic for moving the robot trough the picking process.
         locationAdvancer = new LocationAdvancer(ordersToPickObservableList, asrCommunication);
+        gridNodes.clear();
 
         // calculate the most efficient boxes.
         binr = new BINR((int)leftBoxPane.getHeight(), (int)rightBoxPane.getHeight());
-        binr.packItems(locationAdvancer.getCurrentRouteOrderItems());
-
-        // display the locations of all the products in the current route.
-        var currentRouteLocations = locationAdvancer.getCurrentRouteLocations();
-        displayLocations(currentRouteLocations);
 
         // advance to the first storage item position
-        if(!locationAdvancer.advanceToNextStorageItem()) {
-            onLog("There are no more storage items");
+        if(locationAdvancer.advanceToNextStorageItem() == LocationAdvanceStatus.NoNewOrdersToPick) {
+            onLog(">>>> Trying to pick order but not orders selected.");
+
+        }else {
+            onLog(">>>> Order picking process starting");
+            drawGridAndRoute();
+            // display the locations of all the products in the current route.
+            var currentRouteLocations = locationAdvancer.getCurrentRouteLocations();
+            binr.packItems(locationAdvancer.getCurrentRouteOrderItems());
+            displayLocations(currentRouteLocations);
+            orderPickProcessRunning = true;
+            processStatus = Progress.Picking;
         }
     }
 
@@ -344,7 +356,7 @@ public class HMIController implements ASREventListener, BINREventListener {
         rectangle.setLayoutY(maxHeight);
         boxPane.getChildren().add(rectangle);
 
-        System.out.println(orderItem.toString() + " height: " + orderItem.getPrdocutHeight());
+        onLog(orderItem.toString() + " height: " + orderItem.getPrdocutHeight());
     }
 
     @FXML
@@ -440,43 +452,10 @@ public class HMIController implements ASREventListener, BINREventListener {
 
 
     /** ======== robot events ========= **/
-
     @Override
     public void onPositionResponseReceived(ErrorCode errorCode) {
-        var numberOfItems = locationAdvancer.getCurrentRouteItemsNumber();
-        var currentItem = locationAdvancer.getCurrentRoutePickedItem();
-
-        double progressBarValue = (double)(100 / numberOfItems * currentItem) / 100;
-        progressBar.setProgress(progressBarValue);
-        
-        if (locationAdvancer.advanceToNextStorageItem()) {
-            System.out.println("there are next items");
-        }else {
-            System.out.println("no more orders");
-        }
-
-        System.out.println(progressBarValue);
-
-        int count = 1;
-        for (var node : gridNodes) {
-            if (node instanceof Line) {
-                count += 1;
-                System.out.println("current item: " + currentItem + "count: " + count);
-                if (currentItem == count) {
-                    System.out.println("Coloring item");
-                    ((Line) node).setStroke(Color.RED);
-                }
-            }
-        }
-
-        Platform.runLater(() -> {
-            gridPane.getChildren().clear();
-            gridPane.getChildren().addAll(gridNodes);
-                progressLabel.setText("Product Items Opgehaald "+ currentItem + " van de "+ numberOfItems);
-            }
-        );
-
-        onLog("Product Items Opgehaald "+ currentItem + " van de "+ numberOfItems);
+        if(orderPickProcessRunning)
+            asrCommunication.pick();
     }
 
     @Override
@@ -491,13 +470,83 @@ public class HMIController implements ASREventListener, BINREventListener {
     public void onUnloadResponseReceived() {
         locationAdvancer.advanceToNextStorageItem();
 
-        onLog("Visualizing box");
         leftBoxPane.getChildren().clear();
         rightBoxPane.getChildren().clear();
 
         for (var box: binr.getClosedBoxes()) {
             for (var storedItem: box.getStoredItems()) {
                 drawProduct(box.getBoxType(), storedItem);
+            }
+        }
+    }
+
+    @Override
+    public void onPickResponse() {
+        var numberOfItems = locationAdvancer.getCurrentRouteItemsNumber();
+        var currentItem = locationAdvancer.getCurrentRoutePickedItem();
+
+        // update progress bar
+        double progressBarValue = (double)(100 / numberOfItems * currentItem) / 100;
+        progressBar.setProgress(progressBarValue);
+
+        Platform.runLater(() -> {
+                    gridPane.getChildren().clear();
+                    InitializeGrid();
+                    gridPane.getChildren().addAll(gridNodes);
+                    progressLabel.setText("Product Items Opgehaald "+ locationAdvancer.getCurrentRoutePickedItem() + " van de " + locationAdvancer.getCurrentRouteItemsNumber());
+                }
+        );
+
+        // advance to next storage item
+        var status = locationAdvancer.advanceToNextStorageItem();
+
+        if (status == LocationAdvanceStatus.NewStorageItemPicked) {
+            System.out.println(">>>> Advancing to next storage item");
+
+            gridNodes.clear();
+            displayLocations(locationAdvancer.getCurrentRouteLocations());
+            drawGridAndRoute();
+
+            onLog("Product Items Opgehaald "+ currentItem + " van de "+ numberOfItems);
+        }
+        else if (status == LocationAdvanceStatus.NoNewOrdersToPick) {
+            System.out.println(">>>> There are no more storage items left for picking");
+
+            if (orderPickProcessRunning) {
+                asrCommunication.gotoPos(0, -1);
+                processStatus = Progress.Unloading;
+            }
+
+            ordersToPickObservableList.clear();
+            orderPickProcessRunning = false;
+        }
+    }
+
+    private void drawGridAndRoute() {
+        int circleCount = 1;
+        int lineCount = 1;
+
+        for (var node : gridNodes) {
+            if (node instanceof Circle) {
+                circleCount += 1;
+            }
+
+            if (node instanceof Line) {
+                lineCount += 1;
+            }
+
+            if (node instanceof Circle) {
+                if (circleCount <= locationAdvancer.getCurrentRoutePickedItem()) {
+                    onLog("Coloring item");
+                    ((Circle) node).setFill(Color.RED);
+                }
+            }
+
+            if (node instanceof Line) {
+                if (lineCount <= locationAdvancer.getCurrentRoutePickedItem()) {
+                    onLog("Coloring item");
+                    ((Line) node).setStroke(Color.RED);
+                }
             }
         }
     }

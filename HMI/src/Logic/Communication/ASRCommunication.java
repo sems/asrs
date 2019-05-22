@@ -121,6 +121,17 @@ public class ASRCommunication implements SerialPortDataListener {
         sendPacket(p);
     }
 
+
+    public void moveLeft() {
+        Packet p = new Packet((byte) 20, new byte[0]);
+        sendPacket(p);
+    }
+
+    public void moveRight() {
+        Packet p = new Packet((byte) 20, new byte[1]);
+        sendPacket(p);
+    }
+
     private ErrorCode getErrorCode(byte er) {
         if (er == 0) {
             return ErrorCode.SUCCESS;
@@ -315,7 +326,7 @@ public class ASRCommunication implements SerialPortDataListener {
                         ErrorCode ec = getErrorCode(payload[0]);
                         asrEvent.onLog("Pick response: " + ec);
                         if (ec == ErrorCode.SUCCESS) {
-                            // TODO: Add application call
+                            asrEvent.onPickResponse();
                         } else {
                             // TODO: Something went wrong
                         }
@@ -345,7 +356,7 @@ public class ASRCommunication implements SerialPortDataListener {
 
                 if (commandId == 115) {
                     asrEvent.onLog("Response to Homing (115) ");
-                    if (size == 0){
+                    if (size == 1){
                         ErrorCode ec = getErrorCode(payload[0]);
 
                         asrEvent.onLog("Homing response: " + ec);
