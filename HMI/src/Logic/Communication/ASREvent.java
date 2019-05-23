@@ -31,4 +31,9 @@ public class ASREvent {
         for (ASREventListener hl : asrListeners)
             hl.onUnloadResponseReceived();
     }
+
+    public void onPickResponse() {
+        for (ASREventListener hl : asrListeners)
+            hl.onPickResponse();
+    }
 }

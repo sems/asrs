@@ -6,4 +6,5 @@ public interface ASREventListener {
     void onGetPositionReceived(byte x, byte y);
     void onLog(String log);
     void onUnloadResponseReceived();
+    void onPickResponse();
 }

@@ -11,12 +11,18 @@ public class OrderItem {
     private int quantity;
     private Date pickingCompleted;
 
+    private static final int maxProductHeight = 200;
+    private static final int minProductHeight = 100;
+
+    private int prdocutHeight;
+
     public OrderItem(int itemID, int orderID, String name, int quantity) {
         this.storageItemID = itemID;
         this.orderID = orderID;
         this.name = name;
         this.quantity = quantity;
         this.pickingCompleted = null;
+        this.prdocutHeight =  (int)(Math.random()*((maxProductHeight-minProductHeight)+1))+minProductHeight;
     }
 
     private boolean isPickingCompleted() {
@@ -65,5 +71,9 @@ public class OrderItem {
     @Override
     public String toString() {
         return "\n\tProduct name = " + name +", quantity = " + quantity;
+    }
+
+    public int getPrdocutHeight() {
+        return prdocutHeight;
     }
 }
