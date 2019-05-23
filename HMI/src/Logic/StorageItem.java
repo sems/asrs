@@ -5,17 +5,12 @@ public class StorageItem {
     private String name;
     private String location;
     private int stock;
-    private int prdocutHeight;
-
-    private static final int maxProductHeight = 20;
-    private static final int minProductHeight = 10;
 
     public StorageItem(int itemID, String name, String location, int stock) {
         this.itemID = itemID;
         this.name = name;
         this.location = location;
         this.stock = stock;
-        this.prdocutHeight =  (int)(Math.random()*((maxProductHeight-minProductHeight)+1))+minProductHeight;
     }
 
     /**
@@ -39,9 +34,5 @@ public class StorageItem {
     @Override
     public String toString() {
         return location;
-    }
-
-    public int getPrdocutHeight() {
-        return prdocutHeight;
     }
 }
