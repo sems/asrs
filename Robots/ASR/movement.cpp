@@ -3,28 +3,29 @@
 #include "AccelStepper.h"
 #include "MultiStepper.h"
 
-Movement::Movement() {
-	this->isOk = false;
-	this->homed = false;
-	this->isReady = false;
-	this->initial_homing_A = 1;
-	this->initial_homing_B = 1;
-	this->initial_homing_Z = 1;
-	this->xpos = 0;
-	this->ypos = 0;
-	this->picked = 0;
+Movement::Movement()
+{
+    this->isOk = false;
+    this->homed = false;
+    this->isReady = false;
+    this->initial_homing_A = 1;
+    this->initial_homing_B = 1;
+    this->initial_homing_Z = 1;
+    this->xpos = 0;
+    this->ypos = 0;
+    this->picked = 0;
 
-	pinMode(LIMIT_SWITCH_X, INPUT_PULLUP);
-	pinMode(LIMIT_SWITCH_Y, INPUT_PULLUP);
-	pinMode(LIMIT_SWITCH_Z, INPUT_PULLUP);
+    pinMode(LIMIT_SWITCH_X, INPUT_PULLUP);
+    pinMode(LIMIT_SWITCH_Y, INPUT_PULLUP);
+    pinMode(LIMIT_SWITCH_Z, INPUT_PULLUP);
 
-	this->stepper_A = AccelStepper(1, 2, 5);
-	this->stepper_B = AccelStepper(1, 3, 6);
-	this->stepper_Z = AccelStepper(1, 4, 7);
-	stepper_A.setMaxSpeed(2000.0);
-	stepper_B.setMaxSpeed(2000.0);
-	this->steppers1.addStepper(stepper_A);
-	this->steppers1.addStepper(stepper_B);
+    this->stepper_A = AccelStepper(1, 2, 5);
+    this->stepper_B = AccelStepper(1, 3, 6);
+    this->stepper_Z = AccelStepper(1, 4, 7);
+    stepper_A.setMaxSpeed(2000.0);
+    stepper_B.setMaxSpeed(2000.0);
+    this->steppers1.addStepper(stepper_A);
+    this->steppers1.addStepper(stepper_B);
 }
 
 const int steps_per_mm_0 = 40; //40 for 1/8th microstepping, 80 for 1/16th microstepping
@@ -33,9 +34,8 @@ const float unit_height_in_mm = 54.8;
 const float steps_per_unit_lenght = steps_per_mm_0 * unit_lenght_in_mm;
 const float steps_per_unit_height = steps_per_mm_0 * unit_height_in_mm;
 
-const int x_mm_offset = 100;
-const int y_mm_offset = 120;
-
+const int x_mm_offset = 20;
+const int y_mm_offset = 20;
 
 /*
 4096 steps / rotation
@@ -53,13 +53,13 @@ const long steps_to_neutral = -9500;
 // Doesn't actually move the ASR
 void Movement::moveXY(int x, int y)
 {
-	y = y * -1;
+    y = y * -1;
     long positions[2];
     positions[0] = ccts_a(x, y);
     positions[1] = ccts_b(x, y);
 
-	stepper_A.setMaxSpeed(2000.0f);
-	stepper_B.setMaxSpeed(2000.0f);
+    stepper_A.setMaxSpeed(2000.0f);
+    stepper_B.setMaxSpeed(2000.0f);
 
     steppers1.moveTo(positions);
 }
@@ -81,51 +81,50 @@ int Movement::ccts_b(int x, int y) //Convert Coordinate to Steps for motor b
 // Picks one item.
 void Movement::pick(int state)
 {
-	switch (state)
-	{
-	case 0:
-		stepper_Z.setMaxSpeed(2000.0f); // Set Max Speed of Stepper
-		stepper_Z.setAcceleration(1000.0f);
-		stepper_Z.moveTo(steps_to_neutral);
-		break;
-	case 1:
-		stepper_Z.setMaxSpeed(2000.0f); // Set Max Speed of Stepper
-		stepper_Z.setAcceleration(1000.0f);
-		stepper_Z.move(-steps_item_width);
-		//stepper_Z.move(-steps_item_width + (-steps_item_width * picked));
-		break;
-	case 2:
-		long positions[2];
-		positions[0] = stepper_A.currentPosition() - 500;
-		positions[1] = stepper_B.currentPosition() + 500;
+    switch (state)
+    {
+    case 0:
+        stepper_Z.setMaxSpeed(2000.0f); // Set Max Speed of Stepper
+        stepper_Z.setAcceleration(1000.0f);
+        stepper_Z.moveTo(steps_to_neutral);
+        break;
+    case 1:
+        stepper_Z.setMaxSpeed(2000.0f); // Set Max Speed of Stepper
+        stepper_Z.setAcceleration(1000.0f);
+        stepper_Z.move(-steps_item_width);
+        //stepper_Z.move(-steps_item_width + (-steps_item_width * picked));
+        break;
+    case 2:
+        long positions[2];
+        positions[0] = stepper_A.currentPosition() - 500;
+        positions[1] = stepper_B.currentPosition() + 500;
 
-		stepper_A.setMaxSpeed(700.0f);
-		stepper_B.setMaxSpeed(700.0f);
+        stepper_A.setMaxSpeed(700.0f);
+        stepper_B.setMaxSpeed(700.0f);
 
-		steppers1.moveTo(positions);
+        steppers1.moveTo(positions);
 
-		break;
-	case 3:
-		//delay(5000);
-		stepper_Z.setMaxSpeed(2000.0f); // Set Max Speed of Stepper
-		stepper_Z.setAcceleration(1000.0f);
-		stepper_Z.moveTo(steps_to_neutral);
-		picked++;
-		break;
-	default:
-		break;
-	}
+        break;
+    case 3:
+        //delay(5000);
+        stepper_Z.setMaxSpeed(2000.0f); // Set Max Speed of Stepper
+        stepper_Z.setAcceleration(1000.0f);
+        stepper_Z.moveTo(steps_to_neutral);
+        picked++;
+        break;
+    default:
+        break;
+    }
 }
 
 // Drops 1 item
 // Does not move to usual drop spot.
 void Movement::drop()
 {
-    
-	stepper_Z.setMaxSpeed(1200.0); // Set Max Speed of Stepper
-	stepper_Z.setAcceleration(2000.0);
-	stepper_Z.moveTo(-steps_item_width * (picked - 1)); 
 
+    stepper_Z.setMaxSpeed(1200.0); // Set Max Speed of Stepper
+    stepper_Z.setAcceleration(2000.0);
+    stepper_Z.moveTo(-steps_item_width * (picked - 1));
 }
 
 //sets the steppers to move to the usual drop spot
@@ -185,7 +184,7 @@ void Movement::homeX()
     stepper_B.setMaxSpeed(1000.0);
     stepper_B.setAcceleration(1000.0);
 
-    while (digitalRead(LIMIT_SWITCH_X))
+    while (digitalRead(LIMIT_SWITCH_X == LOW))
     {                                       // Make the Stepper move CCW until the switch is activated
         stepper_A.moveTo(initial_homing_A); // Set the position to move to
         stepper_B.moveTo(initial_homing_B); // Set the position to move to
@@ -206,7 +205,7 @@ void Movement::homeX()
     initial_homing_A = 1;
     initial_homing_B = 1;
 
-    while (!digitalRead(LIMIT_SWITCH_X))
+    while (!digitalRead(LIMIT_SWITCH_X) == HIGH)
     {                                       // Make the Stepper move CW until the switch is deactivated
         stepper_A.moveTo(initial_homing_A); // Set the position to move to
         stepper_B.moveTo(initial_homing_B);
@@ -242,7 +241,6 @@ void Movement::homeY()
         stepper_B.run(); // Start moving the stepper
         delay(5);
     }
-    
 
     stepper_A.setCurrentPosition(0);  // Set the current position as zero for now
     stepper_A.setMaxSpeed(800.0);     // Set Max Speed of Stepper (Slower to get better accuracy)
@@ -270,9 +268,9 @@ void Movement::homeY()
 
 void Movement::gotToZeroZero()
 {
-	long positions[2];
-	positions[0] = ((steps_per_mm_0 * x_mm_offset) - 0) + ((steps_per_mm_0 * -y_mm_offset) - 0);
-	positions[1] = ((steps_per_mm_0 * x_mm_offset) - 0) - ((steps_per_mm_0 * -y_mm_offset) - 0);
-	steppers1.moveTo(positions);
-	steppers1.runSpeedToPosition();
+    long positions[2];
+    positions[0] = ((steps_per_mm_0 * x_mm_offset) - 0) + ((steps_per_mm_0 * -y_mm_offset) - 0);
+    positions[1] = ((steps_per_mm_0 * x_mm_offset) - 0) - ((steps_per_mm_0 * -y_mm_offset) - 0);
+    steppers1.moveTo(positions);
+    steppers1.runSpeedToPosition();
 }

@@ -9,21 +9,20 @@
 #include "Binr.hpp"
 #endif // ASR
 
-void statusCommand(Core& core, Communication& communication, Packet& packet)
+void statusCommand(Core &core, Communication &communication, Packet &packet)
 {
 	core.logger.logInfo("running status command");
 	communication.sendStatusPacket(STATUS_TX, core.status);
 }
 
-
-void stopCommand(Core& core, Communication& communication, Packet& packet)
+void stopCommand(Core &core, Communication &communication, Packet &packet)
 {
 	core.logger.logInfo("running stop command");
 	core.started = false;
 	communication.sendErrorPacket(STOP_TX, Success);
 }
 
-void startCommand(Core& core, Communication& communication, Packet& packet)
+void startCommand(Core &core, Communication &communication, Packet &packet)
 {
 	core.logger.logInfo("running start command");
 	core.started = true;
@@ -32,7 +31,7 @@ void startCommand(Core& core, Communication& communication, Packet& packet)
 
 #ifdef ASR
 
-void getPositionCommand(Core& core, Communication& communication, Packet& packet)
+void getPositionCommand(Core &core, Communication &communication, Packet &packet)
 {
 	core.logger.logInfo("running getPos command");
 	XY_POSITION_ARRAY xy = core.movement.getXYPos();
@@ -41,7 +40,7 @@ void getPositionCommand(Core& core, Communication& communication, Packet& packet
 }
 
 // Long running commands
-void gotopositionCommand(Core& core, Communication& communication, Packet& packet)
+void gotopositionCommand(Core &core, Communication &communication, Packet &packet)
 {
 	core.logger.logInfo("running gotoPositionCommand");
 	if (!core.started)
@@ -95,13 +94,14 @@ void gotopositionCommand(Core& core, Communication& communication, Packet& packe
 
 const int maxPick = 4;
 
-bool runBoth(AccelStepper a, AccelStepper b) {
+bool runBoth(AccelStepper a, AccelStepper b)
+{
 	bool b_a = a.run();
 	bool b_b = b.run();
 	return b_a || b_a;
 }
 
-void pickCommand(Core& core, Communication& communication, Packet& packet)
+void pickCommand(Core &core, Communication &communication, Packet &packet)
 {
 	core.logger.logInfo("running pick command");
 	if (!core.started)
@@ -119,16 +119,19 @@ void pickCommand(Core& core, Communication& communication, Packet& packet)
 	core.longRunningCommandInProgress = true;
 
 	//Only run steps if there is room on the picker
-	if (core.movement.picked < maxPick) {
+	if (core.movement.picked < maxPick)
+	{
 		int state = 0;
-		while (state < 4) {
+		while (state < 4)
+		{
 			// Sends current state and increments it
 			core.movement.pick(state++);
 
 			while (core.movement.stepper_Z.run() || core.movement.steppers1.run())
 			{
 				core.pollProgramLoop();
-				if (!core.started) {
+				if (!core.started)
+				{
 					core.logger.logError("Stopped");
 					communication.sendErrorPacket(PICK_TX, ErrorCode::NotStarted);
 					core.longRunningCommandInProgress = false;
@@ -136,10 +139,9 @@ void pickCommand(Core& core, Communication& communication, Packet& packet)
 				}
 			}
 		}
-
-
 	}
-	else {
+	else
+	{
 		core.logger.logError("Picker Full");
 		communication.sendErrorPacket(PICK_TX, ErrorCode::NoMoreLoadingSpace);
 		core.longRunningCommandInProgress = false;
@@ -147,29 +149,33 @@ void pickCommand(Core& core, Communication& communication, Packet& packet)
 		return;
 	}
 
-
 	communication.sendErrorPacket(PICK_TX, Success);
 	core.longRunningCommandInProgress = false;
 }
 
-void unloadCommand(Core& core, Communication& communication, Packet& packet)
+void unloadCommand(Core &core, Communication &communication, Packet &packet)
 {
-	if(core.longRunningCommandInProgress){
+	if (core.longRunningCommandInProgress)
+	{
 		communication.sendErrorPacket(UNLOAD_TX, ErrorCode::LongRunningCommandInProgress);
 		return;
 	}
 
-	if(!core.started){
+	if (!core.started)
+	{
 		communication.sendErrorPacket(UNLOAD_TX, ErrorCode::NotStarted);
 		return;
 	}
 
-	if(core.movement.picked){
+	if (core.movement.picked)
+	{
 		core.movement.drop();
 
-		while (core.movement.stepper_Z.run()){
+		while (core.movement.stepper_Z.run())
+		{
 			core.pollProgramLoop();
-			if (!core.started) {
+			if (!core.started)
+			{
 				core.logger.logError("Stopped");
 				communication.sendErrorPacket(PICK_TX, ErrorCode::NotStarted);
 				core.longRunningCommandInProgress = false;
@@ -180,12 +186,11 @@ void unloadCommand(Core& core, Communication& communication, Packet& packet)
 		core.movement.picked--;
 	}
 
-
 	core.logger.logInfo("unload command");
 	communication.sendErrorPacket(UNLOAD_TX, Success);
 }
 
-void homeCommand(Core& core, Communication& communication, Packet& packet)
+void homeCommand(Core &core, Communication &communication, Packet &packet)
 {
 	core.logger.logInfo("running homing command");
 	if (!core.started)
@@ -202,13 +207,13 @@ void homeCommand(Core& core, Communication& communication, Packet& packet)
 
 	core.longRunningCommandInProgress = true;
 
-			core.movement.homeZ();
-			//core.movement.homeX();
-			//core.movement.homeY();
-			//core.movement.gotToZeroZero();
-			//core.movement.stepper_A.setCurrentPosition(0);
-			//core.movement.stepper_B.setCurrentPosition(0);
-			//core.movement.stepper_Z.setCurrentPosition(0);
+	core.movement.homeZ();
+	core.movement.homeX();
+	//core.movement.homeY();
+	core.movement.gotToZeroZero();
+	//core.movement.stepper_A.setCurrentPosition(0);
+	//core.movement.stepper_B.setCurrentPosition(0);
+	//core.movement.stepper_Z.setCurrentPosition(0);
 
 	communication.sendErrorPacket(HOME_TX, ErrorCode::Success);
 	core.longRunningCommandInProgress = false;
@@ -216,7 +221,8 @@ void homeCommand(Core& core, Communication& communication, Packet& packet)
 
 #else
 
-void binrDrop(Core& core, Communication& communication, Packet& packet) {
+void binrDrop(Core &core, Communication &communication, Packet &packet)
+{
 	core.logger.logInfo("binr drop");
 	if (!core.started)
 	{
@@ -231,21 +237,22 @@ void binrDrop(Core& core, Communication& communication, Packet& packet) {
 	}
 	core.longRunningCommandInProgress = true;
 
-
 	const auto dir = static_cast<Direction>(packet.payload[0]);
-	if (dir == Direction::Left) {
+	if (dir == Direction::Left)
+	{
 		BinR::set_motor_dir_left();
 	}
-	else {
+	else
+	{
 		BinR::set_motor_dir_right();
 	}
 	BinR::start_motor();
-	while (BinR::is_laser_blocked()) { // wait untill product is on belt
+	while (BinR::is_laser_blocked())
+	{ // wait untill product is on belt
 		core.pollProgramLoop();
 		delay(100);
 	}
 	BinR::stop_motor();
-
 
 	communication.sendErrorPacket(DROP_BINR_TX, ErrorCode::Success);
 	core.longRunningCommandInProgress = false;
