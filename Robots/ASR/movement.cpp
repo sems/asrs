@@ -121,17 +121,11 @@ void Movement::pick(int state)
 // Does not move to usual drop spot.
 void Movement::drop()
 {
-    if (picked > 0)
-    {
-        stepper_Z.setMaxSpeed(1200.0); // Set Max Speed of Stepper
-        stepper_Z.setAcceleration(2000.0);
-        stepper_Z.moveTo(steps_item_width);
-        picked--;
-    }
-    else
-    {
-        // send error message
-    }
+    
+	stepper_Z.setMaxSpeed(1200.0); // Set Max Speed of Stepper
+	stepper_Z.setAcceleration(2000.0);
+	stepper_Z.moveTo(-steps_item_width * (picked - 1));
+    
 }
 
 //sets the steppers to move to the usual drop spot

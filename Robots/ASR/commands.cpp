@@ -142,6 +142,9 @@ void pickCommand(Core& core, Communication& communication, Packet& packet)
 	else {
 		core.logger.logError("Picker Full");
 		communication.sendErrorPacket(PICK_TX, ErrorCode::NoMoreLoadingSpace);
+		core.longRunningCommandInProgress = false;
+
+		return;
 	}
 
 
@@ -151,6 +154,33 @@ void pickCommand(Core& core, Communication& communication, Packet& packet)
 
 void unloadCommand(Core& core, Communication& communication, Packet& packet)
 {
+	if(core.longRunningCommandInProgress){
+		communication.sendErrorPacket(UNLOAD_TX, ErrorCode::LongRunningCommandInProgress);
+		return;
+	}
+
+	if(!core.started){
+		communication.sendErrorPacket(UNLOAD_TX, ErrorCode::NotStarted);
+		return;
+	}
+
+	if(core.movement.picked){
+		core.movement.drop();
+
+		while (core.movement.stepper_Z.run()){
+			core.pollProgramLoop();
+			if (!core.started) {
+				core.logger.logError("Stopped");
+				communication.sendErrorPacket(PICK_TX, ErrorCode::NotStarted);
+				core.longRunningCommandInProgress = false;
+				return;
+			}
+		}
+
+		core.movement.picked--;
+	}
+
+
 	core.logger.logInfo("unload command");
 	communication.sendErrorPacket(UNLOAD_TX, Success);
 }
