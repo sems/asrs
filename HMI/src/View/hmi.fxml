@@ -210,6 +210,7 @@
                                         <Button fx:id="startBtn" layoutX="17.0" layoutY="194.0" mnemonicParsing="false" onAction="#handleStartDebugButton" prefHeight="50.0" prefWidth="339.0" text="START" />
                                         <Button fx:id="stopBtn" layoutX="17.0" layoutY="262.0" mnemonicParsing="false" onAction="#handleStopDebugButton" prefHeight="50.0" prefWidth="339.0" text="STOP" />
                                         <Button id="stopBtn" fx:id="getPosBtn" layoutX="15.0" layoutY="330.0" mnemonicParsing="false" onAction="#handleGetPosButton" prefHeight="50.0" prefWidth="344.0" text="Get pos" />
+                                                <Button id="stopBtn" fx:id="getPosBtn1" layoutX="15.0" layoutY="397.0" mnemonicParsing="false" onAction="#handleHomeButton" prefHeight="50.0" prefWidth="344.0" text="Homing" />
                                              </children>
                                           </AnchorPane>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
