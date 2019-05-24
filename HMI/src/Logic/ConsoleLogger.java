@@ -1,4 +1,5 @@
 package Logic;
 
-public class ConsoleLogger {
+public class ConsoleLogger extends Logger {
+
 }
