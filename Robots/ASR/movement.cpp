@@ -34,8 +34,8 @@ const float unit_height_in_mm = 54.8;
 const float steps_per_unit_lenght = steps_per_mm_0 * unit_lenght_in_mm;
 const float steps_per_unit_height = steps_per_mm_0 * unit_height_in_mm;
 
-const int x_mm_offset = 100;
-const int y_mm_offset = 120;
+const int x_mm_offset = 20;
+const int y_mm_offset = 20;
 
 /*
 4096 steps / rotation
@@ -184,7 +184,7 @@ void Movement::homeX()
     stepper_B.setMaxSpeed(1000.0);
     stepper_B.setAcceleration(1000.0);
 
-    while (digitalRead(LIMIT_SWITCH_X))
+    while (digitalRead(LIMIT_SWITCH_X == LOW))
     {                                       // Make the Stepper move CCW until the switch is activated
         stepper_A.moveTo(initial_homing_A); // Set the position to move to
         stepper_B.moveTo(initial_homing_B); // Set the position to move to
@@ -205,7 +205,7 @@ void Movement::homeX()
     initial_homing_A = 1;
     initial_homing_B = 1;
 
-    while (!digitalRead(LIMIT_SWITCH_X))
+    while (!digitalRead(LIMIT_SWITCH_X) == HIGH)
     {                                       // Make the Stepper move CW until the switch is deactivated
         stepper_A.moveTo(initial_homing_A); // Set the position to move to
         stepper_B.moveTo(initial_homing_B);
