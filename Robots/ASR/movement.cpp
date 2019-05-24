@@ -46,7 +46,7 @@ const int y_mm_offset = 20;
 
 85 1/3 steps / mm
 */
-const long steps_item_width = 4500;
+const long steps_item_width = 2500;
 const long steps_to_neutral = -9500;
 
 //sets the steps and direction for the motors to move to.
@@ -91,7 +91,7 @@ void Movement::pick(int state)
     case 1:
         stepper_Z.setMaxSpeed(2000.0f); // Set Max Speed of Stepper
         stepper_Z.setAcceleration(1000.0f);
-        stepper_Z.move(-steps_item_width);
+        stepper_Z.move(-steps_item_width - 1000);
         //stepper_Z.move(-steps_item_width + (-steps_item_width * picked));
         break;
     case 2:

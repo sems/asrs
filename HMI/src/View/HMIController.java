@@ -130,13 +130,21 @@ public class HMIController implements ASREventListener, BINREventListener {
 
         InitializeGrid();
         InitializeTables();
+        try{
+            SerialPort asrPort = SerialPort.getCommPorts()[0];
+            asrCommunication = new ASRCommunication(asrPort);
+            asrCommunication.subscribeToResponses(this);
+        }catch(Exception e){
+            onLog(e.toString());
+        }
 
-        SerialPort asrPort = SerialPort.getCommPorts()[0];
-        SerialPort binrPort = SerialPort.getCommPorts()[1];
-        asrCommunication = new ASRCommunication(asrPort);
-        asrCommunication.subscribeToResponses(this);
-        binrCommunication= new BinrCommunication(binrPort);
-        binrCommunication.subscribeToResponses(this);
+        try{
+            SerialPort binrPort = SerialPort.getCommPorts()[1];
+            binrCommunication= new BinrCommunication(binrPort);
+            binrCommunication.subscribeToResponses(this);
+        }catch(Exception e){
+            onLog(e.toString());
+        }
         locationAdvancer = new LocationAdvancer(ordersToPickObservableList, asrCommunication);
         binr = new BINR((int)leftBoxPane.getHeight(), (int)rightBoxPane.getHeight());
         processStatus = Progress.Idling;
