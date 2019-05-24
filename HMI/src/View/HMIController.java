@@ -1,5 +1,6 @@
 package View;
 
+import Data.Database.DataServer;
 import Logic.BINR.BINR;
 import Logic.Communication.*;
 import Logic.BINR.BoxType;
@@ -13,7 +14,7 @@ import Logic.OrderItem;
 import View.ASR.Cell;
 import View.ASR.Grid;
 import View.ASR.LocationAdvanceStatus;
-import View.ASR.LocationAdvancer;
+import View.ASR.LocationNavigator;
 import com.fazecast.jSerialComm.SerialPort;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -71,18 +72,6 @@ public class HMIController implements ASREventListener, BINREventListener {
      * DEBUG screen
      */
     @FXML
-    private Button gotoBtn;
-    @FXML
-    private Button pickBtn;
-    @FXML
-    private Button dropBtn;
-    @FXML
-    private Button stopBtn;
-    @FXML
-    private Button startBtn;
-    @FXML
-    private Button getPosBtn;
-    @FXML
     private TextField xDebugTextField;
     @FXML
     private TextField yDebugTextField;
@@ -101,7 +90,7 @@ public class HMIController implements ASREventListener, BINREventListener {
 
     public ASRCommunication asrCommunication;
     public BinrCommunication binrCommunication;
-    private LocationAdvancer locationAdvancer;
+    private LocationNavigator locationNavigator;
     private BINR binr;
     private ObservableList<Order> ordersToPickObservableList;
 
@@ -113,6 +102,7 @@ public class HMIController implements ASREventListener, BINREventListener {
     private ArrayList<Node> gridNodes = new ArrayList<>();
     private Progress processStatus;
     private int unloadedProducts = 0;
+    private ArrayList<OrderItem> pickedOrderItems = new ArrayList<>();
 
     /**
      * Initialize the screen by passing in the orders that will be displayed.
@@ -130,24 +120,19 @@ public class HMIController implements ASREventListener, BINREventListener {
 
         InitializeGrid();
         InitializeTables();
-        try{
-            SerialPort asrPort = SerialPort.getCommPorts()[0];
-            asrCommunication = new ASRCommunication(asrPort);
-            asrCommunication.subscribeToResponses(this);
-        }catch(Exception e){
-            onLog(e.toString());
-        }
 
-        try{
-            SerialPort binrPort = SerialPort.getCommPorts()[1];
-            binrCommunication= new BinrCommunication(binrPort);
-            binrCommunication.subscribeToResponses(this);
-        }catch(Exception e){
-            onLog(e.toString());
-        }
-        locationAdvancer = new LocationAdvancer(ordersToPickObservableList, asrCommunication);
+        SerialPort asrPort = SerialPort.getCommPorts()[0];
+        SerialPort binrPort = SerialPort.getCommPorts()[1];
+        asrCommunication = new ASRCommunication(asrPort);
+        asrCommunication.subscribeToResponses(this);
+        binrCommunication= new BinrCommunication(binrPort);
+        binrCommunication.subscribeToResponses(this);
+        locationNavigator = new LocationNavigator(ordersToPickObservableList, asrCommunication);
         binr = new BINR((int)leftBoxPane.getHeight(), (int)rightBoxPane.getHeight());
         processStatus = Progress.Idling;
+
+//        binr.packItems(new DataServer().getOrder(61).getOrderItems());
+        updateBINRView();
     }
 
     /**
@@ -155,7 +140,7 @@ public class HMIController implements ASREventListener, BINREventListener {
      *  A line will connect all storage items based on the shortest path.
      */
     private void displayLocations(ArrayList<Location> locations) {
-        System.out.println("Drawing locations, locations: " + locations.size());
+        onLog("Drawing locations, locations: " + locations.size());
         for (int i = 0; i < locations.size(); i++) {
             var current = locations.get(i);
 
@@ -304,20 +289,20 @@ public class HMIController implements ASREventListener, BINREventListener {
     @FXML
     protected void handlePickOrderAction(ActionEvent event) {
         // initialize the logic for moving the robot trough the picking process.
-        locationAdvancer = new LocationAdvancer(ordersToPickObservableList, asrCommunication);
+        locationNavigator = new LocationNavigator(ordersToPickObservableList, asrCommunication);
         gridNodes.clear();
 
         // calculate the most efficient boxes.
         binr = new BINR((int)leftBoxPane.getHeight(), (int)rightBoxPane.getHeight());
 
         // advance to the first storage item position
-        if(locationAdvancer.advanceToNextStorageItem() == LocationAdvanceStatus.NoNewOrdersToPick) {
+        if(locationNavigator.advanceToNextStorageItem() == LocationAdvanceStatus.NoNewOrdersToPick) {
             onLog(">>>> Trying to pick order but not orders selected.");
         }else {
             onLog(">>>> Order picking process starting");
             // display the locations of all the products in the current route.
-            var currentRouteLocations = locationAdvancer.getCurrentRouteLocations();
-            System.out.println("count locations" +currentRouteLocations);
+            var currentRouteLocations = locationNavigator.getCurrentRouteLocations();
+            onLog("count locations" +currentRouteLocations);
             updateASRView(currentRouteLocations);
             processStatus = Progress.Picking;
         }
@@ -414,16 +399,15 @@ public class HMIController implements ASREventListener, BINREventListener {
         }
     }
 
-
     /** ======== robot events ========= **/
     @Override
     public void onPositionResponseReceived(ErrorCode errorCode) {
         if(processStatus == Progress.Picking) {
-            System.out.println("Picking load");
+            onLog("Picking load");
             asrCommunication.pick();
         }
         else if(processStatus == Progress.MovingToBinr) {
-            System.out.println("Moving over to unload position");
+            onLog("Moving over to unload position");
             asrCommunication.gotoPos(5,3);
             processStatus = Progress.Unloading;
         }
@@ -431,7 +415,7 @@ public class HMIController implements ASREventListener, BINREventListener {
             asrCommunication.unload();
         }
         else {
-            System.out.println("Status process: " + processStatus);
+            onLog("Status process: " + processStatus);
         }
     }
 
@@ -445,43 +429,60 @@ public class HMIController implements ASREventListener, BINREventListener {
 
     @Override
     public void onUnloadResponseReceived() {
-        if (unloadedProducts < 4) {
-            binrCommunication.moveLeft();
-            leftBoxPane.getChildren().clear();
-            rightBoxPane.getChildren().clear();
+        System.out.println("picked item order size " + pickedOrderItems.size());
+        if (pickedOrderItems.size() > 0) {
+            var unloadingItem = pickedOrderItems.remove(pickedOrderItems.size() - 1);
+            var packingStatus = binr.packItem(unloadingItem);
 
-            for (var box : binr.getClosedBoxes()) {
-                for (var storedItem : box.getStoredItems()) {
-                    drawProduct(box.getBoxType(), storedItem);
-                }
+            onLog(">>>> Unloaded  " + unloadingItem.getOrderID() + " status: " +  packingStatus);
+            updateBINRView();
+
+            switch (packingStatus) {
+                case PackedIntoLeftBox:
+                case ClosedLeftBox:
+                    // move binr left if item is packet in left box
+                    binrCommunication.moveLeft();
+                    break;
+                case PackedIntoRightBox:
+                case ClosedRightBox:
+                    // move binr right if item is packet in right box
+                    binrCommunication.moveRight();
+                    break;
             }
-
-            unloadedProducts++;
         }else {
+            onLog(">>>> Unloading done " + unloadedProducts);
             unloadedProducts = 0;
+            // goto base position
+            asrCommunication.gotoPos(0,0);
         }
     }
-
+    
     @Override
     public void onPickResponse() {
-        var numberOfItems = locationAdvancer.getCurrentRouteItemsNumber();
-        var currentItem = locationAdvancer.getCurrentRoutePickedItem();
+        var numberOfItems = locationNavigator.getCurrentRouteItemsNumber();
+        var currentItem = locationNavigator.getCurrentRoutePickedItem();
+
+        var currentOrderItem = locationNavigator.getCurrentRouteOrderItem();
+
+        if (currentOrderItem != null) {
+            this.pickedOrderItems.add(currentOrderItem);
+        }
 
         // update progress bar
         double progressBarValue = (double)(100 / numberOfItems * currentItem) / 100;
         progressBar.setProgress(progressBarValue);
 
         // advance to next storage item
-        var status = locationAdvancer.advanceToNextStorageItem();
+        var status = locationNavigator.advanceToNextStorageItem();
 
-        updateASRView(locationAdvancer.getCurrentRouteLocations());
+        updateASRView(locationNavigator.getCurrentRouteLocations());
 
         if (status == LocationAdvanceStatus.NewStorageItemPicked) {
-            System.out.println(">>>> Advancing to next storage item");
+            onLog(">>>> Advancing to next storage item");
             onLog("Product Items Opgehaald "+ currentItem + " van de "+ numberOfItems);
         }
         else if (status == LocationAdvanceStatus.NoNewOrdersToPick) {
-            System.out.println(">>>> There are no more storage items left for picking");
+            onLog(">>>> There are no more storage items left for picking");
 
             if (processStatus == Progress.Picking) {
                 asrCommunication.gotoPos(5, 4);
@@ -506,7 +507,23 @@ public class HMIController implements ASREventListener, BINREventListener {
             drawGridAndRoute();
 
             gridPane.getChildren().addAll(gridNodes);
-            progressLabel.setText("Product Items Opgehaald " + (locationAdvancer.getCurrentRoutePickedItem() - 1) + " van de " + locationAdvancer.getCurrentRouteItemsNumber());
+            progressLabel.setText("Product Items Opgehaald " + (locationNavigator.getCurrentRoutePickedItem() - 1) + " van de " + locationNavigator.getCurrentRouteItemsNumber());
+        });
+    }
+
+    /**
+     * This will draw the packet products to the screen.
+     */
+    private void updateBINRView() {
+        Platform.runLater(() -> {
+            leftBoxPane.getChildren().clear();
+            rightBoxPane.getChildren().clear();
+
+            var rightBox = binr.getBoxByType(BoxType.Right);
+            drawProducts(rightBox.getBoxType(), rightBox.getStoredItems());
+
+            var leftBox = binr.getBoxByType(BoxType.Left);
+            drawProducts(leftBox.getBoxType(), leftBox.getStoredItems());
         });
     }
 
@@ -515,14 +532,7 @@ public class HMIController implements ASREventListener, BINREventListener {
      * @param boxType
      * @param orderItem
      */
-    private void drawProduct(BoxType boxType, OrderItem orderItem) {
-        Rectangle rectangle = new Rectangle();
-        rectangle.setWidth(leftBoxPane.getWidth());
-        rectangle.setHeight(orderItem.getPrdocutHeight());
-        rectangle.setFill(Color.RED);
-        rectangle.setStroke(Color.BLACK);
-        rectangle.setStrokeWidth(4);
-
+    private void drawProducts(BoxType boxType, ArrayList<OrderItem> orderItems) {
         AnchorPane boxPane = null;
 
         if (boxType== BoxType.Left) {
@@ -534,18 +544,21 @@ public class HMIController implements ASREventListener, BINREventListener {
 
         int maxHeight = boxPane.heightProperty().intValue();
 
-        for (var node: boxPane.getChildren()) {
-            if (node instanceof Rectangle) {
-                maxHeight -= ((Rectangle)node).getHeight();
-            }
+        for (var orderItem: orderItems) {
+            Rectangle rectangle = new Rectangle();
+            rectangle.setWidth(leftBoxPane.getWidth());
+            rectangle.setHeight(orderItem.getPrdocutHeight());
+            rectangle.setFill(Color.RED);
+            rectangle.setStroke(Color.BLACK);
+            rectangle.setStrokeWidth(4);
+
+            maxHeight = maxHeight - (int)rectangle.getHeight();
+
+            rectangle.setLayoutY(maxHeight);
+            boxPane.getChildren().add(rectangle);
+
+            onLog(orderItem.toString() + " height: " + orderItem.getPrdocutHeight());
         }
-
-        maxHeight = maxHeight - (int)rectangle.getHeight();
-
-        rectangle.setLayoutY(maxHeight);
-        boxPane.getChildren().add(rectangle);
-
-        onLog(orderItem.toString() + " height: " + orderItem.getPrdocutHeight());
     }
 
     /**
@@ -565,13 +578,13 @@ public class HMIController implements ASREventListener, BINREventListener {
             }
 
             if (node instanceof Circle) {
-                if (circleCount <= locationAdvancer.getCurrentRoutePickedItem()) {
+                if (circleCount <= locationNavigator.getCurrentRoutePickedItem()) {
                     ((Circle) node).setFill(Color.RED);
                 }
             }
 
             if (node instanceof Line) {
-                if (lineCount < locationAdvancer.getCurrentRoutePickedItem()) {
+                if (lineCount < locationNavigator.getCurrentRoutePickedItem()) {
                     ((Line) node).setStroke(Color.RED);
                 }
             }

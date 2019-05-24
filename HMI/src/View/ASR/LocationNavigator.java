@@ -10,7 +10,10 @@ import javafx.collections.ObservableList;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-public class LocationAdvancer {
+/***
+ * Navigate through the picking route.
+ */
+public class LocationNavigator {
     private ObservableList<Order> orders;
     private ASRCommunication asrCommunication;
     private ArrayList<Location> currentRoute;
@@ -18,7 +21,7 @@ public class LocationAdvancer {
     private int currentOrderPickedIndex = 0;
     private int currentStorageItemPickedIndex = 1;
 
-    public LocationAdvancer(ObservableList<Order> orders, ASRCommunication asrCommunication) {
+    public LocationNavigator(ObservableList<Order> orders, ASRCommunication asrCommunication) {
         this.orders = orders;
         this.asrCommunication = asrCommunication;
     }
@@ -83,8 +86,12 @@ public class LocationAdvancer {
      * Returns the current route order items.
      * @return
      */
-    public ArrayList<OrderItem> getCurrentRouteOrderItems() {
-        return orders.get(currentOrderPickedIndex).getOrderItems();
+    public OrderItem getCurrentRouteOrderItem() {
+        try {
+            return orders.get(currentOrderPickedIndex - 1).getOrderItems().get(currentStorageItemPickedIndex - 1);
+        }catch (Exception ex) {
+            return null;
+        }
     }
 
     /**

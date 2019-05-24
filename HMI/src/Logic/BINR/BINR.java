@@ -23,32 +23,47 @@ public class BINR {
     }
 
     /**
-     * Packs the given item into the most efficient box.
+     * Packs the given items into the most efficient box.
+     *
      * @param items
      */
     public void packItems(ArrayList<OrderItem> items) {
-        for (var item: items) {
-            var productHeight = item.getPrdocutHeight();
+        for (var item : items) {
+            packItem(item);
+        }
+    }
 
-            if (leftBox.getFreeHeightSpace() >= productHeight) {
-                // item fits in left box
-                leftBox.addOrderItem(item);
-            } else if (rightBox.getFreeHeightSpace() >= productHeight) {
-                // item fits in right box
-                rightBox.addOrderItem(item);
+    /**
+     *  Packs the given item into the most efficient box.
+     * @param orderItem
+     * @return
+     */
+    public PackStatus packItem(OrderItem orderItem) {
+        var productHeight = orderItem.getPrdocutHeight();
+
+        if (leftBox.getFreeHeightSpace() >= productHeight) {
+            // item fits in left box
+            leftBox.addOrderItem(orderItem);
+            return PackStatus.PackedIntoLeftBox;
+        } else if (rightBox.getFreeHeightSpace() >= productHeight) {
+            // item fits in right box
+            rightBox.addOrderItem(orderItem);
+            return PackStatus.PackedIntoRightBox;
+        } else {
+            // check the most filled box and close that one.
+            if (rightBox.getFreeHeightSpace() > leftBox.getFreeHeightSpace()) {
+                closeLeftBox();
+                leftBox.addOrderItem(orderItem);
+                return PackStatus.ClosedLeftBox;
+            } else if (rightBox.getFreeHeightSpace() < leftBox.getFreeHeightSpace()) {
+                closeRightBox();
+                rightBox.addOrderItem(orderItem);
+                return PackStatus.ClosedRightBox;
             } else {
-                // item doesn't fit in either right or left box, create new box.
-                leftBox.closeBox();
-
-                // check the most filled box and close that one.
-                if (rightBox.getFreeHeightSpace() > leftBox.getFreeHeightSpace()) {
-                    closeLeftBox();
-                } else if (rightBox.getFreeHeightSpace() < leftBox.getFreeHeightSpace()) {
-                    closeRightBox();
-                } else {
-                    // free space is the same in each box, close the right one.
-                    closeRightBox();
-                }
+                // free space is the same in each box, close the right one.
+                closeRightBox();
+                rightBox.addOrderItem(orderItem);
+                return PackStatus.ClosedRightBox;
             }
         }
     }
