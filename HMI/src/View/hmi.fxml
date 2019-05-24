@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.HMIController">
   <children>
@@ -150,12 +151,36 @@
                               <children>
                                 <SplitPane orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
                                   <items>
-                                    <AnchorPane id="bannl" fx:id="leftBoxPane" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                                    <AnchorPane id="bannl" fx:id="leftBoxPane" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                                         <children>
+                                                            <SplitPane dividerPositions="0.12362030905077263" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
+                                                              <items>
+                                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                                                     <children>
+                                                                        <Text layoutX="96.0" layoutY="31.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Left box" />
+                                                                     </children>
+                                                                  </AnchorPane>
+                                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                                                              </items>
+                                                            </SplitPane>
+                                                         </children></AnchorPane>
                                   </items>
                                 </SplitPane>
                               </children>
                             </AnchorPane>
-                            <AnchorPane fx:id="rightBoxPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
+                            <AnchorPane fx:id="rightBoxPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                             <children>
+                                                <SplitPane dividerPositions="0.12691466083150985" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
+                                                  <items>
+                                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                                         <children>
+                                                            <Text layoutX="94.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Right box" />
+                                                         </children>
+                                                      </AnchorPane>
+                                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                                                  </items>
+                                                </SplitPane>
+                                             </children></AnchorPane>
                           </items>
                         </SplitPane>
                       </children>
@@ -174,15 +199,34 @@
                   <items>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                       <children>
-                        <TextField fx:id="yDebugTextField" layoutX="463.0" layoutY="14.0" prefHeight="45.0" prefWidth="69.0" />
                                     <Button id="stopBtn" fx:id="homeBtn1" layoutX="14.0" layoutY="378.0" mnemonicParsing="false" onAction="#handleHomeButton" prefHeight="50.0" prefWidth="344.0" text="Home" />
-                                    <Button layoutX="463.0" layoutY="220.0" mnemonicParsing="false" onAction="#handleRight" text="Right" />
-                                    <Button layoutX="383.0" layoutY="220.0" mnemonicParsing="false" onAction="#handleLeft" text="Left" />
-                                    <Label layoutX="403.0" layoutY="95.0" text="ASR Comm" />
-                                    <Label layoutX="548.0" layoutY="95.0" text="BINr Comm" />
-                                    <TextField fx:id="asrCommTextfield" layoutX="397.0" layoutY="112.0" prefHeight="25.0" prefWidth="75.0" />
-                                    <TextField fx:id="binrCommTextfield" layoutX="537.0" layoutY="112.0" prefHeight="25.0" prefWidth="82.0" />
-                                    <Button fx:id="saveComms" layoutX="458.0" layoutY="154.0" mnemonicParsing="false" onAction="#handleSaveCommButton" text="Save Comm" />
+                                    <SplitPane dividerPositions="0.5222222222222223" layoutX="418.0" prefHeight="285.0" prefWidth="306.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
+                                      <items>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                             <children>
+                                        <Button fx:id="gotoBtn" layoutX="17.0" layoutY="24.0" mnemonicParsing="false" onAction="#handleGotoPosDebugButton" prefHeight="45.0" prefWidth="339.0" text="GOTO" />
+                                        <Button fx:id="pickBtn" layoutX="17.0" layoutY="77.0" mnemonicParsing="false" onAction="#handlePickDebugButton" prefHeight="45.0" prefWidth="339.0" text="PICK" />
+                                        <Button fx:id="dropBtn" layoutX="17.0" layoutY="132.0" mnemonicParsing="false" onAction="#handleDropDebugButton" prefHeight="50.0" prefWidth="339.0" text="DROP" />
+                                        <Button fx:id="startBtn" layoutX="17.0" layoutY="194.0" mnemonicParsing="false" onAction="#handleStartDebugButton" prefHeight="50.0" prefWidth="339.0" text="START" />
+                                        <Button fx:id="stopBtn" layoutX="17.0" layoutY="262.0" mnemonicParsing="false" onAction="#handleStopDebugButton" prefHeight="50.0" prefWidth="339.0" text="STOP" />
+                                        <Button id="stopBtn" fx:id="getPosBtn" layoutX="15.0" layoutY="330.0" mnemonicParsing="false" onAction="#handleGetPosButton" prefHeight="50.0" prefWidth="344.0" text="Get pos" />
+                                             </children>
+                                          </AnchorPane>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                             <children>
+                                        <TextField layoutX="17.0" layoutY="43.0" prefHeight="45.0" prefWidth="69.0" fx:id="xDebugTextField" />
+                                    <TextField fx:id="yDebugTextField" layoutX="114.0" layoutY="43.0" prefHeight="45.0" prefWidth="69.0" />
+                                                <Label layoutX="22.0" layoutY="104.0" text="ASR Comm" />
+                                                <Label layoutX="118.0" layoutY="104.0" text="BINr Comm" />
+                                                <TextField fx:id="asrCommTextfield" layoutX="15.0" layoutY="130.0" prefHeight="25.0" prefWidth="75.0" />
+                                                <TextField fx:id="binrCommTextfield" layoutX="108.0" layoutY="130.0" prefHeight="25.0" prefWidth="82.0" />
+                                                <Button fx:id="saveComms" layoutX="14.0" layoutY="177.0" mnemonicParsing="false" onAction="#handleSaveCommButton" prefHeight="46.0" prefWidth="173.0" text="Save Comm" />
+                                                <Button layoutX="17.0" layoutY="250.0" mnemonicParsing="false" onAction="#handleLeft" prefHeight="45.0" prefWidth="69.0" text="Left" />
+                                                <Button layoutX="109.0" layoutY="249.0" mnemonicParsing="false" onAction="#handleRight" prefHeight="47.0" prefWidth="80.0" text="Right" />
+                                             </children>
+                                          </AnchorPane>
+                                      </items>
+                                    </SplitPane>
                       </children>
                     </AnchorPane>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="465.0" prefWidth="271.0">
@@ -192,13 +236,6 @@
                     </AnchorPane>
                   </items>
                 </SplitPane>
-                <TextField layoutX="368.0" layoutY="14.0" prefHeight="45.0" prefWidth="69.0" fx:id="xDebugTextField" />
-                <Button fx:id="gotoBtn" layoutX="17.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleGotoPosDebugButton" prefHeight="45.0" prefWidth="339.0" text="GOTO" />
-                <Button fx:id="pickBtn" layoutX="17.0" layoutY="69.0" mnemonicParsing="false" onAction="#handlePickDebugButton" prefHeight="45.0" prefWidth="339.0" text="PICK" />
-                <Button fx:id="dropBtn" layoutX="17.0" layoutY="132.0" mnemonicParsing="false" onAction="#handleDropDebugButton" prefHeight="50.0" prefWidth="339.0" text="DROP" />
-                <Button fx:id="startBtn" layoutX="16.0" layoutY="195.0" mnemonicParsing="false" onAction="#handleStartDebugButton" prefHeight="50.0" prefWidth="339.0" text="START" />
-                <Button fx:id="stopBtn" layoutX="14.0" layoutY="259.0" mnemonicParsing="false" onAction="#handleStopDebugButton" prefHeight="50.0" prefWidth="339.0" text="STOP" />
-                <Button id="stopBtn" fx:id="getPosBtn" layoutX="11.0" layoutY="322.0" mnemonicParsing="false" onAction="#handleGetPosButton" prefHeight="50.0" prefWidth="344.0" text="Get pos" />
               </children>
             </AnchorPane>
           </content>
