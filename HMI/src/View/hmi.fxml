@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
@@ -9,12 +11,13 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.HMIController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="View.HMIController">
   <children>
     <TabPane prefHeight="398.0" prefWidth="656.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
       <tabs>
@@ -151,36 +154,12 @@
                               <children>
                                 <SplitPane orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
                                   <items>
-                                    <AnchorPane id="bannl" fx:id="leftBoxPane" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                                                         <children>
-                                                            <SplitPane dividerPositions="0.12362030905077263" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
-                                                              <items>
-                                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                                                                     <children>
-                                                                        <Text layoutX="96.0" layoutY="31.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Left box" />
-                                                                     </children>
-                                                                  </AnchorPane>
-                                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
-                                                              </items>
-                                                            </SplitPane>
-                                                         </children></AnchorPane>
+                                    <AnchorPane id="bannl" fx:id="leftBoxPane" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
                                   </items>
                                 </SplitPane>
                               </children>
                             </AnchorPane>
-                            <AnchorPane fx:id="rightBoxPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                             <children>
-                                                <SplitPane dividerPositions="0.12691466083150985" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
-                                                  <items>
-                                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                                                         <children>
-                                                            <Text layoutX="94.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Right box" />
-                                                         </children>
-                                                      </AnchorPane>
-                                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
-                                                  </items>
-                                                </SplitPane>
-                                             </children></AnchorPane>
+                            <AnchorPane fx:id="rightBoxPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
                           </items>
                         </SplitPane>
                       </children>
@@ -195,38 +174,32 @@
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
-                <SplitPane dividerPositions="0.7313883299798792" focusTraversable="true" prefHeight="445.0" prefWidth="996.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
+                <SplitPane dividerPositions="0.6529175050301811" focusTraversable="true" prefHeight="445.0" prefWidth="996.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
                   <items>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                       <children>
-                                    <Button id="stopBtn" fx:id="homeBtn1" layoutX="14.0" layoutY="378.0" mnemonicParsing="false" onAction="#handleHomeButton" prefHeight="50.0" prefWidth="344.0" text="Home" />
-                                    <SplitPane dividerPositions="0.5222222222222223" layoutX="418.0" prefHeight="285.0" prefWidth="306.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
-                                      <items>
-                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                             <children>
-                                        <Button fx:id="gotoBtn" layoutX="17.0" layoutY="24.0" mnemonicParsing="false" onAction="#handleGotoPosDebugButton" prefHeight="45.0" prefWidth="339.0" text="GOTO" />
-                                        <Button fx:id="pickBtn" layoutX="17.0" layoutY="77.0" mnemonicParsing="false" onAction="#handlePickDebugButton" prefHeight="45.0" prefWidth="339.0" text="PICK" />
-                                        <Button fx:id="dropBtn" layoutX="17.0" layoutY="132.0" mnemonicParsing="false" onAction="#handleDropDebugButton" prefHeight="50.0" prefWidth="339.0" text="DROP" />
-                                        <Button fx:id="startBtn" layoutX="17.0" layoutY="194.0" mnemonicParsing="false" onAction="#handleStartDebugButton" prefHeight="50.0" prefWidth="339.0" text="START" />
-                                        <Button fx:id="stopBtn" layoutX="17.0" layoutY="262.0" mnemonicParsing="false" onAction="#handleStopDebugButton" prefHeight="50.0" prefWidth="339.0" text="STOP" />
-                                        <Button id="stopBtn" fx:id="getPosBtn" layoutX="15.0" layoutY="330.0" mnemonicParsing="false" onAction="#handleGetPosButton" prefHeight="50.0" prefWidth="344.0" text="Get pos" />
-                                             </children>
-                                          </AnchorPane>
-                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                             <children>
-                                        <TextField layoutX="17.0" layoutY="43.0" prefHeight="45.0" prefWidth="69.0" fx:id="xDebugTextField" />
-                                    <TextField fx:id="yDebugTextField" layoutX="114.0" layoutY="43.0" prefHeight="45.0" prefWidth="69.0" />
-                                                <Label layoutX="22.0" layoutY="104.0" text="ASR Comm" />
-                                                <Label layoutX="118.0" layoutY="104.0" text="BINr Comm" />
-                                                <TextField fx:id="asrCommTextfield" layoutX="15.0" layoutY="130.0" prefHeight="25.0" prefWidth="75.0" />
-                                                <TextField fx:id="binrCommTextfield" layoutX="108.0" layoutY="130.0" prefHeight="25.0" prefWidth="82.0" />
-                                                <Button fx:id="saveComms" layoutX="14.0" layoutY="177.0" mnemonicParsing="false" onAction="#handleSaveCommButton" prefHeight="46.0" prefWidth="173.0" text="Save Comm" />
-                                                <Button layoutX="17.0" layoutY="250.0" mnemonicParsing="false" onAction="#handleLeft" prefHeight="45.0" prefWidth="69.0" text="Left" />
-                                                <Button layoutX="109.0" layoutY="249.0" mnemonicParsing="false" onAction="#handleRight" prefHeight="47.0" prefWidth="80.0" text="Right" />
-                                             </children>
-                                          </AnchorPane>
-                                      </items>
-                                    </SplitPane>
+                        <TextField fx:id="yDebugTextField" layoutX="401.0" layoutY="136.0" prefHeight="45.0" prefWidth="98.0" />
+                        <Button layoutX="530.0" layoutY="406.0" mnemonicParsing="false" onAction="#handleRight" prefHeight="37.0" prefWidth="91.0" text="Move Right" />
+                        <Button layoutX="426.0" layoutY="406.0" mnemonicParsing="false" onAction="#handleLeft" prefHeight="37.0" prefWidth="101.0" text="Move Left" />
+                        <Label layoutX="425.0" layoutY="256.0" text="ASR Comm" />
+                        <Label layoutX="534.0" layoutY="259.0" text="BINr Comm" />
+                        <TextField fx:id="asrCommTextfield" layoutX="425.0" layoutY="275.0" prefHeight="32.0" prefWidth="91.0" />
+                        <TextField fx:id="binrCommTextfield" layoutX="523.0" layoutY="276.0" prefHeight="32.0" prefWidth="98.0" />
+                        <Button fx:id="saveComms" layoutX="426.0" layoutY="333.0" mnemonicParsing="false" onAction="#handleSaveCommButton" prefHeight="24.0" prefWidth="203.0" text="Save Comm" />
+                        <Button id="stopBtn" fx:id="homeBtn1" layoutX="13.0" layoutY="79.0" mnemonicParsing="false" onAction="#handleHomeButton" prefHeight="50.0" prefWidth="280.0" text="HOME Picker" />
+                        <Button fx:id="gotoBtn" layoutX="14.0" layoutY="136.0" mnemonicParsing="false" onAction="#handleGotoPosDebugButton" prefHeight="45.0" prefWidth="280.0" text="GOTO" />
+                        <Button fx:id="pickBtn" layoutX="14.0" layoutY="186.0" mnemonicParsing="false" onAction="#handlePickDebugButton" prefHeight="45.0" prefWidth="280.0" text="PICK" />
+                        <Button fx:id="dropBtn" layoutX="12.0" layoutY="236.0" mnemonicParsing="false" onAction="#handleDropDebugButton" prefHeight="50.0" prefWidth="279.9998779296875" text="DROP" />
+                        <Button fx:id="startBtn" layoutX="13.0" layoutY="291.0" mnemonicParsing="false" onAction="#handleStartDebugButton" prefHeight="50.0" prefWidth="281.0" text="START" />
+                        <Button fx:id="stopBtn" layoutX="11.0" layoutY="345.0" mnemonicParsing="false" onAction="#handleStopDebugButton" prefHeight="50.0" prefWidth="283.0" text="STOP" />
+                        <Button id="stopBtn" fx:id="getPosBtn" layoutX="8.0" layoutY="399.0" mnemonicParsing="false" onAction="#handleGetPosButton" prefHeight="50.0" prefWidth="283.0000999999975" text="POSITION" />
+                        <TextField fx:id="xDebugTextField" layoutX="298.0" layoutY="136.0" prefHeight="45.0" prefWidth="91.0" />
+                        <Label layoutX="430.0" layoutY="209.0" text="BINR Debugger">
+                          <font>
+                            <Font size="20.0" fx:id="x2" />
+                          </font>
+                        </Label>
+                        <Label font="$x2" layoutX="22.0" layoutY="22.0" text="ASR Debugger" />
                       </children>
                     </AnchorPane>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="465.0" prefWidth="271.0">
