@@ -262,8 +262,7 @@ public class BinrCommunication implements SerialPortDataListener {
                     if (size == 1){
                         ErrorCode ec = getErrorCode(payload[0]);
                         binrEvent.onLog("Drop response: " + ec);
-
-                        //TODO: Timon code
+                        binrEvent.onDropResponseReceived();
                     }
                     else {
                         System.err.println("Unexpected size");
